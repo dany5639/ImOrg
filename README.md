@@ -26,3 +26,17 @@ To Do:
 - Add text files support.
 - Add more file types support.
 - Allow directory change when renaming files ( F:\image1.jpg: renaming to new\image1 would create the "new" folder and move the file)
+
+Tested supported file formats:
+- Image: jpg, png, gif, tif, bmp, ico, tiff, jpeg
+- Video: webm, mp4, mkv
+
+Unsupported file formats:
+- Image: webp, dds, tga
+- Video: flv
+
+Complete list of supported file formats based on the used libraries.
+- Any file type supported by WinForms PictureBox:
+(BMP, GIF, JPEG, EXIF, PNG and TIFF)
+- Any file type supported by Windows Media Player:
+(asf, wma, wmv, wm, asx, wax, wvx, wmx, wpl, dvr-ms, wmd, avi, mpg, mpeg, m1v, mp2, mp3, mpa, mpe, m3u, mid, midi, rmi, aif, aifc, aiff, au, snd, wav, cda, ivf, wmz, wms, mov, m4a, mp4, m4v, mp4v, 3g2, 3gp2, 3gp, 3gpp, aac, adt, adts, m2ts, flac)
