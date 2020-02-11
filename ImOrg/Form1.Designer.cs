@@ -42,14 +42,11 @@
             this.autoSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.centerImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stretchImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.keySettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fileSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rGBTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rGBBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allowAnyFiletypeToolStripMenuItem2 = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -111,7 +108,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
-            this.toolStripStatusLabel1});
+            this.allowAnyFiletypeToolStripMenuItem2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 573);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1242, 22);
@@ -123,11 +120,10 @@
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pictureSizeModeToolStripMenuItem,
-            this.keySettingsToolStripMenuItem,
-            this.fileSettingsToolStripMenuItem,
             this.rGBTextToolStripMenuItem,
             this.rGBBackgroundToolStripMenuItem,
-            this.testToolStripMenuItem});
+            this.allowUPDOWNToRenameToolStripMenuItem,
+            this.allowAnyFiletypeToolStripMenuItem});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -143,100 +139,78 @@
             this.centerImageToolStripMenuItem,
             this.stretchImageToolStripMenuItem});
             this.pictureSizeModeToolStripMenuItem.Name = "pictureSizeModeToolStripMenuItem";
-            this.pictureSizeModeToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.pictureSizeModeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.pictureSizeModeToolStripMenuItem.Text = "Picture Size Mode";
             // 
             // zoomToolStripMenuItem
             // 
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
             this.zoomToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
             // normalToolStripMenuItem
             // 
             this.normalToolStripMenuItem.Name = "normalToolStripMenuItem";
-            this.normalToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.normalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.normalToolStripMenuItem.Text = "Normal";
             this.normalToolStripMenuItem.Click += new System.EventHandler(this.NormalToolStripMenuItem_Click);
             // 
             // autoSizeToolStripMenuItem
             // 
             this.autoSizeToolStripMenuItem.Name = "autoSizeToolStripMenuItem";
-            this.autoSizeToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.autoSizeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.autoSizeToolStripMenuItem.Text = "Auto Size";
             this.autoSizeToolStripMenuItem.Click += new System.EventHandler(this.AutoSizeToolStripMenuItem_Click);
             // 
             // centerImageToolStripMenuItem
             // 
             this.centerImageToolStripMenuItem.Name = "centerImageToolStripMenuItem";
-            this.centerImageToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.centerImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.centerImageToolStripMenuItem.Text = "Center Image";
             this.centerImageToolStripMenuItem.Click += new System.EventHandler(this.CenterImageToolStripMenuItem_Click);
             // 
             // stretchImageToolStripMenuItem
             // 
             this.stretchImageToolStripMenuItem.Name = "stretchImageToolStripMenuItem";
-            this.stretchImageToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.stretchImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.stretchImageToolStripMenuItem.Text = "Stretch Image";
             this.stretchImageToolStripMenuItem.Click += new System.EventHandler(this.StretchImageToolStripMenuItem_Click);
-            // 
-            // keySettingsToolStripMenuItem
-            // 
-            this.keySettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.allowUPDOWNToRenameToolStripMenuItem});
-            this.keySettingsToolStripMenuItem.Name = "keySettingsToolStripMenuItem";
-            this.keySettingsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.keySettingsToolStripMenuItem.Text = "Key settings";
-            // 
-            // allowUPDOWNToRenameToolStripMenuItem
-            // 
-            this.allowUPDOWNToRenameToolStripMenuItem.Checked = true;
-            this.allowUPDOWNToRenameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.allowUPDOWNToRenameToolStripMenuItem.Name = "allowUPDOWNToRenameToolStripMenuItem";
-            this.allowUPDOWNToRenameToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.allowUPDOWNToRenameToolStripMenuItem.Text = "Allow Up/Down to rename";
-            // 
-            // fileSettingsToolStripMenuItem
-            // 
-            this.fileSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.allowAnyFiletypeToolStripMenuItem});
-            this.fileSettingsToolStripMenuItem.Name = "fileSettingsToolStripMenuItem";
-            this.fileSettingsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.fileSettingsToolStripMenuItem.Text = "File settings";
-            // 
-            // allowAnyFiletypeToolStripMenuItem
-            // 
-            this.allowAnyFiletypeToolStripMenuItem.Name = "allowAnyFiletypeToolStripMenuItem";
-            this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.allowAnyFiletypeToolStripMenuItem.Text = "Allow any filetype";
             // 
             // rGBTextToolStripMenuItem
             // 
             this.rGBTextToolStripMenuItem.Name = "rGBTextToolStripMenuItem";
-            this.rGBTextToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.rGBTextToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.rGBTextToolStripMenuItem.Text = "RGB Text";
             this.rGBTextToolStripMenuItem.Click += new System.EventHandler(this.RGBTextToolStripMenuItem_Click);
             // 
             // rGBBackgroundToolStripMenuItem
             // 
             this.rGBBackgroundToolStripMenuItem.Name = "rGBBackgroundToolStripMenuItem";
-            this.rGBBackgroundToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.rGBBackgroundToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.rGBBackgroundToolStripMenuItem.Text = "RGB Background";
             this.rGBBackgroundToolStripMenuItem.Click += new System.EventHandler(this.RGBBackgroundToolStripMenuItem_Click);
             // 
+            // allowUPDOWNToRenameToolStripMenuItem
+            // 
+            this.allowUPDOWNToRenameToolStripMenuItem.CheckOnClick = true;
+            this.allowUPDOWNToRenameToolStripMenuItem.Name = "allowUPDOWNToRenameToolStripMenuItem";
+            this.allowUPDOWNToRenameToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.allowUPDOWNToRenameToolStripMenuItem.Text = "Allow Up/Down to rename";
+            // 
             // testToolStripMenuItem
             // 
-            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.testToolStripMenuItem.Text = "Test";
-            this.testToolStripMenuItem.Click += new System.EventHandler(this.TestToolStripMenuItem_Click);
+            this.allowAnyFiletypeToolStripMenuItem.CheckOnClick = true;
+            this.allowAnyFiletypeToolStripMenuItem.Name = "testToolStripMenuItem";
+            this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.allowAnyFiletypeToolStripMenuItem.Text = "Allow any filetype";
+            this.allowAnyFiletypeToolStripMenuItem.Click += new System.EventHandler(this.TestToolStripMenuItem_Click);
             // 
-            // toolStripStatusLabel1
+            // allowAnyFiletypeToolStripMenuItem2
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(26, 17);
-            this.toolStripStatusLabel1.Text = "Idle";
+            this.allowAnyFiletypeToolStripMenuItem2.Name = "allowAnyFiletypeToolStripMenuItem2";
+            this.allowAnyFiletypeToolStripMenuItem2.Size = new System.Drawing.Size(26, 17);
+            this.allowAnyFiletypeToolStripMenuItem2.Text = "Idle";
             // 
             // Form1
             // 
@@ -266,7 +240,7 @@
         private System.Windows.Forms.ColorDialog colorDialog1; 
         private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel allowAnyFiletypeToolStripMenuItem2;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripMenuItem pictureSizeModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rGBTextToolStripMenuItem;
@@ -276,10 +250,7 @@
         private System.Windows.Forms.ToolStripMenuItem autoSizeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem centerImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stretchImageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem keySettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fileSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
     }
 }

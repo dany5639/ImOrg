@@ -113,8 +113,7 @@ namespace ImOrg
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // best view mode
 
-            allowAnyFiletypeToolStripMenuItem.CheckOnClick = true;
-            allowUPDOWNToRenameToolStripMenuItem.CheckOnClick = true;
+            allowUPDOWNToRenameToolStripMenuItem.Checked = true;
 
         }
         private void GetDrivesList()
@@ -174,8 +173,8 @@ namespace ImOrg
             treeView_folders.ForeColor = textColor;
             this.BackColor = backgroundColor;
             this.ForeColor = textColor;
-            toolStripStatusLabel1.BackColor = Color.White;
-            toolStripStatusLabel1.ForeColor = Color.Black;
+            allowAnyFiletypeToolStripMenuItem2.BackColor = Color.White;
+            allowAnyFiletypeToolStripMenuItem2.ForeColor = Color.Black;
 
         }
         private bool RenameFile(string oldFileName, string newFileName)
@@ -185,7 +184,7 @@ namespace ImOrg
 
             if (File.Exists(newFileName))
             {
-                toolStripStatusLabel1.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
                 return false;
             }
 
@@ -207,17 +206,20 @@ namespace ImOrg
 
             if (oldFileName.Length > 248)
             {
-                toolStripStatusLabel1.Text = $"ERROR: filename too long: {oldFileName}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {oldFileName}";
                 return false;
             }
             if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
             {
-                toolStripStatusLabel1.Text = $"ERROR: filename too long: {newFileName}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {newFileName}";
                 return false;
             }
 
             File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
-            renameHistory.Add(oldFileName, newFileName);
+            if (renameHistory.ContainsKey(oldFileName))
+                renameHistory[oldFileName] = newFileName;
+            else
+                renameHistory.Add(oldFileName, newFileName);
 
             listBox_files.SelectedIndex = b;
             listBox_files.SelectedItem = listBox_files.Items[b];
@@ -225,11 +227,11 @@ namespace ImOrg
 
             if (!File.Exists(newFileName))
             {
-                toolStripStatusLabel1.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
                 return false;
             }
 
-            toolStripStatusLabel1.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            allowAnyFiletypeToolStripMenuItem2.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
             return true;
         }
         private bool RevertRenameFile(string oldFileName, string newFileName)
@@ -239,7 +241,7 @@ namespace ImOrg
 
             if (File.Exists(newFileName))
             {
-                toolStripStatusLabel1.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
                 return false;
             }
 
@@ -261,12 +263,12 @@ namespace ImOrg
 
             if (oldFileName.Length > 248)
             {
-                toolStripStatusLabel1.Text = $"ERROR: filename too long: {oldFileName}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {oldFileName}";
                 return false;
             }
             if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
             {
-                toolStripStatusLabel1.Text = $"ERROR: filename too long: {newFileName}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {newFileName}";
                 return false;
             }
 
@@ -279,11 +281,11 @@ namespace ImOrg
 
             if (!File.Exists(newFileName))
             {
-                toolStripStatusLabel1.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
                 return false;
             }
 
-            toolStripStatusLabel1.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            allowAnyFiletypeToolStripMenuItem2.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
             return true;
         }
         private string updateFilepath(string _old, string newFilename)
@@ -357,7 +359,7 @@ namespace ImOrg
         {
             // if user clicks another file, clear the previous file's temp name
             newFilenameTemp = "";
-            toolStripStatusLabel1.Text = $"Name reset.";
+            allowAnyFiletypeToolStripMenuItem2.Text = $"Name reset.";
 
             // a different filename was selected, read it and display
             var currentFile = (ListBox)sender;
@@ -367,7 +369,7 @@ namespace ImOrg
             var currentFilePath = currentFile.SelectedItem.ToString();
             if (!File.Exists(currentFilePath))
             {
-                toolStripStatusLabel1.Text = $"ERROR: cannot find {currentFilePath}";
+                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: cannot find {currentFilePath}";
                 return;
             }
 
@@ -399,7 +401,7 @@ namespace ImOrg
 
             if (false) // debug
                 if (e.KeyCode != Keys.ShiftKey)
-                    toolStripStatusLabel1.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
+                    allowAnyFiletypeToolStripMenuItem2.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
 
             switch (e.KeyCode)
             {
@@ -412,7 +414,7 @@ namespace ImOrg
                 case Keys.Down:
                     if (!allowUPDOWNToRenameToolStripMenuItem.Checked)
                     {
-                        toolStripStatusLabel1.Text = $"Name reset.";
+                        allowAnyFiletypeToolStripMenuItem2.Text = $"Name reset.";
                         return;
                     }
                     if (newFilenameTemp == "")
@@ -430,7 +432,7 @@ namespace ImOrg
 
                 case Keys.Escape:
                     newFilenameTemp = "";
-                    toolStripStatusLabel1.Text = $"Name reset.";
+                    allowAnyFiletypeToolStripMenuItem2.Text = $"Name reset.";
                     return;
 
                 #region numbers and signs
@@ -505,7 +507,7 @@ namespace ImOrg
 
             newFilenameTemp = $"{newFilenameTemp}{add}";
 
-            toolStripStatusLabel1.Text = $"New name: {newFilenameTemp}";
+            allowAnyFiletypeToolStripMenuItem2.Text = $"New name: {newFilenameTemp}";
 
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
@@ -586,10 +588,6 @@ namespace ImOrg
 
         [DllImport("user32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        private void TestToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // test();
-        }
 
         private void AxWindowsMediaPlayer1_Enter(object sender, EventArgs e)
         {
@@ -603,6 +601,11 @@ namespace ImOrg
             listBox_files.Focus();
             if (listBox_files.Items.Count > 0)
                 listBox_files.SelectedIndex = 0;
+        }
+
+        private void TestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
