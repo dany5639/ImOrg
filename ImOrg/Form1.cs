@@ -24,6 +24,7 @@ namespace ImOrg
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
         private Dictionary<string, string> renameHistory = new Dictionary<string, string>();
+        private bool isDebug = true;
 
         public static void log(string in_)
         {
@@ -115,6 +116,12 @@ namespace ImOrg
 
             allowUPDOWNToRenameToolStripMenuItem.Checked = true;
 
+            if (isDebug)
+            {
+                allowAnyFiletypeToolStripMenuItem.Checked = true;
+                newNameMovesToFolderToolStripMenuItem.Checked = true;
+            }
+
         }
         private void GetDrivesList()
         {
@@ -173,8 +180,8 @@ namespace ImOrg
             treeView_folders.ForeColor = textColor;
             this.BackColor = backgroundColor;
             this.ForeColor = textColor;
-            allowAnyFiletypeToolStripMenuItem2.BackColor = Color.White;
-            allowAnyFiletypeToolStripMenuItem2.ForeColor = Color.Black;
+            ToolStrip.BackColor = Color.White;
+            ToolStrip.ForeColor = Color.Black;
 
         }
         private bool RenameFile(string oldFileName, string newFileName)
@@ -184,7 +191,7 @@ namespace ImOrg
 
             if (File.Exists(newFileName))
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
+                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
                 return false;
             }
 
@@ -206,12 +213,12 @@ namespace ImOrg
 
             if (oldFileName.Length > 248)
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {oldFileName}";
+                ToolStrip.Text = $"ERROR: filename too long: {oldFileName}";
                 return false;
             }
             if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {newFileName}";
+                ToolStrip.Text = $"ERROR: filename too long: {newFileName}";
                 return false;
             }
 
@@ -227,12 +234,79 @@ namespace ImOrg
 
             if (!File.Exists(newFileName))
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
+                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
                 return false;
             }
 
-            allowAnyFiletypeToolStripMenuItem2.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            ToolStrip.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
             return true;
+        }
+        private bool MoveItem(string oldFileName, string newFileName)
+        {
+            // todo: add folder handling
+
+            if (!File.Exists(oldFileName))
+                throw new Exception($"ERROR: file does not exist: {oldFileName}");
+
+            if (File.Exists(newFileName))
+            {
+                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
+                return false;
+            }
+
+            newFileName = MoveItemToFolder(oldFileName, newFileName);
+            if (newFileName == null)
+            {
+                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
+                return false;
+            }
+
+            if (oldFileName.Length > 248)
+            {
+                ToolStrip.Text = $"ERROR: filename too long: {oldFileName}";
+                return false;
+            }
+            if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
+            {
+                ToolStrip.Text = $"ERROR: filename too long: {newFileName}";
+                return false;
+            }
+
+            var a = listBox_files.SelectedItem;
+            var b = listBox_files.SelectedIndex;
+
+            File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
+
+            if (!File.Exists(newFileName))
+            {
+                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
+                return false;
+            }
+
+            if (renameHistory.ContainsKey(oldFileName))
+                renameHistory[oldFileName] = newFileName;
+            else
+                renameHistory.Add(oldFileName, newFileName);
+
+            listBox_files.SelectedIndex = b;
+            listBox_files.SelectedItem = listBox_files.Items[b];
+            listBox_files.Items[b] = newFileName; // System.Windows.Forms.ListBox.SelectedItem.get returned null.
+
+            ToolStrip.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            return true;
+        }
+        private string MoveItemToFolder(string oldFileName, string newFileName)
+        {
+            var a = new FileInfo(oldFileName);
+            var b = $"{a.Directory}\\{newFileName}";
+
+            if (!Directory.Exists(b))
+                if (!Directory.CreateDirectory(b).Exists)
+                    return null;
+
+            var c = $"{b}\\{a.Name}";
+
+            return c;
         }
         private bool RevertRenameFile(string oldFileName, string newFileName)
         {
@@ -241,7 +315,7 @@ namespace ImOrg
 
             if (File.Exists(newFileName))
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
+                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
                 return false;
             }
 
@@ -263,12 +337,12 @@ namespace ImOrg
 
             if (oldFileName.Length > 248)
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {oldFileName}";
+                ToolStrip.Text = $"ERROR: filename too long: {oldFileName}";
                 return false;
             }
             if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: filename too long: {newFileName}";
+                ToolStrip.Text = $"ERROR: filename too long: {newFileName}";
                 return false;
             }
 
@@ -281,11 +355,11 @@ namespace ImOrg
 
             if (!File.Exists(newFileName))
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
+                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
                 return false;
             }
 
-            allowAnyFiletypeToolStripMenuItem2.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            ToolStrip.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
             return true;
         }
         private string updateFilepath(string _old, string newFilename)
@@ -359,7 +433,7 @@ namespace ImOrg
         {
             // if user clicks another file, clear the previous file's temp name
             newFilenameTemp = "";
-            allowAnyFiletypeToolStripMenuItem2.Text = $"Name reset.";
+            ToolStrip.Text = $"Name reset.";
 
             // a different filename was selected, read it and display
             var currentFile = (ListBox)sender;
@@ -369,7 +443,7 @@ namespace ImOrg
             var currentFilePath = currentFile.SelectedItem.ToString();
             if (!File.Exists(currentFilePath))
             {
-                allowAnyFiletypeToolStripMenuItem2.Text = $"ERROR: cannot find {currentFilePath}";
+                ToolStrip.Text = $"ERROR: cannot find {currentFilePath}";
                 return;
             }
 
@@ -401,7 +475,7 @@ namespace ImOrg
 
             if (false) // debug
                 if (e.KeyCode != Keys.ShiftKey)
-                    allowAnyFiletypeToolStripMenuItem2.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
+                    ToolStrip.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
 
             switch (e.KeyCode)
             {
@@ -414,11 +488,17 @@ namespace ImOrg
                 case Keys.Down:
                     if (!allowUPDOWNToRenameToolStripMenuItem.Checked)
                     {
-                        allowAnyFiletypeToolStripMenuItem2.Text = $"Name reset.";
+                        ToolStrip.Text = $"Name reset.";
                         return;
                     }
                     if (newFilenameTemp == "")
                         return;
+                    if (newNameMovesToFolderToolStripMenuItem.Checked)
+                    {
+                        if (MoveItem(oldFileName, newFilenameTemp))
+                            newFilenameTemp = "";
+                        return;
+                    }
                     if (RenameFile(oldFileName, newFilenameTemp))
                         newFilenameTemp = "";
                     return;
@@ -426,13 +506,19 @@ namespace ImOrg
                 case Keys.Enter:
                     if (newFilenameTemp == "")
                         return;
+                    if (newNameMovesToFolderToolStripMenuItem.Checked)
+                    {
+                        if (MoveItem(oldFileName, newFilenameTemp))
+                            newFilenameTemp = "";
+                        return;
+                    }
                     if (RenameFile(oldFileName, newFilenameTemp))
                         newFilenameTemp = "";
                     return;
 
                 case Keys.Escape:
                     newFilenameTemp = "";
-                    allowAnyFiletypeToolStripMenuItem2.Text = $"Name reset.";
+                    ToolStrip.Text = $"Name reset.";
                     return;
 
                 #region numbers and signs
@@ -451,6 +537,7 @@ namespace ImOrg
                 case Keys.OemMinus: add = "_"; break;
                 case Keys.Subtract: add = "-"; break;
                 #endregion
+      
                 #region letters
                 case Keys.A:
                 case Keys.B:
@@ -484,8 +571,8 @@ namespace ImOrg
                         add = $"{e.KeyCode.ToString().ToLower()}";
                     break;
                 #endregion
-              
-                    //case Keys.F12:
+                
+                //case Keys.F12:
                 //    var resolution = Screen.PrimaryScreen.Bounds;
                 //    if (isFullscreen)
                 //    {
@@ -507,7 +594,7 @@ namespace ImOrg
 
             newFilenameTemp = $"{newFilenameTemp}{add}";
 
-            allowAnyFiletypeToolStripMenuItem2.Text = $"New name: {newFilenameTemp}";
+            ToolStrip.Text = $"New name: {newFilenameTemp}";
 
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
@@ -603,7 +690,12 @@ namespace ImOrg
                 listBox_files.SelectedIndex = 0;
         }
 
-        private void TestToolStripMenuItem_Click(object sender, EventArgs e)
+        private void allowAnyFiletypeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void NewNameMovesToFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
