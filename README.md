@@ -25,7 +25,6 @@ To Do:
 - Notify the user if a file has the wrong extension.
 - Add text files support.
 - Add more file types support.
-- Allow directory change when renaming files ( F:\image1.jpg: renaming to new\image1 would create the "new" folder and move the file)
 
 Tested supported file formats:
 - Image: jpg, png, gif, tif, bmp, ico, tiff, jpeg
