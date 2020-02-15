@@ -24,7 +24,7 @@ namespace ImOrg
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
         private Dictionary<string, string> renameHistory = new Dictionary<string, string>();
-        private bool isDebug = true;
+        private bool isDebug = false;
 
         public static void log(string in_)
         {
