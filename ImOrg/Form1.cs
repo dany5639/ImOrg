@@ -222,7 +222,14 @@ namespace ImOrg
                 return false;
             }
 
+            if (File.Exists(newFileName))
+            {
+                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
+                return false;
+            }
+
             File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
+
             if (renameHistory.ContainsKey(oldFileName))
                 renameHistory[oldFileName] = newFileName;
             else
@@ -274,6 +281,12 @@ namespace ImOrg
 
             var a = listBox_files.SelectedItem;
             var b = listBox_files.SelectedIndex;
+
+            if (File.Exists(newFileName))
+            {
+                ToolStrip.Text = $"ERROR: File already exists: {newFileName}";
+                return false;
+            }
 
             File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
 
