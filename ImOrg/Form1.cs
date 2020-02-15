@@ -452,6 +452,7 @@ namespace ImOrg
             {
                 axWindowsMediaPlayer1.Show();
                 axWindowsMediaPlayer1.URL = currentFilePath;
+                axWindowsMediaPlayer1.Ctlcontrols.play();
                 isVideo = true;
             }
             else
@@ -679,8 +680,6 @@ namespace ImOrg
         private void AxWindowsMediaPlayer1_Enter(object sender, EventArgs e)
         {
             listBox_files.Focus();
-            if (listBox_files.Items.Count > 0)
-                listBox_files.SelectedIndex = 0;
         }
 
         private void PictureBox1_Click(object sender, EventArgs e)

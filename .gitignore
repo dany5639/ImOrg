@@ -1,5 +1,5 @@
 
-ImOrg/bin/
+ImOrg/bin/Debug
 ImOrg/obj/
 .vs/ImOrg/v16/.suo
 .vs/ImOrg/v16/Server/sqlite3/db.lock
