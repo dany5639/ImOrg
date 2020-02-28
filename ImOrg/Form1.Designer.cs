@@ -15,7 +15,6 @@
         {
             if (disposing && (components != null))
             {
-                components.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -47,7 +46,9 @@
             this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newNameMovesToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testFfmpegToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
+            this.autorenameDuplicatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -125,12 +126,15 @@
             this.rGBBackgroundToolStripMenuItem,
             this.allowUPDOWNToRenameToolStripMenuItem,
             this.allowAnyFiletypeToolStripMenuItem,
-            this.newNameMovesToFolderToolStripMenuItem});
+            this.newNameMovesToFolderToolStripMenuItem,
+            this.autorenameDuplicatesToolStripMenuItem,
+            this.testFfmpegToolStripMenuItem});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Click += new System.EventHandler(this.ToolStripDropDownButton1_Click);
             // 
             // pictureSizeModeToolStripMenuItem
             // 
@@ -206,7 +210,6 @@
             this.allowAnyFiletypeToolStripMenuItem.Name = "allowAnyFiletypeToolStripMenuItem";
             this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.allowAnyFiletypeToolStripMenuItem.Text = "Allow any filetype";
-            this.allowAnyFiletypeToolStripMenuItem.Click += new System.EventHandler(this.allowAnyFiletypeToolStripMenuItem_Click);
             // 
             // newNameMovesToFolderToolStripMenuItem
             // 
@@ -214,13 +217,27 @@
             this.newNameMovesToFolderToolStripMenuItem.Name = "newNameMovesToFolderToolStripMenuItem";
             this.newNameMovesToFolderToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.newNameMovesToFolderToolStripMenuItem.Text = "New name moves to folder";
-            this.newNameMovesToFolderToolStripMenuItem.Click += new System.EventHandler(this.NewNameMovesToFolderToolStripMenuItem_Click);
+            // 
+            // testFfmpegToolStripMenuItem
+            // 
+            this.testFfmpegToolStripMenuItem.Name = "testFfmpegToolStripMenuItem";
+            this.testFfmpegToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.testFfmpegToolStripMenuItem.Text = "test ffmpeg";
+            this.testFfmpegToolStripMenuItem.Click += new System.EventHandler(this.TestFfmpegToolStripMenuItem_Click);
             // 
             // ToolStrip
             // 
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(26, 17);
             this.ToolStrip.Text = "Idle";
+            // 
+            // autorenameDuplicatesToolStripMenuItem
+            // 
+            this.autorenameDuplicatesToolStripMenuItem.CheckOnClick = true;
+            this.autorenameDuplicatesToolStripMenuItem.Name = "autorenameDuplicatesToolStripMenuItem";
+            this.autorenameDuplicatesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.autorenameDuplicatesToolStripMenuItem.Text = "Autorename duplicates";
+            this.autorenameDuplicatesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.AutorenameDuplicatesToolStripMenuItem_CheckedChanged);
             // 
             // Form1
             // 
@@ -234,6 +251,7 @@
             this.Controls.Add(this.treeView_folders);
             this.Name = "Form1";
             this.Text = "ImOrg";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
@@ -248,7 +266,8 @@
         private System.Windows.Forms.ListBox listBox_files;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ColorDialog colorDialog1; 
-        private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
+        private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1
+            ;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel ToolStrip;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
@@ -263,6 +282,8 @@
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newNameMovesToFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem testFfmpegToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem autorenameDuplicatesToolStripMenuItem;
     }
 }
 

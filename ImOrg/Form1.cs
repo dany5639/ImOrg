@@ -119,7 +119,8 @@ namespace ImOrg
             if (isDebug)
             {
                 allowAnyFiletypeToolStripMenuItem.Checked = true;
-                newNameMovesToFolderToolStripMenuItem.Checked = true;
+                newNameMovesToFolderToolStripMenuItem.Checked = false;
+                autorenameDuplicatesToolStripMenuItem.CheckState = CheckState.Checked;
             }
 
         }
@@ -189,27 +190,41 @@ namespace ImOrg
             if (!File.Exists(oldFileName))
                 throw new Exception($"ERROR: file does not exist: {oldFileName}");
 
-            if (File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
-                return false;
-            }
-
             var a = listBox_files.SelectedItem;
             var b = listBox_files.SelectedIndex;
 
             newFileName = updateFilepath(oldFileName, newFileName);// some issue with backslash
 
-            // need to show a different image since the currently viewed image is locked
-            // useless?
-            if (!isVideo)
-            {
-                Assembly myAssembly = Assembly.GetExecutingAssembly();
-                Stream myStream = myAssembly.GetManifestResourceStream("ImOrg.Bitmap1.bmp");
-                Bitmap bmp = new Bitmap(myStream);
+            if (oldFileName == newFileName)
+                return true;
 
-                pictureBox1.Image = bmp;
+            if (File.Exists(newFileName))
+            {
+                if (autorenameDuplicatesToolStripMenuItem.Checked)
+                {
+                    while (true)
+                    {
+                        if (File.Exists(newFileName))
+                        {
+                            var a1 = new FileInfo(newFileName);
+                            var a2 = $"{a1.Directory}\\{a1.Name.Substring(0, a1.Name.Length - a1.Extension.Length)}_{DateTime.Now.ToString("hhmmss")}{a1.Extension}";
+                            newFileName = a2;
+                        }
+                        else goto rename;
+                    }
+                }
+                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
+                return false;
             }
+
+            rename:
+
+            // need to show a different image since the currently viewed item is being read
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            Stream myStream = myAssembly.GetManifestResourceStream("ImOrg.Bitmap1.bmp");
+            Bitmap bmp = new Bitmap(myStream);
+
+            pictureBox1.Image = bmp;
 
             if (oldFileName.Length > 248)
             {
@@ -222,11 +237,11 @@ namespace ImOrg
                 return false;
             }
 
-            if (File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
-                return false;
-            }
+            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            axWindowsMediaPlayer1.Hide();
+            // axWindowsMediaPlayer1.URL = listBox_files.Items[0].ToString();
+
+            Thread.Sleep(100); // something is wrong here. no line, fails to move because file is in use. add sleep 1000, moves fine. set sleep 0, still moves fine
 
             File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
 
@@ -622,8 +637,30 @@ namespace ImOrg
             // also this function might run excessively
             try
             {
-                if (axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsPaused)
+                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsStopped)
+                {
+                    axWindowsMediaPlayer1.Ctlcontrols.stop();
+                    axWindowsMediaPlayer1.Hide();
+                    axWindowsMediaPlayer1.URL = "";
+
+                }
+
+                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsTransitioning)
+                {
                     axWindowsMediaPlayer1.Ctlcontrols.play();
+                    return;
+                }
+
+                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsPlaying)
+                    return;
+
+                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
+                {
+                    axWindowsMediaPlayer1.Ctlcontrols.play();
+                    return;
+                }
+
+
             }
             catch
             {
@@ -674,17 +711,7 @@ namespace ImOrg
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.Refresh();
         }
-        private void test()
-        {
-            ffplay.StartInfo.FileName = "ffplay.exe";
-            ffplay.StartInfo.Arguments = @"F:\\a.webm";
-            ffplay.StartInfo.CreateNoWindow = true;
-            ffplay.StartInfo.RedirectStandardOutput = true;
-            ffplay.StartInfo.UseShellExecute = false;
-            ffplay.Start();
-            Thread.Sleep(500);
-            SetParent(ffplay.MainWindowHandle, axWindowsMediaPlayer1.Handle);
-        }
+
         public Process ffplay = new Process();
 
         [DllImport("user32.dll")]
@@ -702,12 +729,39 @@ namespace ImOrg
                 listBox_files.SelectedIndex = 0;
         }
 
-        private void allowAnyFiletypeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ffplay.StartInfo.FileName = "ffplay.exe";
+            ffplay.StartInfo.Arguments = $"-left 0 -top 0 -noborder -fs {listBox_files.SelectedItem.ToString()}";
+            ffplay.StartInfo.CreateNoWindow = true;
+            ffplay.StartInfo.RedirectStandardOutput = true;
+            ffplay.StartInfo.UseShellExecute = false;
+            ffplay.Start();
+            Thread.Sleep(500);
+
+            SetParent(ffplay.MainWindowHandle, pictureBox1.Handle);
+
+            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            axWindowsMediaPlayer1.Hide();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (ffplay.SynchronizingObject == null)
+                return;
+
+            if (!ffplay.HasExited)
+                ffplay.Kill();
+
+        }
+         
+
+        private void ToolStripDropDownButton1_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void NewNameMovesToFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutorenameDuplicatesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
 
         }
