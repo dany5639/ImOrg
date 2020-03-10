@@ -18,36 +18,45 @@ namespace ImOrg
 {
     public partial class Form1 : Form
     {
+        #region Constants, globals
         private string newFilenameTemp = "";
         private static List<string> logq = new List<string>();
         private bool isVideo = false;
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
         private Dictionary<string, string> renameHistory = new Dictionary<string, string>();
-        private bool isDebug = false;
+        private static bool isDebug = false;
+        private List<string> supportedImageExtensions = new List<string>
+        {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".tif",
+            ".tiff",
+            ".bmp",
+            ".ico",
+            // ".webp", // not supported
+            // ".dds", // not supported
+            // ".tga", // not supported
+        };
+        private List<string> supportedVideoExtensions = new List<string>
+        {
+            ".webm",
+            ".mp4",
+            ".mkv", 
+            // ".flv", // definitely not supported
+        };
+        #endregion
 
+        #region utilities
         public static void log(string in_)
         {
-            logq.Add(in_);
-        }
-        private static List<string> ReadCsv(string filename)
-        {
-            var output = new List<string>();
-
-            using (var reader = new StreamReader(filename))
+            if (isDebug)
             {
-                var line = "";
-                while (line != null)
-                {
-                    line = reader.ReadLine();
-                    output.Add(line);
-                }
-
-                if (output.Last() == null)
-                    output.RemoveAt(output.Count - 1);
+                logq.Add(in_);
+                WriteCsv(logq, "debug.log");
             }
-
-            return output;
         }
         public static bool WriteCsv(List<string> in_, string file)
         {
@@ -77,44 +86,33 @@ namespace ImOrg
             return true;
 
         }
-        private List<string> supportedImageExtensions = new List<string>
-        {
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".tif",
-            ".tiff",
-            ".bmp",
-            ".ico",
-            // ".webp", // not supported
-            // ".dds", // not supported
-            // ".tga", // not supported
-        };
-        private List<string> supportedVideoExtensions = new List<string>
-        {
-            ".webm",
-            ".mp4",
-            ".mkv", 
-            // ".flv", // definitely not supported
-        };
-
+        #endregion
         public Form1()
         {
             // when attempting to rename an image, the image loader still has it locked and can't seem to unlock it until opening another image
             // can't select next image in the filelist either as it tries to edit the images list while it's being edited
 
+#if debug
+            isDebug  = true;
+#endif
+
             InitializeComponent();
+            log("Form1:InitializeComponent() executed.");
 
             GetDrivesList(); // check all available drives and display them
+            log("Form1:GetDrivesList() executed.");
 
             SetAppColors();
+            log("Form1:SetAppColors() executed.");
 
             axWindowsMediaPlayer1.Hide(); // image viewer prioritizes
+            log("Form1:axWindowsMediaPlayer1.Hide() executed.");
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // best view mode
 
             allowUPDOWNToRenameToolStripMenuItem.Checked = true;
+
+            log($"DEBUG: isDebug {isDebug}");
 
             if (isDebug)
             {
@@ -156,21 +154,7 @@ namespace ImOrg
                     currentNode.Nodes[currentNode.Nodes.Count - 1].Nodes.Add("");
                 }
             }
-        }
-        private void Button_RGBappBackground_Click(object sender, EventArgs e)
-        {
-            colorDialog1.ShowDialog();
-            backgroundColor = colorDialog1.Color;
 
-            SetAppColors();
-
-        }
-        private void Button_RGBtext_Click(object sender, EventArgs e)
-        {
-            colorDialog1.ShowDialog();
-            textColor = colorDialog1.Color;
-
-            SetAppColors();
         }
         private void SetAppColors()
         { 
@@ -184,6 +168,7 @@ namespace ImOrg
             ToolStrip.BackColor = Color.White;
             ToolStrip.ForeColor = Color.Black;
 
+            log("SetAppColors() executed.");
         }
         private bool RenameFile(string oldFileName, string newFileName)
         {
@@ -261,6 +246,8 @@ namespace ImOrg
             }
 
             ToolStrip.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+
+            log($"RenameFile(): Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}");
             return true;
         }
         private bool MoveItem(string oldFileName, string newFileName)
@@ -320,7 +307,10 @@ namespace ImOrg
             listBox_files.SelectedItem = listBox_files.Items[b];
             listBox_files.Items[b] = newFileName; // System.Windows.Forms.ListBox.SelectedItem.get returned null.
 
-            ToolStrip.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            ToolStrip.Text = $"Moved {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+
+            log($"MoveItem(): Moved {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}");
+
             return true;
         }
         private string MoveItemToFolder(string oldFileName, string newFileName)
@@ -334,9 +324,11 @@ namespace ImOrg
 
             var c = $"{b}\\{a.Name}";
 
+            log($"MoveItemToFolder(): returns {c}");
+
             return c;
         }
-        private bool RevertRenameFile(string oldFileName, string newFileName)
+        private bool RevertRenameFile(string oldFileName, string newFileName) // to implement
         {
             if (!File.Exists(oldFileName))
                 throw new Exception($"ERROR: file does not exist: {oldFileName}");
@@ -387,7 +379,8 @@ namespace ImOrg
                 return false;
             }
 
-            ToolStrip.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            ToolStrip.Text = $"RevertRenameFile {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
+            log($"RevertRenameFile {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}");
             return true;
         }
         private string updateFilepath(string _old, string newFilename)
@@ -401,6 +394,8 @@ namespace ImOrg
                 out_ = $"{dir}{newFilename}{ext}";
             else
                 out_ = $"{dir}\\{newFilename}{ext}";
+
+            log($"updateFilepath(): args: {_old}, {newFilename}; return: {out_}");
             return out_;
         }
         private void TreeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -432,6 +427,7 @@ namespace ImOrg
 
             }
 
+            log($"TreeView1_BeforeExpand(): args: {sender.ToString()}, {e.Node.Name}");
         }
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -455,6 +451,8 @@ namespace ImOrg
 
             foreach (var file in supportedFiles)
                 listBox_files.Items.Add(file);
+
+            log($"TreeView1_AfterSelect(): args: {sender.ToString()}, {e.Node.Name}");
 
         }
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e)
@@ -491,6 +489,8 @@ namespace ImOrg
                 pictureBox1.LoadAsync(currentFilePath);
                 isVideo = false;
             }
+
+            log($"ListBox_files_SelectedIndexChanged(): args: {sender.ToString()}, {e.ToString()}");
         }
         private void ListBox_files_KeyDown(object sender, KeyEventArgs e)
         {
@@ -550,7 +550,7 @@ namespace ImOrg
                     ToolStrip.Text = $"Name reset.";
                     return;
 
-                #region numbers and signs
+#region numbers and signs
                 case Keys.D0: add = "0"; break;
                 case Keys.D1: add = "1"; break;
                 case Keys.D2: add = "2"; break;
@@ -565,9 +565,9 @@ namespace ImOrg
                 case Keys.Space: add = " "; break;
                 case Keys.OemMinus: add = "_"; break;
                 case Keys.Subtract: add = "-"; break;
-                #endregion
+#endregion
       
-                #region letters
+#region letters
                 case Keys.A:
                 case Keys.B:
                 case Keys.C:
@@ -599,7 +599,7 @@ namespace ImOrg
                     else
                         add = $"{e.KeyCode.ToString().ToLower()}";
                     break;
-                #endregion
+#endregion
                 
                 //case Keys.F12:
                 //    var resolution = Screen.PrimaryScreen.Bounds;
@@ -625,6 +625,8 @@ namespace ImOrg
 
             ToolStrip.Text = $"New name: {newFilenameTemp}";
 
+            log($"ListBox_files_SelectedIndexChanged(): args: {sender.ToString()}, {e.ToString()}; {newFilenameTemp}");
+
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -634,7 +636,7 @@ namespace ImOrg
         private void AxWindowsMediaPlayer1_StatusChange(object sender, EventArgs e)
         {
             // auto play for webm's. would crash as it's async
-            // also this function might run excessively
+            // also this function runs excessively often
             try
             {
                 if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsStopped)
@@ -666,6 +668,9 @@ namespace ImOrg
             {
 
             }
+
+            log($"AxWindowsMediaPlayer1_StatusChange(): args: {sender.ToString()}, {e.ToString()}");
+
         }
         private void RGBTextToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -677,6 +682,8 @@ namespace ImOrg
 
             SetAppColors();
 
+            log($"RGBTextToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; {textColor:X8}");
+
         }
         private void RGBBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -685,50 +692,71 @@ namespace ImOrg
 
             SetAppColors();
 
+            log($"RGBTextToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; {backgroundColor:X8}");
         }
         private void ZoomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Refresh();
+
+            log($"ZoomToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
         }
         private void NormalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
             pictureBox1.Refresh();
+
+            log($"NormalToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
         }
         private void AutoSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBox1.Refresh();
+
+            log($"AutoSizeToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
         }
         private void CenterImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
             pictureBox1.Refresh();
+
+            log($"CenterImageToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
         }
         private void StretchImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.Refresh();
+
+            log($"StretchImageToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
+        }
+        private void AxWindowsMediaPlayer1_Enter(object sender, EventArgs e)
+        {
+            listBox_files.Focus();
+
+            log($"AxWindowsMediaPlayer1_Enter(): args: {sender.ToString()}, {e.ToString()}; attempt to focus ffmpeg window.");
+        }
+        private void PictureBox1_Click(object sender, EventArgs e)
+        {
+            // listBox_files.Focus();
+            // if (listBox_files.Items.Count > 0)
+            //     listBox_files.SelectedIndex = 0;
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (ffplay.SynchronizingObject == null)
+                return;
+
+            if (!ffplay.HasExited)
+                ffplay.Kill();
+
+            log($"Form1_FormClosing(): args: {sender.ToString()}, {e.ToString()}; kill ffmpeg first before closing.");
         }
 
+#region testing FFMPEG
         public Process ffplay = new Process();
 
         [DllImport("user32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
-        private void AxWindowsMediaPlayer1_Enter(object sender, EventArgs e)
-        {
-            listBox_files.Focus();
-        }
-
-        private void PictureBox1_Click(object sender, EventArgs e)
-        {
-            listBox_files.Focus();
-            if (listBox_files.Items.Count > 0)
-                listBox_files.SelectedIndex = 0;
-        }
-
         private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ffplay.StartInfo.FileName = "ffplay.exe";
@@ -739,31 +767,15 @@ namespace ImOrg
             ffplay.Start();
             Thread.Sleep(500);
 
-            SetParent(ffplay.MainWindowHandle, pictureBox1.Handle);
+            SetParent(ffplay.MainWindowHandle, pictureBox1.Handle); // attempt failed to stick it to the program main window
 
             axWindowsMediaPlayer1.Ctlcontrols.stop();
             axWindowsMediaPlayer1.Hide();
+
+            log($"TestFfmpegToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; playing a video using ffmpeg.");
         }
+#endregion
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (ffplay.SynchronizingObject == null)
-                return;
-
-            if (!ffplay.HasExited)
-                ffplay.Kill();
-
-        }
-         
-
-        private void ToolStripDropDownButton1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void AutorenameDuplicatesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
     }
+
 }

@@ -46,9 +46,9 @@
             this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newNameMovesToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autorenameDuplicatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testFfmpegToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
-            this.autorenameDuplicatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -134,7 +134,6 @@
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Click += new System.EventHandler(this.ToolStripDropDownButton1_Click);
             // 
             // pictureSizeModeToolStripMenuItem
             // 
@@ -218,6 +217,13 @@
             this.newNameMovesToFolderToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.newNameMovesToFolderToolStripMenuItem.Text = "New name moves to folder";
             // 
+            // autorenameDuplicatesToolStripMenuItem
+            // 
+            this.autorenameDuplicatesToolStripMenuItem.CheckOnClick = true;
+            this.autorenameDuplicatesToolStripMenuItem.Name = "autorenameDuplicatesToolStripMenuItem";
+            this.autorenameDuplicatesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.autorenameDuplicatesToolStripMenuItem.Text = "Autorename duplicates";
+            // 
             // testFfmpegToolStripMenuItem
             // 
             this.testFfmpegToolStripMenuItem.Name = "testFfmpegToolStripMenuItem";
@@ -230,14 +236,6 @@
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(26, 17);
             this.ToolStrip.Text = "Idle";
-            // 
-            // autorenameDuplicatesToolStripMenuItem
-            // 
-            this.autorenameDuplicatesToolStripMenuItem.CheckOnClick = true;
-            this.autorenameDuplicatesToolStripMenuItem.Name = "autorenameDuplicatesToolStripMenuItem";
-            this.autorenameDuplicatesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.autorenameDuplicatesToolStripMenuItem.Text = "Autorename duplicates";
-            this.autorenameDuplicatesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.AutorenameDuplicatesToolStripMenuItem_CheckedChanged);
             // 
             // Form1
             // 
