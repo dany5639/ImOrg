@@ -142,8 +142,6 @@ namespace ImOrg
 
             SetAppColors();
 
-            // axWindowsMediaPlayer1.Hide(); // image viewer prioritizes
-
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // best view mode
             allowUPDOWNToRenameToolStripMenuItem.Checked = true;
             autorenameDuplicatesToolStripMenuItem.CheckState = CheckState.Checked;
@@ -325,8 +323,9 @@ namespace ImOrg
                 }
             }
 
-            var x = (ListBox)sender;
-            // log($"ListBox_files_SelectedIndexChanged(): args: {x.SelectedItem.ToString()}");
+            // let's try renaming the files here, after viewing a new item
+            RenameFile();
+
         }
         private void ListBox_files_KeyDown(object sender, KeyEventArgs e) // press a key
         {
@@ -354,6 +353,9 @@ namespace ImOrg
 
                     if (listBox_files.Items.Count != items.Count)
                         throw new Exception("badev");
+
+                    if (items[selectedIndex].newFilenameTemp != "")
+                        break;
 
                     items[selectedIndex].newFilenameTemp = newFilenameTemp;
                     items[selectedIndex].toRename = true;
@@ -432,7 +434,6 @@ namespace ImOrg
                 case Keys.Back:
                     if (newFilenameTemp != "")
                         newFilenameTemp = newFilenameTemp.Remove(newFilenameTemp.Length - 1, 1);
-                    // newFilenameTemp = newFilenameTemp.Substring(0, newFilenameTemp.Length - 1);
                     break;
 
                 // press this key to use the last used filename
@@ -460,10 +461,7 @@ namespace ImOrg
 
                 default:
                     break;
-                    // throw new NotImplementedException("ERROR: unsupported key.");
             }
-
-            // newFilenameTemp = $"{newFilenameTemp}{add}";
 
             ToolStrip.Text = $"New name: {newFilenameTemp}";
 
@@ -564,13 +562,8 @@ namespace ImOrg
         private void Timer1_Tick(object sender, EventArgs e)
         {
             if(!isDebug)
-            {
-                // if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsStopped) // freezes temporarly if it tries to rename a file being used, it's not being released fast enough
-                // {
-                //     RenameFile();
-                // }
-
-                RenameFile();
+            { 
+                // RenameFile();
             }
         }
         private bool RenameFile()
@@ -697,5 +690,7 @@ namespace ImOrg
 
             return true;
         }
+
     }
+
 }
