@@ -18,14 +18,21 @@ namespace ImOrg
 {
     public partial class Form1 : Form
     {
+        // TODO: 
+        // Add F key or menu toggle to add the new filename at the end of existing filename name or at the start
+
         #region Constants, globals
+        /// <summary>
+        /// A list of all viewable files in the selected directory. Key is full path, value is item class with originalFilename, newFilename etc. 
+        /// </summary>
+        private Dictionary<int, itemInfo> items = new Dictionary<int, itemInfo>();
+
+        private bool isDebug = false;
+        private bool isDebugDontMove = false;
         private string newFilenameTemp = "";
-        private static List<string> logq = new List<string>();
-        private bool isVideo = false;
+        private string previousNewFilenameTemp = "";
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
-        private Dictionary<string, string> renameHistory = new Dictionary<string, string>();
-        private static bool isDebug = false;
         private List<string> supportedImageExtensions = new List<string>
         {
             ".jpg",
@@ -47,15 +54,28 @@ namespace ImOrg
             ".mkv", 
             // ".flv", // definitely not supported
         };
+        private static List<string> logq = new List<string>();
+        private class itemInfo
+        {
+            public string filename;
+            public string fullpath;
+            public string originalFullpath;
+            public string newFilenameTemp;
+            public bool toRename;
+        }
         #endregion
 
         #region utilities
-        public static void log(string in_)
+        public void log(string in_)
         {
+            richTextBox1.Text = $"{richTextBox1.Text}\n[{DateTime.Now.ToString("hhmmss.fff")}] {in_}";
+
+            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] {in_}");
+
             if (isDebug)
             {
-                logq.Add(in_);
-                WriteCsv(logq, "debug.log");
+                // logq.Add($"[{DateTime.Now.ToString("hhmmss.fff")}] {in_}");
+                // WriteCsv(logq, "debug.log"); // this is horrible, need to create file once, then only append logs
             }
         }
         public static bool WriteCsv(List<string> in_, string file)
@@ -87,40 +107,60 @@ namespace ImOrg
 
         }
         #endregion
+
+        #region testing FFMPEG
+        public Process ffplay = new Process();
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+
+            ffplay.StartInfo.FileName = "ffplay.exe";
+            ffplay.StartInfo.Arguments = $"-left 0 -top 0 -noborder -fs {listBox_files.SelectedItem.ToString()}";
+            ffplay.StartInfo.CreateNoWindow = true;
+            ffplay.StartInfo.RedirectStandardOutput = true;
+            ffplay.StartInfo.UseShellExecute = false;
+            ffplay.Start();
+            Thread.Sleep(500);
+
+            SetParent(ffplay.MainWindowHandle, pictureBox1.Handle); // attempt failed to stick it to the program main window
+
+            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            axWindowsMediaPlayer1.Hide();
+
+            log($"TestFfmpegToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; playing a video using ffmpeg.");
+        }
+        #endregion
+
         public Form1()
         {
-            // when attempting to rename an image, the image loader still has it locked and can't seem to unlock it until opening another image
-            // can't select next image in the filelist either as it tries to edit the images list while it's being edited
-
-#if debug
-            isDebug  = true;
-#endif
-
             InitializeComponent();
-            log("Form1:InitializeComponent() executed.");
 
             GetDrivesList(); // check all available drives and display them
-            log("Form1:GetDrivesList() executed.");
 
             SetAppColors();
-            log("Form1:SetAppColors() executed.");
 
-            axWindowsMediaPlayer1.Hide(); // image viewer prioritizes
-            log("Form1:axWindowsMediaPlayer1.Hide() executed.");
+            // axWindowsMediaPlayer1.Hide(); // image viewer prioritizes
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // best view mode
-
             allowUPDOWNToRenameToolStripMenuItem.Checked = true;
+            autorenameDuplicatesToolStripMenuItem.CheckState = CheckState.Checked;
 
-            log($"DEBUG: isDebug {isDebug}");
+            richTextBox1.Hide(); // hide debug text window, only show when clicking on the status bar label
+            button1.Hide();
 
             if (isDebug)
             {
-                allowAnyFiletypeToolStripMenuItem.Checked = true;
+                allowAnyFiletypeToolStripMenuItem.Checked = false;
                 newNameMovesToFolderToolStripMenuItem.Checked = false;
-                autorenameDuplicatesToolStripMenuItem.CheckState = CheckState.Checked;
+                button1.Show();
+                log($"DEBUG: isDebug {isDebug}");
+                treeView_folders.Nodes[3].Expand();
             }
 
+            axWindowsMediaPlayer1.Show(); //TEST
         }
         private void GetDrivesList()
         {
@@ -168,235 +208,6 @@ namespace ImOrg
             ToolStrip.BackColor = Color.White;
             ToolStrip.ForeColor = Color.Black;
 
-            log("SetAppColors() executed.");
-        }
-        private bool RenameFile(string oldFileName, string newFileName)
-        {
-            if (!File.Exists(oldFileName))
-                throw new Exception($"ERROR: file does not exist: {oldFileName}");
-
-            var a = listBox_files.SelectedItem;
-            var b = listBox_files.SelectedIndex;
-
-            newFileName = updateFilepath(oldFileName, newFileName);// some issue with backslash
-
-            if (oldFileName == newFileName)
-                return true;
-
-            if (File.Exists(newFileName))
-            {
-                if (autorenameDuplicatesToolStripMenuItem.Checked)
-                {
-                    while (true)
-                    {
-                        if (File.Exists(newFileName))
-                        {
-                            var a1 = new FileInfo(newFileName);
-                            var a2 = $"{a1.Directory}\\{a1.Name.Substring(0, a1.Name.Length - a1.Extension.Length)}_{DateTime.Now.ToString("hhmmss")}{a1.Extension}";
-                            newFileName = a2;
-                        }
-                        else goto rename;
-                    }
-                }
-                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
-                return false;
-            }
-
-            rename:
-
-            // need to show a different image since the currently viewed item is being read
-            Assembly myAssembly = Assembly.GetExecutingAssembly();
-            Stream myStream = myAssembly.GetManifestResourceStream("ImOrg.Bitmap1.bmp");
-            Bitmap bmp = new Bitmap(myStream);
-
-            pictureBox1.Image = bmp;
-
-            if (oldFileName.Length > 248)
-            {
-                ToolStrip.Text = $"ERROR: filename too long: {oldFileName}";
-                return false;
-            }
-            if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
-            {
-                ToolStrip.Text = $"ERROR: filename too long: {newFileName}";
-                return false;
-            }
-
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
-            axWindowsMediaPlayer1.Hide();
-            // axWindowsMediaPlayer1.URL = listBox_files.Items[0].ToString();
-
-            Thread.Sleep(100); // something is wrong here. no line, fails to move because file is in use. add sleep 1000, moves fine. set sleep 0, still moves fine
-
-            File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
-
-            if (renameHistory.ContainsKey(oldFileName))
-                renameHistory[oldFileName] = newFileName;
-            else
-                renameHistory.Add(oldFileName, newFileName);
-
-            listBox_files.SelectedIndex = b;
-            listBox_files.SelectedItem = listBox_files.Items[b];
-            listBox_files.Items[b] = newFileName; // System.Windows.Forms.ListBox.SelectedItem.get returned null.
-
-            if (!File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
-                return false;
-            }
-
-            ToolStrip.Text = $"Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
-
-            log($"RenameFile(): Renamed {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}");
-            return true;
-        }
-        private bool MoveItem(string oldFileName, string newFileName)
-        {
-            // todo: add folder handling
-
-            if (!File.Exists(oldFileName))
-                throw new Exception($"ERROR: file does not exist: {oldFileName}");
-
-            if (File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
-                return false;
-            }
-
-            newFileName = MoveItemToFolder(oldFileName, newFileName);
-            if (newFileName == null)
-            {
-                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
-                return false;
-            }
-
-            if (oldFileName.Length > 248)
-            {
-                ToolStrip.Text = $"ERROR: filename too long: {oldFileName}";
-                return false;
-            }
-            if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
-            {
-                ToolStrip.Text = $"ERROR: filename too long: {newFileName}";
-                return false;
-            }
-
-            var a = listBox_files.SelectedItem;
-            var b = listBox_files.SelectedIndex;
-
-            if (File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"ERROR: File already exists: {newFileName}";
-                return false;
-            }
-
-            File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
-
-            if (!File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
-                return false;
-            }
-
-            if (renameHistory.ContainsKey(oldFileName))
-                renameHistory[oldFileName] = newFileName;
-            else
-                renameHistory.Add(oldFileName, newFileName);
-
-            listBox_files.SelectedIndex = b;
-            listBox_files.SelectedItem = listBox_files.Items[b];
-            listBox_files.Items[b] = newFileName; // System.Windows.Forms.ListBox.SelectedItem.get returned null.
-
-            ToolStrip.Text = $"Moved {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
-
-            log($"MoveItem(): Moved {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}");
-
-            return true;
-        }
-        private string MoveItemToFolder(string oldFileName, string newFileName)
-        {
-            var a = new FileInfo(oldFileName);
-            var b = $"{a.Directory}\\{newFileName}";
-
-            if (!Directory.Exists(b))
-                if (!Directory.CreateDirectory(b).Exists)
-                    return null;
-
-            var c = $"{b}\\{a.Name}";
-
-            log($"MoveItemToFolder(): returns {c}");
-
-            return c;
-        }
-        private bool RevertRenameFile(string oldFileName, string newFileName) // to implement
-        {
-            if (!File.Exists(oldFileName))
-                throw new Exception($"ERROR: file does not exist: {oldFileName}");
-
-            if (File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"File already exists: {new FileInfo(newFilenameTemp).Name}";
-                return false;
-            }
-
-            var a = listBox_files.SelectedItem;
-            var b = listBox_files.SelectedIndex;
-
-            newFileName = updateFilepath(oldFileName, newFileName);// some issue with backslash
-
-            // need to show a different image since the currently viewed image is locked
-            // useless?
-            if (!isVideo)
-            {
-                Assembly myAssembly = Assembly.GetExecutingAssembly();
-                Stream myStream = myAssembly.GetManifestResourceStream("ImOrg.Bitmap1.bmp");
-                Bitmap bmp = new Bitmap(myStream);
-
-                pictureBox1.Image = bmp;
-            }
-
-            if (oldFileName.Length > 248)
-            {
-                ToolStrip.Text = $"ERROR: filename too long: {oldFileName}";
-                return false;
-            }
-            if (newFileName.Length > 248) // this is just wrong; needs to check filename length separately from directory length
-            {
-                ToolStrip.Text = $"ERROR: filename too long: {newFileName}";
-                return false;
-            }
-
-            File.Move(oldFileName, newFileName); // fails to move if the image was opened earlier
-            renameHistory.Add(oldFileName, newFileName);
-
-            listBox_files.SelectedIndex = b;
-            listBox_files.SelectedItem = listBox_files.Items[b];
-            listBox_files.Items[b] = newFileName; // System.Windows.Forms.ListBox.SelectedItem.get returned null.
-
-            if (!File.Exists(newFileName))
-            {
-                ToolStrip.Text = $"Failed to rename {new FileInfo(oldFileName).Name}. IsReadOnly: {new FileInfo(newFileName).IsReadOnly}";
-                return false;
-            }
-
-            ToolStrip.Text = $"RevertRenameFile {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}";
-            log($"RevertRenameFile {new FileInfo(oldFileName).Name} to {new FileInfo(newFileName).Name}");
-            return true;
-        }
-        private string updateFilepath(string _old, string newFilename)
-        {
-            // modifiy original filename based on user input
-            var file = new FileInfo(_old);
-            var ext = file.Extension;
-            var dir = file.Directory;
-            var out_ = "";
-            if (dir.Name.Contains("\\"))
-                out_ = $"{dir}{newFilename}{ext}";
-            else
-                out_ = $"{dir}\\{newFilename}{ext}";
-
-            log($"updateFilepath(): args: {_old}, {newFilename}; return: {out_}");
-            return out_;
         }
         private void TreeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
@@ -427,38 +238,59 @@ namespace ImOrg
 
             }
 
-            log($"TreeView1_BeforeExpand(): args: {sender.ToString()}, {e.Node.Name}");
+            var s = (TreeView)sender;
         }
-        private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e) // a folder has been selected, scan for all supported files
         {
-            // a folder has been selected, scan for all supported files
             listBox_files.Items.Clear();
+            items.Clear();
 
             var files = Directory.EnumerateFiles($"{e.Node.FullPath}\\");
+            var files2 = files.ToList();
+            files2.Sort();
+            files = files2;
 
             // add all files with supported extensions
             var supportedFiles = new List<string>();
+            int i = 0;
             foreach (var file in files)
             {
-                var ext = new FileInfo(file).Extension;
+                var fileInfo = new FileInfo(file);
+                var ext = fileInfo.Extension;
 
                 if (allowAnyFiletypeToolStripMenuItem.Checked)
-                    supportedFiles.Add(file);
+                {
+                    listBox_files.Items.Add(fileInfo.Name);
+                }
+                else if (supportedVideoExtensions.Contains(ext) || supportedImageExtensions.Contains(ext))
+                {
+                    listBox_files.Items.Add(fileInfo.Name);
+                }
                 else
-                    if (supportedVideoExtensions.Contains(ext) || supportedImageExtensions.Contains(ext))
-                        supportedFiles.Add(file);
+                {
+                    ; // other unsupported formats
+                    continue;
+                }
+
+                items.Add(i, new itemInfo
+                {
+                    filename = fileInfo.Name,
+                    fullpath = fileInfo.FullName,
+                    originalFullpath = fileInfo.FullName,
+                    newFilenameTemp = "",
+                    toRename = false,
+                });
+
+                i++;
             }
 
-            foreach (var file in supportedFiles)
-                listBox_files.Items.Add(file);
-
-            log($"TreeView1_AfterSelect(): args: {sender.ToString()}, {e.Node.Name}");
+            var s = (TreeView)sender;
 
         }
-        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
             // if user clicks another file, clear the previous file's temp name
-            newFilenameTemp = "";
+            // newFilenameTemp = "";
             ToolStrip.Text = $"Name reset.";
 
             // a different filename was selected, read it and display
@@ -466,108 +298,104 @@ namespace ImOrg
             if (currentFile.SelectedItem == null)
                 return;
 
-            var currentFilePath = currentFile.SelectedItem.ToString();
-            if (!File.Exists(currentFilePath))
+            // var selectedItemFilename = currentFile.SelectedItem.ToString();
+            var fullPath = items[currentFile.SelectedIndex].fullpath ;
+
+            if (!File.Exists(fullPath))
             {
-                ToolStrip.Text = $"ERROR: cannot find {currentFilePath}";
+                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
                 return;
             }
 
             // verify if it's a video
-            if (supportedVideoExtensions.Contains(new FileInfo(currentFilePath).Extension))
+            if (supportedVideoExtensions.Contains(new FileInfo(fullPath).Extension))
             {
+                axWindowsMediaPlayer1.URL = fullPath;
                 axWindowsMediaPlayer1.Show();
-                axWindowsMediaPlayer1.URL = currentFilePath;
-                axWindowsMediaPlayer1.Ctlcontrols.play();
-                isVideo = true;
+                pictureBox1.Hide();
             }
             else
             {
-                // stop an already playing video
-                axWindowsMediaPlayer1.Ctlcontrols.stop();
-                axWindowsMediaPlayer1.Hide();
-                pictureBox1.LoadAsync(currentFilePath);
-                isVideo = false;
+                if (axWindowsMediaPlayer1.Ctlcontrols != null) // stop an already playing video
+                {
+                    axWindowsMediaPlayer1.Ctlcontrols.stop();
+                    axWindowsMediaPlayer1.Hide();
+                    pictureBox1.LoadAsync(fullPath);
+                    pictureBox1.Show();
+                }
             }
 
-            log($"ListBox_files_SelectedIndexChanged(): args: {sender.ToString()}, {e.ToString()}");
+            var x = (ListBox)sender;
+            // log($"ListBox_files_SelectedIndexChanged(): args: {x.SelectedItem.ToString()}");
         }
-        private void ListBox_files_KeyDown(object sender, KeyEventArgs e)
+        private void ListBox_files_KeyDown(object sender, KeyEventArgs e) // press a key
         {
-            // TODO: add support for more keys
-
             if (listBox_files.SelectedItem == null)
                 return;
 
             var oldFileName = listBox_files.SelectedItem.ToString();
-            var add = "";
 
             if (false) // debug
                 if (e.KeyCode != Keys.ShiftKey)
                     ToolStrip.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
 
             switch (e.KeyCode)
-            {
-                case Keys.Back:
-                    if (newFilenameTemp != "")
-                        newFilenameTemp = newFilenameTemp.Substring(0, newFilenameTemp.Length - 1);
-                    break;
-
+            { 
                 case Keys.Up:
                 case Keys.Down:
+                case Keys.Enter:
                     if (!allowUPDOWNToRenameToolStripMenuItem.Checked)
                     {
                         ToolStrip.Text = $"Name reset.";
                         return;
                     }
-                    if (newFilenameTemp == "")
-                        return;
-                    if (newNameMovesToFolderToolStripMenuItem.Checked)
-                    {
-                        if (MoveItem(oldFileName, newFilenameTemp))
-                            newFilenameTemp = "";
-                        return;
-                    }
-                    if (RenameFile(oldFileName, newFilenameTemp))
-                        newFilenameTemp = "";
-                    return;
 
-                case Keys.Enter:
-                    if (newFilenameTemp == "")
-                        return;
-                    if (newNameMovesToFolderToolStripMenuItem.Checked)
-                    {
-                        if (MoveItem(oldFileName, newFilenameTemp))
-                            newFilenameTemp = "";
-                        return;
-                    }
-                    if (RenameFile(oldFileName, newFilenameTemp))
-                        newFilenameTemp = "";
-                    return;
+                    var selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
+
+                    if (listBox_files.Items.Count != items.Count)
+                        throw new Exception("badev");
+
+                    items[selectedIndex].newFilenameTemp = newFilenameTemp;
+                    items[selectedIndex].toRename = true;
+
+                    previousNewFilenameTemp = newFilenameTemp;
+                    newFilenameTemp = "";
+
+                    break;
 
                 case Keys.Escape:
                     newFilenameTemp = "";
-                    ToolStrip.Text = $"Name reset.";
+                    ToolStrip.Text = $"Name reset."; // maybe use to undo
                     return;
 
-#region numbers and signs
-                case Keys.D0: add = "0"; break;
-                case Keys.D1: add = "1"; break;
-                case Keys.D2: add = "2"; break;
-                case Keys.D3: add = "3"; break;
-                case Keys.D4: add = "4"; break;
-                case Keys.D5: add = "5"; break;
-                case Keys.D6: add = "6"; break;
-                case Keys.D7: add = "7"; break;
-                case Keys.D8: add = "8"; break;
-                case Keys.D9: add = "9"; break;
-                case Keys.Add: add = "+"; break;
-                case Keys.Space: add = " "; break;
-                case Keys.OemMinus: add = "_"; break;
-                case Keys.Subtract: add = "-"; break;
-#endregion
-      
-#region letters
+                #region numbers and signs
+                case Keys.D0: newFilenameTemp = $"{newFilenameTemp}0"; break;
+                case Keys.D1: newFilenameTemp = $"{newFilenameTemp}1"; break;
+                case Keys.D2: newFilenameTemp = $"{newFilenameTemp}2"; break;
+                case Keys.D3: newFilenameTemp = $"{newFilenameTemp}3"; break;
+                case Keys.D4: newFilenameTemp = $"{newFilenameTemp}4"; break;
+                case Keys.D5: newFilenameTemp = $"{newFilenameTemp}5"; break;
+                case Keys.D6: newFilenameTemp = $"{newFilenameTemp}6"; break;
+                case Keys.D7: newFilenameTemp = $"{newFilenameTemp}7"; break;
+                case Keys.D8: newFilenameTemp = $"{newFilenameTemp}8"; break;
+                case Keys.D9: newFilenameTemp = $"{newFilenameTemp}9"; break;
+                case Keys.NumPad0: newFilenameTemp = $"{newFilenameTemp}0"; break;
+                case Keys.NumPad1: newFilenameTemp = $"{newFilenameTemp}1"; break;
+                case Keys.NumPad2: newFilenameTemp = $"{newFilenameTemp}2"; break;
+                case Keys.NumPad3: newFilenameTemp = $"{newFilenameTemp}3"; break;
+                case Keys.NumPad4: newFilenameTemp = $"{newFilenameTemp}4"; break;
+                case Keys.NumPad5: newFilenameTemp = $"{newFilenameTemp}5"; break;
+                case Keys.NumPad6: newFilenameTemp = $"{newFilenameTemp}6"; break;
+                case Keys.NumPad7: newFilenameTemp = $"{newFilenameTemp}7"; break;
+                case Keys.NumPad8: newFilenameTemp = $"{newFilenameTemp}8"; break;
+                case Keys.NumPad9: newFilenameTemp = $"{newFilenameTemp}9"; break;
+                case Keys.Add: newFilenameTemp = $"{newFilenameTemp}+"; break;
+                case Keys.Space: newFilenameTemp = $"{newFilenameTemp} "; break;
+                case Keys.OemMinus: newFilenameTemp = $"{newFilenameTemp}_"; break;
+                case Keys.Subtract: newFilenameTemp = $"{newFilenameTemp}-"; break;
+                #endregion
+
+                #region letters
                 case Keys.A:
                 case Keys.B:
                 case Keys.C:
@@ -595,13 +423,26 @@ namespace ImOrg
                 case Keys.Y:
                 case Keys.Z:
                     if (e.Shift)
-                        add = $"{e.KeyCode}";
+                        newFilenameTemp = $"{newFilenameTemp}{e.KeyCode}";
                     else
-                        add = $"{e.KeyCode.ToString().ToLower()}";
+                        newFilenameTemp = $"{newFilenameTemp}{e.KeyCode.ToString().ToLower()}";
                     break;
-#endregion
-                
-                //case Keys.F12:
+                #endregion
+
+                case Keys.Back:
+                    if (newFilenameTemp != "")
+                        newFilenameTemp = newFilenameTemp.Remove(newFilenameTemp.Length - 1, 1);
+                    // newFilenameTemp = newFilenameTemp.Substring(0, newFilenameTemp.Length - 1);
+                    break;
+
+                // press this key to use the last used filename
+                case Keys.F1:
+                    // use the last renamed file as template
+                    // maybe change key or let the user customize it
+                    newFilenameTemp = previousNewFilenameTemp;
+                    return;
+
+                //case Keys.F11:
                 //    var resolution = Screen.PrimaryScreen.Bounds;
                 //    if (isFullscreen)
                 //    {
@@ -619,57 +460,30 @@ namespace ImOrg
 
                 default:
                     break;
+                    // throw new NotImplementedException("ERROR: unsupported key.");
             }
 
-            newFilenameTemp = $"{newFilenameTemp}{add}";
+            // newFilenameTemp = $"{newFilenameTemp}{add}";
 
             ToolStrip.Text = $"New name: {newFilenameTemp}";
-
-            log($"ListBox_files_SelectedIndexChanged(): args: {sender.ToString()}, {e.ToString()}; {newFilenameTemp}");
 
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
         {
             // prevent name change keys to seek filename in the list
             e.Handled = true; 
+
         }
         private void AxWindowsMediaPlayer1_StatusChange(object sender, EventArgs e)
-        {
-            // auto play for webm's. would crash as it's async
-            // also this function runs excessively often
-            try
+        { 
+            if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
             {
-                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsStopped)
-                {
-                    axWindowsMediaPlayer1.Ctlcontrols.stop();
-                    axWindowsMediaPlayer1.Hide();
-                    axWindowsMediaPlayer1.URL = "";
-
-                }
-
-                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsTransitioning)
+                try
                 {
                     axWindowsMediaPlayer1.Ctlcontrols.play();
-                    return;
                 }
-
-                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsPlaying)
-                    return;
-
-                if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
-                {
-                    axWindowsMediaPlayer1.Ctlcontrols.play();
-                    return;
-                }
-
-
+                catch { }
             }
-            catch
-            {
-
-            }
-
-            log($"AxWindowsMediaPlayer1_StatusChange(): args: {sender.ToString()}, {e.ToString()}");
 
         }
         private void RGBTextToolStripMenuItem_Click(object sender, EventArgs e)
@@ -681,8 +495,6 @@ namespace ImOrg
             textColor = colorDialog1.Color;
 
             SetAppColors();
-
-            log($"RGBTextToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; {textColor:X8}");
 
         }
         private void RGBBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
@@ -731,9 +543,7 @@ namespace ImOrg
         }
         private void AxWindowsMediaPlayer1_Enter(object sender, EventArgs e)
         {
-            listBox_files.Focus();
-
-            log($"AxWindowsMediaPlayer1_Enter(): args: {sender.ToString()}, {e.ToString()}; attempt to focus ffmpeg window.");
+            // listBox_files.Focus();
         }
         private void PictureBox1_Click(object sender, EventArgs e)
         {
@@ -751,31 +561,141 @@ namespace ImOrg
 
             log($"Form1_FormClosing(): args: {sender.ToString()}, {e.ToString()}; kill ffmpeg first before closing.");
         }
-
-#region testing FFMPEG
-        public Process ffplay = new Process();
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
+        private void Timer1_Tick(object sender, EventArgs e)
         {
-            ffplay.StartInfo.FileName = "ffplay.exe";
-            ffplay.StartInfo.Arguments = $"-left 0 -top 0 -noborder -fs {listBox_files.SelectedItem.ToString()}";
-            ffplay.StartInfo.CreateNoWindow = true;
-            ffplay.StartInfo.RedirectStandardOutput = true;
-            ffplay.StartInfo.UseShellExecute = false;
-            ffplay.Start();
-            Thread.Sleep(500);
+            if(!isDebug)
+            {
+                // if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsStopped) // freezes temporarly if it tries to rename a file being used, it's not being released fast enough
+                // {
+                //     RenameFile();
+                // }
 
-            SetParent(ffplay.MainWindowHandle, pictureBox1.Handle); // attempt failed to stick it to the program main window
-
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
-            axWindowsMediaPlayer1.Hide();
-
-            log($"TestFfmpegToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; playing a video using ffmpeg.");
+                RenameFile();
+            }
         }
-#endregion
+        private bool RenameFile()
+        {
+            // wait what about moving directories
 
+            if (newNameMovesToFolderToolStripMenuItem.Checked)
+                throw new NotImplementedException();
+            
+            for (int i = 0; i < items.Count; i++)
+            { 
+                var a = items[i];
+
+                // skip files that don't need to be renamed
+                if (a.toRename == false)
+                    continue;
+
+                // skip files if new name was failed to be set
+                if (a.newFilenameTemp == "")
+                    continue;
+
+                // // ignore the currently playing video for now as it causes a temporary freezing
+                // if (axWindowsMediaPlayer1.currentMedia != null)
+                if (axWindowsMediaPlayer1.currentMedia.sourceURL == a.fullpath && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
+                    continue;
+
+                log($"Processing:" +
+                    $"\nitem        {i}" +
+                    $"\ntoRename    {a.toRename}" +
+                    $"\noldFullpath {a.fullpath}" +
+                    $"\noldFilename {a.filename}" +
+                    $"\nnewNameTemp {a.newFilenameTemp}" +
+                    $"\n");
+
+                var oldFullpath = a.fullpath;
+                var newFullpath = "";
+                var newTempFilename = a.newFilenameTemp;
+
+                if (!new FileInfo(oldFullpath).Exists)
+                {
+                    log($"RenameOrMoveItems(): error: file doesn't exists." +
+                        $"prevFileName = {oldFullpath};");
+                    return false;
+                }
+
+                var ogFileInfo = new FileInfo(oldFullpath);
+                newFullpath = $"{ogFileInfo.Directory}\\{a.newFilenameTemp}{ogFileInfo.Extension}";
+
+                // rename file if a file already exists with the same name. a fast enough computer might fail on miliseconds aswel (fff)
+                // with every rename, add 2 more characters for the date formatting
+                // considering the user wouldn't rename a lot of files before the rename timer ticks, it shouldn't even get to milisecond renaming
+                var format = "";
+                var format2 = "yyyyMMddhhmmssffff"; // year month day hour minute second milisecond
+                var k = -1;
+                while (File.Exists(newFullpath))
+                {
+                    k++;
+                    format = format2.Substring(0, 4 + k * 2);
+                    newFullpath = $"" +
+                        $"{ogFileInfo.Directory}\\" +
+                        $"{newTempFilename}_" +
+                        $"{DateTime.Now.ToString(format)}{ogFileInfo.Extension}";
+
+                    // absolute worst case scenario, if for some reason all the files already exist
+                    if (k > 10000)
+                        continue;
+                }
+
+                // stop video from playing to prevent it from freezing
+                // axWindowsMediaPlayer1.Ctlcontrols.stop();
+                // axWindowsMediaPlayer1.close();
+                // axWindowsMediaPlayer1.Dispose();
+                // axWindowsMediaPlayer1.Refresh();
+                // axWindowsMediaPlayer1.Update();
+
+                if (!isDebugDontMove)
+                    File.Move(oldFullpath, newFullpath); // TODO move filename error handling here
+
+                log($"Renamed {oldFullpath} to {newFullpath}");
+                ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
+
+                a.fullpath = newFullpath;
+                a.filename = newFullpath.Split("\\".ToCharArray()).Last();
+                a.newFilenameTemp = "";
+
+                if (a.toRename == true)
+                    listBox_files.Items[i] = a.filename;
+
+                a.toRename = false;
+
+                log($"");
+                log($"Processed :" +
+                    $"\nitem        {i}" +
+                    $"\ntoRename    {a.toRename}" +
+                    $"\noldFullpath {a.fullpath}" +
+                    $"\noldFilename {a.filename}" +
+                    $"\nnewNameTemp {a.newFilenameTemp}" +
+                    $"\n");
+
+            }
+
+            return true;
+
+        } 
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            RenameFile();
+        }
+        private void ToolStrip_Click(object sender, EventArgs e)
+        {
+            if (richTextBox1.Visible)
+                richTextBox1.Hide();
+            else
+                richTextBox1.Show();
+        }
+        private bool showDefaultImage(string oldFilename, string newFilename) // keep old code
+        {
+            // need to show a different image since the currently viewed item is being read
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            Stream myStream = myAssembly.GetManifestResourceStream("ImOrg.Bitmap1.bmp");
+            Bitmap bmp = new Bitmap(myStream);
+
+            pictureBox1.Image = bmp;
+
+            return true;
+        }
     }
-
 }

@@ -27,6 +27,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.treeView_folders = new System.Windows.Forms.TreeView();
             this.listBox_files = new System.Windows.Forms.ListBox();
@@ -49,6 +50,9 @@
             this.autorenameDuplicatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testFfmpegToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.button1 = new System.Windows.Forms.Button();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -61,7 +65,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView_folders.Location = new System.Drawing.Point(0, 0);
             this.treeView_folders.Name = "treeView_folders";
-            this.treeView_folders.Size = new System.Drawing.Size(201, 516);
+            this.treeView_folders.Size = new System.Drawing.Size(201, 614);
             this.treeView_folders.TabIndex = 1;
             this.treeView_folders.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeView1_BeforeExpand);
             this.treeView_folders.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView1_AfterSelect);
@@ -71,9 +75,9 @@
             this.listBox_files.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox_files.FormattingEnabled = true;
-            this.listBox_files.Location = new System.Drawing.Point(0, 514);
+            this.listBox_files.Location = new System.Drawing.Point(0, 620);
             this.listBox_files.Name = "listBox_files";
-            this.listBox_files.Size = new System.Drawing.Size(1242, 56);
+            this.listBox_files.Size = new System.Drawing.Size(1251, 95);
             this.listBox_files.TabIndex = 2;
             this.listBox_files.SelectedIndexChanged += new System.EventHandler(this.ListBox_files_SelectedIndexChanged);
             this.listBox_files.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ListBox_files_KeyDown);
@@ -86,7 +90,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Location = new System.Drawing.Point(207, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1035, 516);
+            this.pictureBox1.Size = new System.Drawing.Size(1044, 614);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
@@ -101,7 +105,7 @@
             this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(207, 0);
             this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
             this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
-            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(1035, 516);
+            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(1044, 614);
             this.axWindowsMediaPlayer1.TabIndex = 10;
             this.axWindowsMediaPlayer1.StatusChange += new System.EventHandler(this.AxWindowsMediaPlayer1_StatusChange);
             this.axWindowsMediaPlayer1.Enter += new System.EventHandler(this.AxWindowsMediaPlayer1_Enter);
@@ -111,9 +115,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
             this.ToolStrip});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 573);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 718);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1242, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1251, 22);
             this.statusStrip1.TabIndex = 11;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -236,17 +240,49 @@
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(26, 17);
             this.ToolStrip.Text = "Idle";
+            this.ToolStrip.Click += new System.EventHandler(this.ToolStrip_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.BackColor = System.Drawing.Color.Black;
+            this.button1.Location = new System.Drawing.Point(1050, 713);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(201, 27);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "Akward debug button to manually move";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox1.Location = new System.Drawing.Point(407, 0);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(844, 350);
+            this.richTextBox1.TabIndex = 13;
+            this.richTextBox1.Text = "";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1242, 595);
+            this.ClientSize = new System.Drawing.Size(1251, 740);
+            this.Controls.Add(this.treeView_folders);
+            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
             this.Controls.Add(this.axWindowsMediaPlayer1);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.treeView_folders);
             this.Name = "Form1";
             this.Text = "ImOrg";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -282,6 +318,9 @@
         private System.Windows.Forms.ToolStripMenuItem newNameMovesToFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testFfmpegToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autorenameDuplicatesToolStripMenuItem;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.RichTextBox richTextBox1;
     }
 }
 
