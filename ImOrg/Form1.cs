@@ -55,6 +55,7 @@ namespace ImOrg
             // ".flv", // definitely not supported
         };
         private static List<string> logq = new List<string>();
+        private int previouslySelectedItem = -1;
         private class itemInfo
         {
             public string filename;
@@ -285,16 +286,15 @@ namespace ImOrg
         }
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
-            // if user clicks another file, clear the previous file's temp name
-            // newFilenameTemp = "";
-            ToolStrip.Text = $"Name reset.";
-
-            // a different filename was selected, read it and display
             var currentFile = (ListBox)sender;
             if (currentFile.SelectedItem == null)
                 return;
 
-            // var selectedItemFilename = currentFile.SelectedItem.ToString();
+            if (currentFile.SelectedIndex == previouslySelectedItem)
+                return;
+
+            ToolStrip.Text = $"Name reset.";
+
             var fullPath = items[currentFile.SelectedIndex].fullpath ;
 
             if (!File.Exists(fullPath))
@@ -320,6 +320,9 @@ namespace ImOrg
                     pictureBox1.Show();
                 }
             }
+
+            // check if this should be placed after RenameFile(); or not
+            previouslySelectedItem = currentFile.SelectedIndex;
 
             // let's try renaming the files here, after viewing a new item
             RenameFile();
@@ -583,9 +586,9 @@ namespace ImOrg
                     continue;
 
                 // // ignore the currently playing video for now as it causes a temporary freezing
-                // if (axWindowsMediaPlayer1.currentMedia != null)
-                if (axWindowsMediaPlayer1.currentMedia.sourceURL == item.fullpath && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
-                    continue;
+                if (axWindowsMediaPlayer1.currentMedia != null)
+                    if (axWindowsMediaPlayer1.currentMedia.sourceURL == item.fullpath && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
+                        continue;
 
                 if (isDebug)
                 {
