@@ -56,6 +56,11 @@ namespace ImOrg
         };
         private static List<string> logq = new List<string>();
         private int previouslySelectedItem = -1;
+        private bool isFullscreen = false;
+        private int defaultLocationX = 0;
+        private int defaultLocationY = 0;
+        private int defaultSizeX = 0;
+        private int defaultSizeY = 0;
         private class itemInfo
         {
             public string filename;
@@ -448,21 +453,32 @@ namespace ImOrg
                     newFilenameTemp = previousNewFilenameTemp;
                     return;
 
-                //case Keys.F11:
-                //    var resolution = Screen.PrimaryScreen.Bounds;
-                //    if (isFullscreen)
-                //    {
-                //        isFullscreen = false;
-                //        pictureBox1.Width = resolution.Width;
-                //        pictureBox1.Height = resolution.Height;
-                //    }
-                //    else
-                //    {
-                //        isFullscreen = true;
-                //        pictureBox1.Width = resolution.Width;
-                //        pictureBox1.Height = resolution.Height;
-                //    }
-                //    break;
+                case Keys.F11:
+                    // okay well this ain't workin at all as i expected
+                    var resolution = Screen.PrimaryScreen.Bounds;
+
+                    if (isFullscreen)
+                    {
+                        isFullscreen = false;
+                        pictureBox1.Location = new System.Drawing.Point(defaultLocationX, defaultLocationY);
+                        pictureBox1.Size = new System.Drawing.Size(defaultSizeX, defaultSizeY);
+                        pictureBox1.SendToBack();
+                        pictureBox1.Update();
+                    }
+                    else
+                    {
+                        isFullscreen = true;
+                    
+                        defaultSizeX = pictureBox1.Height;
+                        defaultSizeY = pictureBox1.Width;
+                        defaultLocationX = pictureBox1.Location.X;
+                        defaultLocationY = pictureBox1.Location.Y;
+                        pictureBox1.Location = new System.Drawing.Point(0, 0);
+                        pictureBox1.Size = new System.Drawing.Size(resolution.Width, resolution.Height);
+                        pictureBox1.BringToFront();
+                        pictureBox1.Update();
+                    }
+                    break;
 
                 default:
                     break;
