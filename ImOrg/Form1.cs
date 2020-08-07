@@ -68,15 +68,11 @@ namespace ImOrg
         #region utilities
         public void log(string in_)
         {
-            richTextBox1.Text = $"{richTextBox1.Text}\n[{DateTime.Now.ToString("hhmmss.fff")}] {in_}";
-
-            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] {in_}");
+            richTextBox1.Text = $"{richTextBox1.Text}\n[{DateTime.Now.ToString("hhmmss")}] {in_}";
 
             if (isDebug)
-            {
-                // logq.Add($"[{DateTime.Now.ToString("hhmmss.fff")}] {in_}");
-                // WriteCsv(logq, "debug.log"); // this is horrible, need to create file once, then only append logs
-            }
+                Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] {in_}");
+
         }
         public static bool WriteCsv(List<string> in_, string file)
         {
@@ -205,6 +201,8 @@ namespace ImOrg
             this.ForeColor = textColor;
             ToolStrip.BackColor = Color.White;
             ToolStrip.ForeColor = Color.Black;
+            richTextBox1.BackColor = backgroundColor;
+            richTextBox1.ForeColor = textColor;
 
         }
         private void TreeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -339,7 +337,11 @@ namespace ImOrg
                     ToolStrip.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
 
             switch (e.KeyCode)
-            { 
+            {
+                case Keys.ShiftKey:
+                case Keys.ControlKey:
+                    break;
+
                 case Keys.Up:
                 case Keys.Down:
                 case Keys.Enter:
@@ -502,7 +504,6 @@ namespace ImOrg
 
             SetAppColors();
 
-            log($"RGBTextToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; {backgroundColor:X8}");
         }
         private void ZoomToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -569,38 +570,38 @@ namespace ImOrg
         private bool RenameFile()
         {
             // wait what about moving directories
-
-            if (newNameMovesToFolderToolStripMenuItem.Checked)
-                throw new NotImplementedException();
-            
             for (int i = 0; i < items.Count; i++)
             { 
-                var a = items[i];
+                var item = items[i];
 
                 // skip files that don't need to be renamed
-                if (a.toRename == false)
+                if (item.toRename == false)
                     continue;
 
                 // skip files if new name was failed to be set
-                if (a.newFilenameTemp == "")
+                if (item.newFilenameTemp == "")
                     continue;
 
                 // // ignore the currently playing video for now as it causes a temporary freezing
                 // if (axWindowsMediaPlayer1.currentMedia != null)
-                if (axWindowsMediaPlayer1.currentMedia.sourceURL == a.fullpath && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
+                if (axWindowsMediaPlayer1.currentMedia.sourceURL == item.fullpath && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
                     continue;
 
-                log($"Processing:" +
-                    $"\nitem        {i}" +
-                    $"\ntoRename    {a.toRename}" +
-                    $"\noldFullpath {a.fullpath}" +
-                    $"\noldFilename {a.filename}" +
-                    $"\nnewNameTemp {a.newFilenameTemp}" +
-                    $"\n");
+                if (isDebug)
+                {
+                    Console.WriteLine($"");
+                    Console.WriteLine($"Processing:" +
+                        $"\nitem        {i}" +
+                        $"\ntoRename    {item.toRename}" +
+                        $"\noldFullpath {item.fullpath}" +
+                        $"\noldFilename {item.filename}" +
+                        $"\nnewNameTemp {item.newFilenameTemp}" +
+                        $"\n");
+                }
 
-                var oldFullpath = a.fullpath;
+                var oldFullpath = item.fullpath;
                 var newFullpath = "";
-                var newTempFilename = a.newFilenameTemp;
+                var newTempFilename = item.newFilenameTemp;
 
                 if (!new FileInfo(oldFullpath).Exists)
                 {
@@ -610,7 +611,17 @@ namespace ImOrg
                 }
 
                 var ogFileInfo = new FileInfo(oldFullpath);
-                newFullpath = $"{ogFileInfo.Directory}\\{a.newFilenameTemp}{ogFileInfo.Extension}";
+                newFullpath = $"{ogFileInfo.Directory}\\{item.newFilenameTemp}{ogFileInfo.Extension}";
+
+                if (newNameMovesToFolderToolStripMenuItem.Checked)
+                {
+                    newTempFilename = $"\\{item.newFilenameTemp}\\{item.filename}";
+                    newFullpath = $"{ogFileInfo.Directory}\\{item.newFilenameTemp}\\{item.filename}";
+
+                    if (!Directory.Exists($"{ogFileInfo.Directory}\\{item.newFilenameTemp}"))
+                        Directory.CreateDirectory($"{ogFileInfo.Directory}\\{item.newFilenameTemp}");
+
+                }
 
                 // rename file if a file already exists with the same name. a fast enough computer might fail on miliseconds aswel (fff)
                 // with every rename, add 2 more characters for the date formatting
@@ -627,17 +638,19 @@ namespace ImOrg
                         $"{newTempFilename}_" +
                         $"{DateTime.Now.ToString(format)}{ogFileInfo.Extension}";
 
+                    if (newNameMovesToFolderToolStripMenuItem.Checked)
+                    {
+                        newFullpath = $"{ogFileInfo.Directory}" +
+                            $"\\{item.newFilenameTemp}" +
+                            $"\\{item.filename.Substring(0, item.filename.Length - ogFileInfo.Extension.Length)}" +
+                            $"_{DateTime.Now.ToString(format)}" +
+                            $"{ogFileInfo.Extension}";
+                    }
+
                     // absolute worst case scenario, if for some reason all the files already exist
                     if (k > 10000)
                         continue;
                 }
-
-                // stop video from playing to prevent it from freezing
-                // axWindowsMediaPlayer1.Ctlcontrols.stop();
-                // axWindowsMediaPlayer1.close();
-                // axWindowsMediaPlayer1.Dispose();
-                // axWindowsMediaPlayer1.Refresh();
-                // axWindowsMediaPlayer1.Update();
 
                 if (!isDebugDontMove)
                     File.Move(oldFullpath, newFullpath); // TODO move filename error handling here
@@ -645,23 +658,26 @@ namespace ImOrg
                 log($"Renamed {oldFullpath} to {newFullpath}");
                 ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
 
-                a.fullpath = newFullpath;
-                a.filename = newFullpath.Split("\\".ToCharArray()).Last();
-                a.newFilenameTemp = "";
+                item.fullpath = newFullpath;
+                item.filename = newFullpath.Split("\\".ToCharArray()).Last();
+                item.newFilenameTemp = "";
 
-                if (a.toRename == true)
-                    listBox_files.Items[i] = a.filename;
+                if (item.toRename == true)
+                    listBox_files.Items[i] = item.filename;
 
-                a.toRename = false;
+                item.toRename = false;
 
-                log($"");
-                log($"Processed :" +
-                    $"\nitem        {i}" +
-                    $"\ntoRename    {a.toRename}" +
-                    $"\noldFullpath {a.fullpath}" +
-                    $"\noldFilename {a.filename}" +
-                    $"\nnewNameTemp {a.newFilenameTemp}" +
-                    $"\n");
+                if (isDebug)
+                {
+                    Console.WriteLine($"");
+                    Console.WriteLine($"Processed :" +
+                        $"\nitem        {i}" +
+                        $"\ntoRename    {item.toRename}" +
+                        $"\noldFullpath {item.fullpath}" +
+                        $"\noldFilename {item.filename}" +
+                        $"\nnewNameTemp {item.newFilenameTemp}" +
+                        $"\n");
+                }
 
             }
 
