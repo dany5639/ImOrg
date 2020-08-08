@@ -27,33 +27,12 @@ namespace ImOrg
         /// </summary>
         private Dictionary<int, itemInfo> items = new Dictionary<int, itemInfo>();
 
-        private bool isDebug = false;
+        private bool isDebug = true;
         private bool isDebugDontMove = false;
         private string newFilenameTemp = "";
         private string previousNewFilenameTemp = "";
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
-        private List<string> supportedImageExtensions = new List<string>
-        {
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".tif",
-            ".tiff",
-            ".bmp",
-            ".ico",
-            // ".webp", // not supported
-            // ".dds", // not supported
-            // ".tga", // not supported
-        };
-        private List<string> supportedVideoExtensions = new List<string>
-        {
-            ".webm",
-            ".mp4",
-            ".mkv", 
-            // ".flv", // definitely not supported
-        };
         private static List<string> logq = new List<string>();
         private int previouslySelectedItem = -1;
         private bool isFullscreen = false;
@@ -67,7 +46,18 @@ namespace ImOrg
             public string fullpath;
             public string originalFullpath;
             public string newFilenameTemp;
+            public string extension;
             public bool toRename;
+            public itemType type;
+        }
+        private enum itemType
+        {
+           noExtension,
+           directory,
+           image,
+           video,
+           text,
+           unsupported
         }
         #endregion
 
@@ -145,22 +135,16 @@ namespace ImOrg
             SetAppColors();
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // best view mode
-            allowUPDOWNToRenameToolStripMenuItem.Checked = true;
-            autorenameDuplicatesToolStripMenuItem.CheckState = CheckState.Checked;
 
             richTextBox1.Hide(); // hide debug text window, only show when clicking on the status bar label
             button1.Hide();
 
             if (isDebug)
             {
-                allowAnyFiletypeToolStripMenuItem.Checked = false;
-                newNameMovesToFolderToolStripMenuItem.Checked = false;
                 button1.Show();
                 log($"DEBUG: isDebug {isDebug}");
                 treeView_folders.Nodes[3].Expand();
             }
-
-            axWindowsMediaPlayer1.Show(); //TEST
         }
         private void GetDrivesList()
         {
@@ -253,40 +237,51 @@ namespace ImOrg
             files = files2;
 
             // add all files with supported extensions
-            var supportedFiles = new List<string>();
-            int i = 0;
+
+            // add dropdown menu toggle to add files in order or by type
+            // bad design, ended up with forcing the type order
+
+            var items2 = new List<itemInfo>();
+
             foreach (var file in files)
             {
                 var fileInfo = new FileInfo(file);
                 var ext = fileInfo.Extension;
-
-                if (allowAnyFiletypeToolStripMenuItem.Checked)
-                {
-                    listBox_files.Items.Add(fileInfo.Name);
-                }
-                else if (supportedVideoExtensions.Contains(ext) || supportedImageExtensions.Contains(ext))
-                {
-                    listBox_files.Items.Add(fileInfo.Name);
-                }
-                else
-                {
-                    ; // other unsupported formats
-                    continue;
-                }
-
-                items.Add(i, new itemInfo
+                items2.Add(new itemInfo
                 {
                     filename = fileInfo.Name,
                     fullpath = fileInfo.FullName,
                     originalFullpath = fileInfo.FullName,
                     newFilenameTemp = "",
                     toRename = false,
+                    extension = ext,
+                    type = getFileType(ext)
                 });
+            }
 
+            // cool we can now add any kind of sorting here
+            // UNCOMMENT THIS BEFORE A PUSH
+            // if (!sortFilesByTypeToolStripMenuItem.Checked)
+            items2 = items2.OrderBy(x => x.type).ToList();
+
+            if (isDebug)
+                foreach (var a in items2)
+                    Console.WriteLine($"{a.type} {a.extension}");
+
+            int i = 0;
+            foreach (var a in items2)
+            {
+                if (!(a.type == itemType.image || a.type == itemType.video))
+                    continue;
+
+                items.Add(i, a);
+                listBox_files.Items.Add(a.filename);
                 i++;
             }
 
-            var s = (TreeView)sender;
+            if (isDebug)
+                foreach (var a in items)
+                    Console.WriteLine($"{a.Key} {a.Value.extension}");
 
         }
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
@@ -309,7 +304,7 @@ namespace ImOrg
             }
 
             // verify if it's a video
-            if (supportedVideoExtensions.Contains(new FileInfo(fullPath).Extension))
+            if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
                 axWindowsMediaPlayer1.URL = fullPath;
                 axWindowsMediaPlayer1.Show();
@@ -331,6 +326,10 @@ namespace ImOrg
 
             // let's try renaming the files here, after viewing a new item
             RenameFile();
+
+            // try to scroll the files list further to see the next files
+            // ...
+            // can't find any method to increment scroll by one
 
         }
         private void ListBox_files_KeyDown(object sender, KeyEventArgs e) // press a key
@@ -451,6 +450,7 @@ namespace ImOrg
                     // use the last renamed file as template
                     // maybe change key or let the user customize it
                     newFilenameTemp = previousNewFilenameTemp;
+                    ToolStrip.Text = $"Reusing: {previousNewFilenameTemp}"; // maybe use to undo
                     return;
 
                 case Keys.F11:
@@ -725,7 +725,67 @@ namespace ImOrg
 
             return true;
         }
+        private itemType getFileType(string extension)
+        {
+            switch (extension)
+            {
+                case "":
+                    return itemType.noExtension;
 
+                case ".jpg":
+                case ".jpeg":
+                case ".png":
+                case ".gif":
+                case ".tif":
+                case ".tiff":
+                case ".bmp":
+                case ".ico":
+                    // ".webp", // not supported
+                    // ".dds", // not supported
+                    // ".tga", // not supported
+                    return itemType.image;
+
+                case ".webm":
+                case ".mp4":
+                case ".mkv":
+                    return itemType.video;
+
+                case ".txt":
+                case ".csv":
+                case ".log":
+                case ".xml":
+                    // ".flv", // definitely not supported
+                    return itemType.text;
+
+                default:
+                    return itemType.unsupported;
+            }
+        }
+
+        private void ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var dialogBox = new Form();
+            dialogBox.Text = "Info";
+            dialogBox.BackColor = backgroundColor;
+            dialogBox.ForeColor = textColor;
+            var label = new Label();
+            label.AutoSize = true;
+            label.Font = new Font("Consolas", 10.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label.Text =
+                "Shortcuts list:" +
+                "\nESC : cancel last new name." +
+                "\nF1  : use the last typed name." +
+                "\nF11 : fullscreen mode (NOT IMPLEMENTED YET)" +
+                "\n" +
+                "";
+
+            label.ForeColor = textColor;
+            label.Location = new Point { X = 10, Y = 10 };
+            dialogBox.Controls.Add(label);
+
+            dialogBox.ShowDialog();
+
+        }
     }
 
 }

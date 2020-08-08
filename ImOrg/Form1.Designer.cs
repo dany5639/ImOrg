@@ -46,13 +46,14 @@
             this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newNameMovesToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.autorenameDuplicatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testFfmpegToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sortFilesByTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
@@ -117,8 +118,9 @@
             this.allowUPDOWNToRenameToolStripMenuItem,
             this.allowAnyFiletypeToolStripMenuItem,
             this.newNameMovesToFolderToolStripMenuItem,
-            this.autorenameDuplicatesToolStripMenuItem,
-            this.testFfmpegToolStripMenuItem});
+            this.sortFilesByTypeToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.toolStripSeparator1});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -188,7 +190,9 @@
             // 
             // allowUPDOWNToRenameToolStripMenuItem
             // 
+            this.allowUPDOWNToRenameToolStripMenuItem.Checked = true;
             this.allowUPDOWNToRenameToolStripMenuItem.CheckOnClick = true;
+            this.allowUPDOWNToRenameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.allowUPDOWNToRenameToolStripMenuItem.Name = "allowUPDOWNToRenameToolStripMenuItem";
             this.allowUPDOWNToRenameToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.allowUPDOWNToRenameToolStripMenuItem.Text = "Allow Up/Down to rename";
@@ -207,19 +211,14 @@
             this.newNameMovesToFolderToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
             this.newNameMovesToFolderToolStripMenuItem.Text = "New name moves to folder";
             // 
-            // autorenameDuplicatesToolStripMenuItem
+            // sortFilesByTypeToolStripMenuItem
             // 
-            this.autorenameDuplicatesToolStripMenuItem.CheckOnClick = true;
-            this.autorenameDuplicatesToolStripMenuItem.Name = "autorenameDuplicatesToolStripMenuItem";
-            this.autorenameDuplicatesToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.autorenameDuplicatesToolStripMenuItem.Text = "Autorename duplicates";
-            // 
-            // testFfmpegToolStripMenuItem
-            // 
-            this.testFfmpegToolStripMenuItem.Name = "testFfmpegToolStripMenuItem";
-            this.testFfmpegToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.testFfmpegToolStripMenuItem.Text = "test ffmpeg";
-            this.testFfmpegToolStripMenuItem.Click += new System.EventHandler(this.TestFfmpegToolStripMenuItem_Click);
+            this.sortFilesByTypeToolStripMenuItem.Checked = true;
+            this.sortFilesByTypeToolStripMenuItem.CheckOnClick = true;
+            this.sortFilesByTypeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sortFilesByTypeToolStripMenuItem.Name = "sortFilesByTypeToolStripMenuItem";
+            this.sortFilesByTypeToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.sortFilesByTypeToolStripMenuItem.Text = "Sort files by type";
             // 
             // ToolStrip
             // 
@@ -251,6 +250,7 @@
             this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox1.Location = new System.Drawing.Point(407, 0);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(844, 350);
@@ -270,6 +270,18 @@
             this.axWindowsMediaPlayer1.TabIndex = 10;
             this.axWindowsMediaPlayer1.StatusChange += new System.EventHandler(this.AxWindowsMediaPlayer1_StatusChange);
             this.axWindowsMediaPlayer1.Enter += new System.EventHandler(this.AxWindowsMediaPlayer1_Enter);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(214, 6);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(217, 22);
+            this.toolStripMenuItem1.Text = "Info";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
             // Form1
             // 
@@ -314,12 +326,13 @@
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newNameMovesToFolderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testFfmpegToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem autorenameDuplicatesToolStripMenuItem;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
+        private System.Windows.Forms.ToolStripMenuItem sortFilesByTypeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 
