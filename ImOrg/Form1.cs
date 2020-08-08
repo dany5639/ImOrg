@@ -27,7 +27,7 @@ namespace ImOrg
         /// </summary>
         private Dictionary<int, itemInfo> items = new Dictionary<int, itemInfo>();
 
-        private bool isDebug = false;
+        private bool isDebug = true;
         private bool isDebugDontMove = false;
         private string newFilenameTemp = "";
         private string previousNewFilenameTemp = "";
@@ -106,12 +106,14 @@ namespace ImOrg
 
             richTextBox1.Hide(); // hide debug text window, only show when clicking on the status bar label
             button1.Hide();
+            initializeVideoPlayer();
 
             if (isDebug)
             {
                 button1.Show();
                 log($"DEBUG: isDebug {isDebug}");
                 treeView_folders.Nodes[3].Expand();
+                treeView_folders.SelectedNode = treeView_folders.Nodes[3].Nodes[3]; // .Find("Text = \"UNSORTED_SFW\"", true)[0];
             }
         }
         private void GetDrivesList()
@@ -243,7 +245,7 @@ namespace ImOrg
                 i++;
             }
 
-            if (isDebug)
+            if (false)
                 foreach (var a in items)
                     Console.WriteLine($"{a.Key} {a.Value.extension}");
 
@@ -270,12 +272,14 @@ namespace ImOrg
             // verify if it's a video
             if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
+                if (isVideoPlayerUnavailable() != true) // stop an already playing video
+                    unloadVideo();
                 loadVideo(fullPath);
                 pictureBox1.Hide();
             }
             else
             {
-                if (isVideoPlayerUnavailable() != null) // stop an already playing video
+                if (isVideoPlayerUnavailable() != true) // stop an already playing video
                 {
                     unloadVideo();
                     pictureBox1.LoadAsync(fullPath);
@@ -420,6 +424,11 @@ namespace ImOrg
                     return;
 
                 case Keys.F12: // resize image
+                    // if (items[listBox_files.SelectedIndex].type != itemType.image)
+                    // {
+                    //     ToolStrip.Text = $"Change image view mode only when viewing an image.";
+                    //     return;
+                    // }
 
                     var a = (int)pictureBox1.SizeMode;
                     if (a + 1 == availablePictureModes.Count)
@@ -427,13 +436,12 @@ namespace ImOrg
 
                     pictureBox1.SizeMode = availablePictureModes[a + 1];
 
-                    var img = new Bitmap(items[listBox_files.SelectedIndex].fullpath);
-
                     pictureBox1.ClientSize = new Size(
                         richTextBox1.Size.Width,
-                        richTextBox1.Size.Height); 
+                        richTextBox1.Size.Height);
 
-                    pictureBox1.Image = (Image)img;
+                    // var img = new Bitmap(items[listBox_files.SelectedIndex].fullpath);
+                    // pictureBox1.Image = (Image)img;
 
                     ToolStrip.Text = $"Picture scaling: {pictureBox1.SizeMode}";
                     return;
@@ -496,7 +504,7 @@ namespace ImOrg
                 if (!canRenameVideo(item.fullpath))
                     continue;
 
-                if (isDebug)
+                if (false)
                 {
                     Console.WriteLine($"");
                     Console.WriteLine($"Processing:" +
@@ -586,7 +594,7 @@ namespace ImOrg
 
                 item.toRename = false;
 
-                if (isDebug)
+                if (false)
                 {
                     Console.WriteLine($"");
                     Console.WriteLine($"Processed :" +
@@ -697,6 +705,7 @@ namespace ImOrg
             PictureBoxSizeMode.StretchImage,
             PictureBoxSizeMode.Zoom
         };
+        
         #region AxWMPLib video player controls
         private void resizeVideo()
         {
@@ -708,6 +717,11 @@ namespace ImOrg
         }
         private void AxWindowsMediaPlayer1_StatusChange(object sender, EventArgs e)
         {
+            if (false)
+            {
+                Console.WriteLine(axWindowsMediaPlayer1.playState);
+            }
+
             if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
             {
                 try
@@ -718,17 +732,17 @@ namespace ImOrg
             }
 
         }
-        private void loadVideo(string fullPath)
+        private void AxloadVideo(string fullPath)
         {
             axWindowsMediaPlayer1.URL = fullPath;
             axWindowsMediaPlayer1.Show();
         }
-        private void unloadVideo()
+        private void AxunloadVideo()
         {
             axWindowsMediaPlayer1.Ctlcontrols.stop();
             axWindowsMediaPlayer1.Hide();
         }
-        private bool isVideoPlayerUnavailable()
+        private bool AxisVideoPlayerUnavailable()
         {
             return axWindowsMediaPlayer1.Ctlcontrols == null;
         }
@@ -741,11 +755,10 @@ namespace ImOrg
             return true;
         }
         #endregion
+        
         #region testing FFMPEG
         public Process ffplay = new Process();
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
         private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
         {
             throw new NotImplementedException();
@@ -767,15 +780,133 @@ namespace ImOrg
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (ffplay.SynchronizingObject == null)
-                return;
+            // if (ffplay.SynchronizingObject == null)
+            //     return;
 
-            if (!ffplay.HasExited)
-                ffplay.Kill();
+            // if (ffplay.HasExited)
+            // ffplay.Close();
+            // ffplay.Dispose();
+            try { ffplay.Kill(); }
+            catch { }
+            // var exited = ffplay.HasExited;
 
-            log($"Form1_FormClosing(): args: {sender.ToString()}, {e.ToString()}; kill ffmpeg first before closing.");
+        }
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        Process currentProcess = Process.GetCurrentProcess();
+        private void loadVideo(string fullPath)
+        {            
+            // spawns the video in the right location
+            ffplay.StartInfo.Arguments = $"" +
+                $"-left {this.DesktopLocation.X + pictureBox1.Location.X + 3} " +
+                $"-top {this.DesktopLocation.Y + 31} " +
+                $"-x {pictureBox1.Width} " +
+                $"-y {pictureBox1.Height} " +
+                $"-noborder " +
+                $"\"{fullPath}\"" +
+                $"";
+
+
+            ffplay.StartInfo.Arguments = $"" +
+                $"-left 0 " +
+                $"-top 0 " +
+                $"-x 800 " +
+                $"-y 600 " +
+                $"-noborder " +
+                $"\"{fullPath}\"" +
+                $"";
+
+            ffplay.StartInfo.CreateNoWindow = true;
+            ffplay.StartInfo.RedirectStandardOutput = true;
+            ffplay.StartInfo.UseShellExecute = false;
+            ffplay.Start();
+
+            // current problem here: video spazes out of the intended location for 500ms
+            Thread.Sleep(500); // required otherwise ffmpeg window doesn't stick to the main program window
+
+            // attach video to the main program window
+            // also inadvertedly moves the video out of the program window
+            SetParent(ffplay.MainWindowHandle, this.Handle);
+        }
+        private void initializeVideoPlayer()
+        {
+            try { ffplay.Kill(); }
+            catch { }
+
+            if (!File.Exists("ffplay.exe"))
+                throw new Exception();
+
+            Console.WriteLine($"{this.Location.X} {this.Location.Y}");
+            Console.WriteLine($"{pictureBox1.Location.X} {pictureBox1.Location.Y}");
+
+            ffplay.StartInfo.FileName = "ffplay.exe";
+
+            // spawns the video in the right location
+            ffplay.StartInfo.Arguments = $"" +
+                $"-left {this.DesktopLocation.X + pictureBox1.Location.X + 3} " +
+                $"-top {this.DesktopLocation.Y + 31} " +
+                $"-x {pictureBox1.Width} " +
+                $"-y {pictureBox1.Height} " +
+                $"-noborder " +
+                $"\"black.mp4\"" +
+                $"";
+
+            ffplay.StartInfo.Arguments = $"" +
+                $"-left 0 " +
+                $"-top 0 " +
+                $"-x 800 " +
+                $"-y 600 " +
+                $"-noborder " +
+                $"\"black.mp4\"" +
+                $"";
+
+            ffplay.StartInfo.CreateNoWindow = true;
+            ffplay.StartInfo.RedirectStandardOutput = true;
+            ffplay.StartInfo.UseShellExecute = false;
+            ffplay.Start();
+
+            // current problem here: video spazes out of the intended location for 500ms
+            Thread.Sleep(500); // required otherwise ffmpeg window doesn't stick to the main program window
+
+            // attach video to the main program window
+            // also inadvertedly moves the video out of the program window
+            SetParent(ffplay.MainWindowHandle, this.Handle);
+
+            // move video window back to the correct location
+            MoveWindow(ffplay.MainWindowHandle,
+                pictureBox1.Location.X,
+                pictureBox1.Location.Y,
+                pictureBox1.Width,
+                pictureBox1.Height,
+                true);
+
+            // let the user continue scrolling trough the file list instead of control being taken over by the video player
+            Thread.Sleep(500);
+            IntPtr hWnd = currentProcess.MainWindowHandle;
+            if (hWnd != IntPtr.Zero)
+            {
+                SetForegroundWindow(hWnd);
+                ShowWindow(hWnd, 5);
+            }
+        }
+        private void unloadVideo()
+        {
+            try { ffplay.Kill(); }
+            catch { }
+        }
+        private bool isVideoPlayerUnavailable()
+        {
+            return false; // dev only
+
         }
         #endregion
+
 
     }
 

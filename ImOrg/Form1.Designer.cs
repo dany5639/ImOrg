@@ -208,9 +208,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(207, 0);
+            this.richTextBox1.Location = new System.Drawing.Point(349, 0);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(1044, 614);
+            this.richTextBox1.Size = new System.Drawing.Size(902, 487);
             this.richTextBox1.TabIndex = 13;
             this.richTextBox1.Text = "";
             // 
@@ -223,7 +223,7 @@
             this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(207, 0);
             this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
             this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
-            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(1044, 614);
+            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(872, 614);
             this.axWindowsMediaPlayer1.TabIndex = 10;
             this.axWindowsMediaPlayer1.StatusChange += new System.EventHandler(this.AxWindowsMediaPlayer1_StatusChange);
             // 
@@ -233,12 +233,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1251, 740);
             this.Controls.Add(this.treeView_folders);
-            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
-            this.Controls.Add(this.axWindowsMediaPlayer1);
+            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.axWindowsMediaPlayer1);
             this.Name = "Form1";
             this.Text = "ImOrg";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
