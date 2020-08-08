@@ -94,33 +94,6 @@ namespace ImOrg
 
         }
         #endregion
-
-        #region testing FFMPEG
-        public Process ffplay = new Process();
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-
-            ffplay.StartInfo.FileName = "ffplay.exe";
-            ffplay.StartInfo.Arguments = $"-left 0 -top 0 -noborder -fs {listBox_files.SelectedItem.ToString()}";
-            ffplay.StartInfo.CreateNoWindow = true;
-            ffplay.StartInfo.RedirectStandardOutput = true;
-            ffplay.StartInfo.UseShellExecute = false;
-            ffplay.Start();
-            Thread.Sleep(500);
-
-            SetParent(ffplay.MainWindowHandle, pictureBox1.Handle); // attempt failed to stick it to the program main window
-
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
-            axWindowsMediaPlayer1.Hide();
-
-            log($"TestFfmpegToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; playing a video using ffmpeg.");
-        }
-        #endregion
-
         public Form1()
         {
             InitializeComponent();
@@ -297,16 +270,14 @@ namespace ImOrg
             // verify if it's a video
             if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
-                axWindowsMediaPlayer1.URL = fullPath;
-                axWindowsMediaPlayer1.Show();
+                loadVideo(fullPath);
                 pictureBox1.Hide();
             }
             else
             {
-                if (axWindowsMediaPlayer1.Ctlcontrols != null) // stop an already playing video
+                if (isVideoPlayerUnavailable() != null) // stop an already playing video
                 {
-                    axWindowsMediaPlayer1.Ctlcontrols.stop();
-                    axWindowsMediaPlayer1.Hide();
+                    unloadVideo();
                     pictureBox1.LoadAsync(fullPath);
                     pictureBox1.Show();
                 }
@@ -445,11 +416,7 @@ namespace ImOrg
                     return;
 
                 case Keys.F11: // resize video
-                    if (axWindowsMediaPlayer1.stretchToFit)
-                        axWindowsMediaPlayer1.stretchToFit = false;
-                    else
-                        axWindowsMediaPlayer1.stretchToFit = true;
-                    ToolStrip.Text = $"Video stretch to fit: {axWindowsMediaPlayer1.stretchToFit}";
+                    resizeVideo();
                     return;
 
                 case Keys.F12: // resize image
@@ -463,8 +430,8 @@ namespace ImOrg
                     var img = new Bitmap(items[listBox_files.SelectedIndex].fullpath);
 
                     pictureBox1.ClientSize = new Size(
-                        axWindowsMediaPlayer1.Size.Width,
-                        axWindowsMediaPlayer1.Size.Height); 
+                        richTextBox1.Size.Width,
+                        richTextBox1.Size.Height); 
 
                     pictureBox1.Image = (Image)img;
 
@@ -482,18 +449,6 @@ namespace ImOrg
         {
             // prevent name change keys to seek filename in the list
             e.Handled = true; 
-
-        }
-        private void AxWindowsMediaPlayer1_StatusChange(object sender, EventArgs e)
-        { 
-            if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
-            {
-                try
-                {
-                    axWindowsMediaPlayer1.Ctlcontrols.play();
-                }
-                catch { }
-            }
 
         }
         private void RGBTextToolStripMenuItem_Click(object sender, EventArgs e)
@@ -514,20 +469,6 @@ namespace ImOrg
 
             SetAppColors();
 
-        }
-        private void AxWindowsMediaPlayer1_Enter(object sender, EventArgs e)
-        {
-            // listBox_files.Focus();
-        }
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (ffplay.SynchronizingObject == null)
-                return;
-
-            if (!ffplay.HasExited)
-                ffplay.Kill();
-
-            log($"Form1_FormClosing(): args: {sender.ToString()}, {e.ToString()}; kill ffmpeg first before closing.");
         }
         private void Timer1_Tick(object sender, EventArgs e)
         {
@@ -552,9 +493,8 @@ namespace ImOrg
                     continue;
 
                 // // ignore the currently playing video for now as it causes a temporary freezing
-                if (axWindowsMediaPlayer1.currentMedia != null)
-                    if (axWindowsMediaPlayer1.currentMedia.sourceURL == item.fullpath && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
-                        continue;
+                if (!canRenameVideo(item.fullpath))
+                    continue;
 
                 if (isDebug)
                 {
@@ -756,7 +696,87 @@ namespace ImOrg
             PictureBoxSizeMode.Normal,
             PictureBoxSizeMode.StretchImage,
             PictureBoxSizeMode.Zoom
-        }; 
+        };
+        #region AxWMPLib video player controls
+        private void resizeVideo()
+        {
+            if (axWindowsMediaPlayer1.stretchToFit)
+                axWindowsMediaPlayer1.stretchToFit = false;
+            else
+                axWindowsMediaPlayer1.stretchToFit = true;
+            ToolStrip.Text = $"Video stretch to fit: {axWindowsMediaPlayer1.stretchToFit}";
+        }
+        private void AxWindowsMediaPlayer1_StatusChange(object sender, EventArgs e)
+        {
+            if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
+            {
+                try
+                {
+                    axWindowsMediaPlayer1.Ctlcontrols.play();
+                }
+                catch { }
+            }
+
+        }
+        private void loadVideo(string fullPath)
+        {
+            axWindowsMediaPlayer1.URL = fullPath;
+            axWindowsMediaPlayer1.Show();
+        }
+        private void unloadVideo()
+        {
+            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            axWindowsMediaPlayer1.Hide();
+        }
+        private bool isVideoPlayerUnavailable()
+        {
+            return axWindowsMediaPlayer1.Ctlcontrols == null;
+        }
+        private bool canRenameVideo(string path)
+        {
+            if (axWindowsMediaPlayer1.currentMedia != null)
+                if (axWindowsMediaPlayer1.currentMedia.sourceURL == path && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
+                    return false;
+
+            return true;
+        }
+        #endregion
+        #region testing FFMPEG
+        public Process ffplay = new Process();
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+
+            ffplay.StartInfo.FileName = "ffplay.exe";
+            ffplay.StartInfo.Arguments = $"-left 0 -top 0 -noborder -fs {listBox_files.SelectedItem.ToString()}";
+            ffplay.StartInfo.CreateNoWindow = true;
+            ffplay.StartInfo.RedirectStandardOutput = true;
+            ffplay.StartInfo.UseShellExecute = false;
+            ffplay.Start();
+            Thread.Sleep(500);
+
+            SetParent(ffplay.MainWindowHandle, pictureBox1.Handle); // attempt failed to stick it to the program main window
+
+            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            axWindowsMediaPlayer1.Hide();
+
+            log($"TestFfmpegToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; playing a video using ffmpeg.");
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (ffplay.SynchronizingObject == null)
+                return;
+
+            if (!ffplay.HasExited)
+                ffplay.Kill();
+
+            log($"Form1_FormClosing(): args: {sender.ToString()}, {e.ToString()}; kill ffmpeg first before closing.");
+        }
+        #endregion
+
     }
 
 }
