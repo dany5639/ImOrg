@@ -27,7 +27,7 @@ namespace ImOrg
         /// </summary>
         private Dictionary<int, itemInfo> items = new Dictionary<int, itemInfo>();
 
-        private bool isDebug = true;
+        private bool isDebug = false;
         private bool isDebugDontMove = false;
         private string newFilenameTemp = "";
         private string previousNewFilenameTemp = "";
@@ -35,11 +35,6 @@ namespace ImOrg
         private Color backgroundColor = Color.Black;
         private static List<string> logq = new List<string>();
         private int previouslySelectedItem = -1;
-        private bool isFullscreen = false;
-        private int defaultLocationX = 0;
-        private int defaultLocationY = 0;
-        private int defaultSizeX = 0;
-        private int defaultSizeY = 0;
         private class itemInfo
         {
             public string filename;
@@ -260,19 +255,15 @@ namespace ImOrg
             }
 
             // cool we can now add any kind of sorting here
-            // UNCOMMENT THIS BEFORE A PUSH
-            // if (!sortFilesByTypeToolStripMenuItem.Checked)
-            items2 = items2.OrderBy(x => x.type).ToList();
-
-            if (isDebug)
-                foreach (var a in items2)
-                    Console.WriteLine($"{a.type} {a.extension}");
+            if (sortFilesByTypeToolStripMenuItem.Checked)
+                items2 = items2.OrderBy(x => x.type).ToList();
 
             int i = 0;
             foreach (var a in items2)
             {
-                if (!(a.type == itemType.image || a.type == itemType.video))
-                    continue;
+                if (!allowAnyFiletypeToolStripMenuItem.Checked)
+                    if (!(a.type == itemType.image || a.type == itemType.video))
+                        continue;
 
                 items.Add(i, a);
                 listBox_files.Items.Add(a.filename);
@@ -295,7 +286,7 @@ namespace ImOrg
 
             ToolStrip.Text = $"Name reset.";
 
-            var fullPath = items[currentFile.SelectedIndex].fullpath ;
+            var fullPath = items[currentFile.SelectedIndex].fullpath;
 
             if (!File.Exists(fullPath))
             {
@@ -453,38 +444,32 @@ namespace ImOrg
                     ToolStrip.Text = $"Reusing: {previousNewFilenameTemp}"; // maybe use to undo
                     return;
 
-                case Keys.F11:
-                    // okay well this ain't workin at all as i expected
-
+                case Keys.F11: // resize video
                     if (axWindowsMediaPlayer1.stretchToFit)
                         axWindowsMediaPlayer1.stretchToFit = false;
                     else
                         axWindowsMediaPlayer1.stretchToFit = true;
+                    ToolStrip.Text = $"Video stretch to fit: {axWindowsMediaPlayer1.stretchToFit}";
+                    return;
 
-                    // var resolution = Screen.PrimaryScreen.Bounds;
-                    // 
-                    // if (isFullscreen)
-                    // {
-                    //     isFullscreen = false;
-                    //     pictureBox1.Location = new System.Drawing.Point(defaultLocationX, defaultLocationY);
-                    //     pictureBox1.Size = new System.Drawing.Size(defaultSizeX, defaultSizeY);
-                    //     pictureBox1.SendToBack();
-                    //     pictureBox1.Update();
-                    // }
-                    // else
-                    // {
-                    //     isFullscreen = true;
-                    // 
-                    //     defaultSizeX = pictureBox1.Height;
-                    //     defaultSizeY = pictureBox1.Width;
-                    //     defaultLocationX = pictureBox1.Location.X;
-                    //     defaultLocationY = pictureBox1.Location.Y;
-                    //     pictureBox1.Location = new System.Drawing.Point(0, 0);
-                    //     pictureBox1.Size = new System.Drawing.Size(resolution.Width, resolution.Height);
-                    //     pictureBox1.BringToFront();
-                    //     pictureBox1.Update();
-                    // }
-                    break;
+                case Keys.F12: // resize image
+
+                    var a = (int)pictureBox1.SizeMode;
+                    if (a + 1 == availablePictureModes.Count)
+                        a = -1;
+
+                    pictureBox1.SizeMode = availablePictureModes[a + 1];
+
+                    var img = new Bitmap(items[listBox_files.SelectedIndex].fullpath);
+
+                    pictureBox1.ClientSize = new Size(
+                        axWindowsMediaPlayer1.Size.Width,
+                        axWindowsMediaPlayer1.Size.Height); 
+
+                    pictureBox1.Image = (Image)img;
+
+                    ToolStrip.Text = $"Picture scaling: {pictureBox1.SizeMode}";
+                    return;
 
                 default:
                     break;
@@ -530,50 +515,9 @@ namespace ImOrg
             SetAppColors();
 
         }
-        private void ZoomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Refresh();
-
-            log($"ZoomToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
-        }
-        private void NormalToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.Normal;
-            pictureBox1.Refresh();
-
-            log($"NormalToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
-        }
-        private void AutoSizeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            pictureBox1.Refresh();
-
-            log($"AutoSizeToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
-        }
-        private void CenterImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
-            pictureBox1.Refresh();
-
-            log($"CenterImageToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
-        }
-        private void StretchImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.Refresh();
-
-            log($"StretchImageToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}");
-        }
         private void AxWindowsMediaPlayer1_Enter(object sender, EventArgs e)
         {
             // listBox_files.Focus();
-        }
-        private void PictureBox1_Click(object sender, EventArgs e)
-        {
-            // listBox_files.Focus();
-            // if (listBox_files.Items.Count > 0)
-            //     listBox_files.SelectedIndex = 0;
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -678,7 +622,17 @@ namespace ImOrg
                 }
 
                 if (!isDebugDontMove)
-                    File.Move(oldFullpath, newFullpath); // TODO move filename error handling here
+                {
+                    try
+                    {
+                        File.Move(oldFullpath, newFullpath); // TODO move filename error handling here }
+                    }
+                    catch
+                    {
+                        ToolStrip.Text = $"ERROR: failed to rename {oldFullpath} to {newFullpath}";
+                        continue;
+                    }
+                }
 
                 log($"Renamed {oldFullpath} to {newFullpath}");
                 ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
@@ -767,7 +721,6 @@ namespace ImOrg
                     return itemType.unsupported;
             }
         }
-
         private void ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var dialogBox = new Form();
@@ -792,6 +745,18 @@ namespace ImOrg
             dialogBox.ShowDialog();
 
         }
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            if (isDebug)
+                Console.WriteLine($"Size changed: {this.Size.Width}x{this.Size.Height}");
+        }
+        private List<PictureBoxSizeMode> availablePictureModes = new List<PictureBoxSizeMode> {
+            PictureBoxSizeMode.AutoSize,
+            PictureBoxSizeMode.CenterImage,
+            PictureBoxSizeMode.Normal,
+            PictureBoxSizeMode.StretchImage,
+            PictureBoxSizeMode.Zoom
+        }; 
     }
 
 }
