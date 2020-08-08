@@ -455,29 +455,35 @@ namespace ImOrg
 
                 case Keys.F11:
                     // okay well this ain't workin at all as i expected
-                    var resolution = Screen.PrimaryScreen.Bounds;
 
-                    if (isFullscreen)
-                    {
-                        isFullscreen = false;
-                        pictureBox1.Location = new System.Drawing.Point(defaultLocationX, defaultLocationY);
-                        pictureBox1.Size = new System.Drawing.Size(defaultSizeX, defaultSizeY);
-                        pictureBox1.SendToBack();
-                        pictureBox1.Update();
-                    }
+                    if (axWindowsMediaPlayer1.stretchToFit)
+                        axWindowsMediaPlayer1.stretchToFit = false;
                     else
-                    {
-                        isFullscreen = true;
-                    
-                        defaultSizeX = pictureBox1.Height;
-                        defaultSizeY = pictureBox1.Width;
-                        defaultLocationX = pictureBox1.Location.X;
-                        defaultLocationY = pictureBox1.Location.Y;
-                        pictureBox1.Location = new System.Drawing.Point(0, 0);
-                        pictureBox1.Size = new System.Drawing.Size(resolution.Width, resolution.Height);
-                        pictureBox1.BringToFront();
-                        pictureBox1.Update();
-                    }
+                        axWindowsMediaPlayer1.stretchToFit = true;
+
+                    // var resolution = Screen.PrimaryScreen.Bounds;
+                    // 
+                    // if (isFullscreen)
+                    // {
+                    //     isFullscreen = false;
+                    //     pictureBox1.Location = new System.Drawing.Point(defaultLocationX, defaultLocationY);
+                    //     pictureBox1.Size = new System.Drawing.Size(defaultSizeX, defaultSizeY);
+                    //     pictureBox1.SendToBack();
+                    //     pictureBox1.Update();
+                    // }
+                    // else
+                    // {
+                    //     isFullscreen = true;
+                    // 
+                    //     defaultSizeX = pictureBox1.Height;
+                    //     defaultSizeY = pictureBox1.Width;
+                    //     defaultLocationX = pictureBox1.Location.X;
+                    //     defaultLocationY = pictureBox1.Location.Y;
+                    //     pictureBox1.Location = new System.Drawing.Point(0, 0);
+                    //     pictureBox1.Size = new System.Drawing.Size(resolution.Width, resolution.Height);
+                    //     pictureBox1.BringToFront();
+                    //     pictureBox1.Update();
+                    // }
                     break;
 
                 default:
