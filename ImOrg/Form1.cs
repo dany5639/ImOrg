@@ -112,6 +112,7 @@ namespace ImOrg
                 button1.Show();
                 log($"DEBUG: isDebug {isDebug}");
                 treeView_folders.Nodes[3].Expand();
+                treeView_folders.SelectedNode = treeView_folders.Nodes[3].Nodes[3];
             }
         }
         private void GetDrivesList()
@@ -420,20 +421,15 @@ namespace ImOrg
                     return;
 
                 case Keys.F12: // resize image
-
                     var a = (int)pictureBox1.SizeMode;
                     if (a + 1 == availablePictureModes.Count)
                         a = -1;
 
                     pictureBox1.SizeMode = availablePictureModes[a + 1];
 
-                    var img = new Bitmap(items[listBox_files.SelectedIndex].fullpath);
-
                     pictureBox1.ClientSize = new Size(
                         richTextBox1.Size.Width,
-                        richTextBox1.Size.Height); 
-
-                    pictureBox1.Image = (Image)img;
+                        richTextBox1.Size.Height);
 
                     ToolStrip.Text = $"Picture scaling: {pictureBox1.SizeMode}";
                     return;
