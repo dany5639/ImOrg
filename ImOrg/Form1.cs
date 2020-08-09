@@ -35,6 +35,7 @@ namespace ImOrg
         private Color backgroundColor = Color.Black;
         private static List<string> logq = new List<string>();
         private int previouslySelectedItem = -1;
+        private int videoSkipSeconds = 5;
         private class itemInfo
         {
             public string filename;
@@ -105,14 +106,17 @@ namespace ImOrg
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // best view mode
 
             richTextBox1.Hide(); // hide debug text window, only show when clicking on the status bar label
-            button1.Hide();
+
+            // set default video jump seconds length
+            // change videoSkipSeconds for the default value
+            toolStripTextBox1.Text = "5";
 
             if (isDebug)
             {
-                button1.Show();
+                button_debug_rename.Show();
                 log($"DEBUG: isDebug {isDebug}");
                 treeView_folders.Nodes[3].Expand();
-                treeView_folders.SelectedNode = treeView_folders.Nodes[3].Nodes[3];
+                treeView_folders.SelectedNode = treeView_folders.Nodes[3].Nodes[3]; // badev
             }
         }
         private void GetDrivesList()
@@ -276,7 +280,7 @@ namespace ImOrg
             }
             else
             {
-                if (isVideoPlayerUnavailable() != null) // stop an already playing video
+                if (isVideoPlayerUnavailable() != true) // stop an already playing video
                 {
                     unloadVideo();
                     pictureBox1.LoadAsync(fullPath);
@@ -288,7 +292,8 @@ namespace ImOrg
             previouslySelectedItem = currentFile.SelectedIndex;
 
             // let's try renaming the files here, after viewing a new item
-            RenameFile();
+            // nope, causes a temporary freeze when viewing videos
+            // RenameFile();
 
             // try to scroll the files list further to see the next files
             // ...
@@ -308,9 +313,19 @@ namespace ImOrg
 
             switch (e.KeyCode)
             {
+                case Keys.Alt:
                 case Keys.ShiftKey:
                 case Keys.ControlKey:
                     break;
+
+                case Keys.Left:
+                    axWindowsMediaPlayer1.Ctlcontrols.currentPosition -= videoSkipSeconds;
+                    e.Handled = true;
+                    return;
+                case Keys.Right:
+                    axWindowsMediaPlayer1.Ctlcontrols.currentPosition += videoSkipSeconds;
+                    e.Handled = true;
+                    return;
 
                 case Keys.Up:
                 case Keys.Down:
@@ -469,9 +484,7 @@ namespace ImOrg
         private void Timer1_Tick(object sender, EventArgs e)
         {
             if(!isDebug)
-            { 
-                // RenameFile();
-            }
+                RenameFile();
         }
         private bool RenameFile()
         {
@@ -773,6 +786,10 @@ namespace ImOrg
         }
         #endregion
 
+        private void ToolStripTextBox1_textChanged(object sender, EventArgs e)
+        {
+            int.TryParse(toolStripTextBox1.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
+        }
     }
 
 }

@@ -42,10 +42,12 @@
             this.newNameMovesToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sortFilesByTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.videoScrollingSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_debug_rename = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -112,6 +114,7 @@
             this.newNameMovesToFolderToolStripMenuItem,
             this.sortFilesByTypeToolStripMenuItem,
             this.toolStripMenuItem1,
+            this.videoScrollingSpeedToolStripMenuItem,
             this.toolStripSeparator1});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -172,6 +175,21 @@
             this.toolStripMenuItem1.Text = "Info";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
+            // videoScrollingSpeedToolStripMenuItem
+            // 
+            this.videoScrollingSpeedToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBox1});
+            this.videoScrollingSpeedToolStripMenuItem.Name = "videoScrollingSpeedToolStripMenuItem";
+            this.videoScrollingSpeedToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.videoScrollingSpeedToolStripMenuItem.Text = "Video jump amount";
+            // 
+            // toolStripTextBox1
+            // 
+            this.toolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox1.Name = "toolStripTextBox1";
+            this.toolStripTextBox1.Size = new System.Drawing.Size(100, 23);
+            this.toolStripTextBox1.TextChanged += new System.EventHandler(this.ToolStripTextBox1_textChanged);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
@@ -190,17 +208,18 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
             // 
-            // button1
+            // button_debug_rename
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.BackColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(1050, 713);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(201, 27);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Akward debug button to manually move";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            this.button_debug_rename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_debug_rename.BackColor = System.Drawing.Color.Black;
+            this.button_debug_rename.Location = new System.Drawing.Point(1050, 713);
+            this.button_debug_rename.Name = "button_debug_rename";
+            this.button_debug_rename.Size = new System.Drawing.Size(201, 27);
+            this.button_debug_rename.TabIndex = 12;
+            this.button_debug_rename.Text = "Akward debug button to manually move";
+            this.button_debug_rename.UseVisualStyleBackColor = false;
+            this.button_debug_rename.Visible = false;
+            this.button_debug_rename.Click += new System.EventHandler(this.Button1_Click);
             // 
             // richTextBox1
             // 
@@ -234,7 +253,7 @@
             this.ClientSize = new System.Drawing.Size(1251, 740);
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.button_debug_rename);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
             this.Controls.Add(this.axWindowsMediaPlayer1);
@@ -266,12 +285,14 @@
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newNameMovesToFolderToolStripMenuItem;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_debug_rename;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
         private System.Windows.Forms.ToolStripMenuItem sortFilesByTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem videoScrollingSpeedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
     }
 }
 
