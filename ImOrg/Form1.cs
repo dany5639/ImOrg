@@ -683,7 +683,8 @@ namespace ImOrg
                 "Shortcuts list:" +
                 "\nESC : cancel last new name." +
                 "\nF1  : use the last typed name." +
-                "\nF11 : fullscreen mode (NOT IMPLEMENTED YET)" +
+                "\nF11 : change video view mode" +
+                "\nF12 : change image view mode" +
                 "\n" +
                 "";
 
