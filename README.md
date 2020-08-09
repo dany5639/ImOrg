@@ -26,12 +26,14 @@ Features to add:
 - Implement a proper fullscreen mode.
 - Add feature to append name at the start or end of the original filename.
 - Hex viewer.
+- Files list auto scroll should keep the highlighted item in the middle of the list, to see above and bellow it.
 
 Current known issues:
 - Short freeze when renaming a video, occurs randomly.
 - Enter has effect if there's only one viewable item in the folder.
 - Left and right arrow don't rename items when viewing the next item.
 - Enter key should rename the currently viewed item and update the files list with the new name.
+- Files list doesn't auto scroll properly.
 
 Tested supported file formats:
 - Image: jpg, png, gif, tif, bmp, ico, tiff, jpeg
