@@ -1,31 +1,35 @@
 # ImOrg
 Image and video files renaming tool.
+Recommended branch: WMP
 
 Features:
 - Directory tree to explore your local drives.
-- Load images and videos.
-- Rename files by typing the new name.
-- Change program background and text colors.
+- View images and videos.
+- Rename files by typing a new filename.
+- Move file to a new subdirectory by typing a new name.
+- Customize background and text color.
 
 Instructions:
 - Compile with Visual Studio 2019 Community Edition or download a precompiled version from the Releases page.
 - Extract and run the program.
-- Select the drive, folder, or expand, to view files in the bottom file list.
-- Click on a file or use arrow keys to view the image or video.
-- Only supported files will be shown.
-- Click at the bottom left to display all file types.
+- Select the drive and folder in the list on the left.
+- Click on a file in the bottom files list and use arrow keys to view the next or previous image or video.
+- Only supported files will be shown. Click on the dropdown list at the bottom left to allow all files.
+- Use F11 (images) and F12 (videos) to resize the viewer.
 
-To Do:
-- Implement CTRL+Z or other functionality to revert name changes.
-- Save settings to file.
-- Replace Windows Media Player with FFMPEG for more codes compatibility.
-- Prevent delay when renaming videos.
+Features to add:
+- Implement CTRL+Z or other key to revert name changes.
+- Save settings and last used path to appdata.
+- Replace Windows Media Player with FFMPEG for more codecs compatibility.
 - Preload images for a faster viewing experience.
-- Notify the user if a file is unreadable.
-- Notify the user if a file has the wrong extension.
-- Add text files support.
-- Add more file types support.
+- Add text files support for viewing.
+- Implement a proper fullscreen mode.
+- Add feature to append name at the start or end of the original filename.
+- Hex viewer.
 
+Current known issues:
+- Short freeze when renaming a video, occurs randomly.
+- 
 Tested supported file formats:
 - Image: jpg, png, gif, tif, bmp, ico, tiff, jpeg
 - Video: webm, mp4, mkv
@@ -34,7 +38,7 @@ Unsupported file formats:
 - Image: webp, dds, tga
 - Video: flv
 
-Complete list of supported file formats based on the used libraries.
+Complete list of supported file formats based on the used Windows Media Player library.
 - Any file type supported by WinForms PictureBox:
 (BMP, GIF, JPEG, EXIF, PNG and TIFF)
 - Any file type supported by Windows Media Player:
