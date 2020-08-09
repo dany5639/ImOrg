@@ -29,7 +29,10 @@ Features to add:
 
 Current known issues:
 - Short freeze when renaming a video, occurs randomly.
-- 
+- Enter has effect if there's only one viewable item in the folder.
+- Left and right arrow don't rename items when viewing the next item.
+- Enter key should rename the currently viewed item and update the files list with the new name.
+
 Tested supported file formats:
 - Image: jpg, png, gif, tif, bmp, ico, tiff, jpeg
 - Video: webm, mp4, mkv
