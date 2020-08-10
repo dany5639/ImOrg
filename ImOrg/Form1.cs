@@ -30,7 +30,7 @@ namespace ImOrg
 
         private bool isDebug = true;
         private bool isDebugDontMove = false;
-        private string newFilenameTemp = "";
+        private string nf = "";
         private string previousNewFilenameTemp = "";
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
@@ -272,8 +272,6 @@ namespace ImOrg
             if (currentFile.SelectedIndex == previouslySelectedItem)
                 return;
 
-            ToolStrip.Text = $"Name reset.";
-
             var fullPath = items[currentFile.SelectedIndex].fullpath;
 
             if (!File.Exists(fullPath))
@@ -341,13 +339,14 @@ namespace ImOrg
 
                 case Keys.Up:
                 case Keys.Down:
-                case Keys.Enter:
                     if (!allowUPDOWNToRenameToolStripMenuItem.Checked)
                     {
                         ToolStrip.Text = $"Name reset.";
                         return;
                     }
-
+                    goto keysEnter;
+                case Keys.Enter:
+                    keysEnter:
                     var selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
 
                     if (listBox_files.Items.Count != items.Count)
@@ -356,44 +355,46 @@ namespace ImOrg
                     if (items[selectedIndex].newFilenameTemp != "")
                         break;
 
-                    items[selectedIndex].newFilenameTemp = newFilenameTemp;
+                    items[selectedIndex].newFilenameTemp = nf;
                     items[selectedIndex].toRename = true;
 
-                    previousNewFilenameTemp = newFilenameTemp;
-                    newFilenameTemp = "";
+                    previousNewFilenameTemp = nf;
 
-                    break;
+                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {nf}";
+
+                    nf = "";
+                    return;
 
                 case Keys.Escape:
-                    newFilenameTemp = "";
+                    nf = "";
                     ToolStrip.Text = $"Name reset."; // maybe use to undo
                     return;
 
                 #region numbers and signs
-                case Keys.D0: newFilenameTemp = $"{newFilenameTemp}0"; break;
-                case Keys.D1: newFilenameTemp = $"{newFilenameTemp}1"; break;
-                case Keys.D2: newFilenameTemp = $"{newFilenameTemp}2"; break;
-                case Keys.D3: newFilenameTemp = $"{newFilenameTemp}3"; break;
-                case Keys.D4: newFilenameTemp = $"{newFilenameTemp}4"; break;
-                case Keys.D5: newFilenameTemp = $"{newFilenameTemp}5"; break;
-                case Keys.D6: newFilenameTemp = $"{newFilenameTemp}6"; break;
-                case Keys.D7: newFilenameTemp = $"{newFilenameTemp}7"; break;
-                case Keys.D8: newFilenameTemp = $"{newFilenameTemp}8"; break;
-                case Keys.D9: newFilenameTemp = $"{newFilenameTemp}9"; break;
-                case Keys.NumPad0: newFilenameTemp = $"{newFilenameTemp}0"; break;
-                case Keys.NumPad1: newFilenameTemp = $"{newFilenameTemp}1"; break;
-                case Keys.NumPad2: newFilenameTemp = $"{newFilenameTemp}2"; break;
-                case Keys.NumPad3: newFilenameTemp = $"{newFilenameTemp}3"; break;
-                case Keys.NumPad4: newFilenameTemp = $"{newFilenameTemp}4"; break;
-                case Keys.NumPad5: newFilenameTemp = $"{newFilenameTemp}5"; break;
-                case Keys.NumPad6: newFilenameTemp = $"{newFilenameTemp}6"; break;
-                case Keys.NumPad7: newFilenameTemp = $"{newFilenameTemp}7"; break;
-                case Keys.NumPad8: newFilenameTemp = $"{newFilenameTemp}8"; break;
-                case Keys.NumPad9: newFilenameTemp = $"{newFilenameTemp}9"; break;
-                case Keys.Add: newFilenameTemp = $"{newFilenameTemp}+"; break;
-                case Keys.Space: newFilenameTemp = $"{newFilenameTemp} "; break;
-                case Keys.OemMinus: newFilenameTemp = $"{newFilenameTemp}_"; break;
-                case Keys.Subtract: newFilenameTemp = $"{newFilenameTemp}-"; break;
+                case Keys.OemMinus: nf = $"{nf}_"; break;
+                case Keys.Subtract: nf = $"{nf}-"; break;
+                case Keys.NumPad0: nf = $"{nf}0"; break;
+                case Keys.NumPad1: nf = $"{nf}1"; break;
+                case Keys.NumPad2: nf = $"{nf}2"; break;
+                case Keys.NumPad3: nf = $"{nf}3"; break;
+                case Keys.NumPad4: nf = $"{nf}4"; break;
+                case Keys.NumPad5: nf = $"{nf}5"; break;
+                case Keys.NumPad6: nf = $"{nf}6"; break;
+                case Keys.NumPad7: nf = $"{nf}7"; break;
+                case Keys.NumPad8: nf = $"{nf}8"; break;
+                case Keys.NumPad9: nf = $"{nf}9"; break;
+                case Keys.Space: nf = $"{nf} "; break;
+                case Keys.Add: nf = $"{nf}+"; break;
+                case Keys.D0: nf = $"{nf}0"; break;
+                case Keys.D1: nf = $"{nf}1"; break;
+                case Keys.D2: nf = $"{nf}2"; break;
+                case Keys.D3: nf = $"{nf}3"; break;
+                case Keys.D4: nf = $"{nf}4"; break;
+                case Keys.D5: nf = $"{nf}5"; break;
+                case Keys.D6: nf = $"{nf}6"; break;
+                case Keys.D7: nf = $"{nf}7"; break;
+                case Keys.D8: nf = $"{nf}8"; break;
+                case Keys.D9: nf = $"{nf}9"; break;
                 #endregion
 
                 #region letters
@@ -424,22 +425,22 @@ namespace ImOrg
                 case Keys.Y:
                 case Keys.Z:
                     if (e.Shift)
-                        newFilenameTemp = $"{newFilenameTemp}{e.KeyCode}";
+                        nf = $"{nf}{e.KeyCode}";
                     else
-                        newFilenameTemp = $"{newFilenameTemp}{e.KeyCode.ToString().ToLower()}";
+                        nf = $"{nf}{e.KeyCode.ToString().ToLower()}";
                     break;
                 #endregion
 
                 case Keys.Back:
-                    if (newFilenameTemp != "")
-                        newFilenameTemp = newFilenameTemp.Remove(newFilenameTemp.Length - 1, 1);
+                    if (nf != "")
+                        nf = nf.Remove(nf.Length - 1, 1);
                     break;
 
                 // press this key to use the last used filename
                 case Keys.F1:
                     // use the last renamed file as template
                     // maybe change key or let the user customize it
-                    newFilenameTemp = previousNewFilenameTemp;
+                    nf = previousNewFilenameTemp;
                     ToolStrip.Text = $"Reusing: {previousNewFilenameTemp}"; // maybe use to undo
                     return;
 
@@ -475,7 +476,7 @@ namespace ImOrg
                     break;
             }
 
-            ToolStrip.Text = $"New name: {newFilenameTemp}";
+            ToolStrip.Text = $"New name: {nf}";
 
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
@@ -617,8 +618,9 @@ namespace ImOrg
                 if (!isDebugDontMove)
                 {
                     // testing video stop to fix freeze when renaming
-                    if (item.type == itemType.video)
-                        axWindowsMediaPlayer1.Ctlcontrols.stop();
+                    if (listBox_files.SelectedIndex == i)
+                        if (item.type == itemType.video)
+                            axWindowsMediaPlayer1.Ctlcontrols.stop();
 
                     try
                     {
