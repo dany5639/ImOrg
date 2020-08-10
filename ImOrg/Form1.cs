@@ -151,8 +151,7 @@ namespace ImOrg
             timer1.Interval = 1000; // to adjust
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            DateTime buildDate = new DateTime(2000, 1, 1)
-                                    .AddDays(version.Build).AddSeconds(version.Revision * 2);
+            DateTime buildDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddSeconds(version.Revision * 2);
             string displayableVersion = $"{version} ({buildDate})";
 
             ToolStrip.Text = $"Version: {displayableVersion}";
