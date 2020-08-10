@@ -19,16 +19,13 @@ namespace ImOrg
 {
     public partial class Form1 : Form
     {
-        // TODO: 
-        // Add F key or menu toggle to add the new filename at the end of existing filename name or at the start
-
         #region Constants, globals
         /// <summary>
         /// A list of all viewable files in the selected directory. Key is full path, value is item class with originalFilename, newFilename etc. 
         /// </summary>
         private Dictionary<int, itemInfo> items = new Dictionary<int, itemInfo>();
 
-        private bool isDebug = true;
+        private bool isDebug = false;
         private bool isDebugDontMove = false;
         private string nf = "";
         private string previousNewFilenameTemp = "";
@@ -49,12 +46,12 @@ namespace ImOrg
         }
         private enum itemType
         {
-           noExtension,
-           directory,
-           image,
-           video,
-           text,
-           unsupported
+            noExtension,
+            directory,
+            image,
+            video,
+            text,
+            unsupported
         }
         private enum renamingMode
         {
@@ -62,6 +59,42 @@ namespace ImOrg
             replace,
             start,
             end,
+        }
+        private itemType getFileType(string extension)
+        {
+            switch (extension)
+            {
+                case "":
+                    return itemType.noExtension;
+
+                case ".jpg":
+                case ".jpeg":
+                case ".png":
+                case ".gif":
+                case ".tif":
+                case ".tiff":
+                case ".bmp":
+                case ".ico":
+                    // ".webp", // not supported
+                    // ".dds", // not supported
+                    // ".tga", // not supported
+                    return itemType.image;
+
+                case ".webm":
+                case ".mp4":
+                case ".mkv":
+                    return itemType.video;
+
+                case ".txt":
+                case ".csv":
+                case ".log":
+                case ".xml":
+                    // ".flv", // definitely not supported
+                    return itemType.text;
+
+                default:
+                    return itemType.unsupported;
+            }
         }
         #endregion
 
@@ -107,6 +140,13 @@ namespace ImOrg
         {
             InitializeComponent();
 
+            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            DateTime buildDate = new DateTime(2000, 1, 1)
+                                    .AddDays(version.Build).AddSeconds(version.Revision * 2);
+            string displayableVersion = $"{version} ({buildDate})";
+
+            ToolStrip.Text = $"Version: {displayableVersion}";
+
             GetDrivesList(); // check all available drives and display them
 
             SetAppColors();
@@ -120,6 +160,10 @@ namespace ImOrg
             toolStripTextBox_videoSkipLength.Text = "5";
 
             toolStripComboBox_renamingMode.SelectedIndex = 1;
+
+#if debug
+            isDebug = true;
+#endif
 
             if (isDebug)
             {
@@ -164,7 +208,7 @@ namespace ImOrg
 
         }
         private void SetAppColors()
-        { 
+        {
             pictureBox1.BackColor = backgroundColor;
             listBox_files.BackColor = backgroundColor;
             listBox_files.ForeColor = textColor;
@@ -190,7 +234,7 @@ namespace ImOrg
             IEnumerable<string> folders = null;
             try
             {
-                folders = Directory.EnumerateDirectories($"{fullPath}\\"); 
+                folders = Directory.EnumerateDirectories($"{fullPath}\\");
             }
             catch (Exception e_cannotReadFolder)
             {
@@ -482,7 +526,7 @@ namespace ImOrg
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
         {
             // prevent name change keys to seek filename in the list
-            e.Handled = true; 
+            e.Handled = true;
 
         }
         private void RGBTextToolStripMenuItem_Click(object sender, EventArgs e)
@@ -512,7 +556,7 @@ namespace ImOrg
         {
             // wait what about moving directories
             for (int i = 0; i < items.Count; i++)
-            { 
+            {
                 var item = items[i];
 
                 // skip files that don't need to be renamed
@@ -662,7 +706,7 @@ namespace ImOrg
 
             return true;
 
-        } 
+        }
         private void Button1_Click(object sender, EventArgs e)
         {
             RenameFile();
@@ -684,42 +728,6 @@ namespace ImOrg
             pictureBox1.Image = bmp;
 
             return true;
-        }
-        private itemType getFileType(string extension)
-        {
-            switch (extension)
-            {
-                case "":
-                    return itemType.noExtension;
-
-                case ".jpg":
-                case ".jpeg":
-                case ".png":
-                case ".gif":
-                case ".tif":
-                case ".tiff":
-                case ".bmp":
-                case ".ico":
-                    // ".webp", // not supported
-                    // ".dds", // not supported
-                    // ".tga", // not supported
-                    return itemType.image;
-
-                case ".webm":
-                case ".mp4":
-                case ".mkv":
-                    return itemType.video;
-
-                case ".txt":
-                case ".csv":
-                case ".log":
-                case ".xml":
-                    // ".flv", // definitely not supported
-                    return itemType.text;
-
-                default:
-                    return itemType.unsupported;
-            }
         }
         private void ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -759,6 +767,7 @@ namespace ImOrg
             PictureBoxSizeMode.StretchImage,
             PictureBoxSizeMode.Zoom
         };
+
         #region AxWMPLib video player controls
         private void resizeVideo()
         {
@@ -803,6 +812,7 @@ namespace ImOrg
             return true;
         }
         #endregion
+     
         #region testing FFMPEG
         public Process ffplay = new Process();
 
@@ -844,15 +854,6 @@ namespace ImOrg
             int.TryParse(toolStripTextBox_videoSkipLength.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
         }
 
-        private void NewNameMovesToFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ToolStripComboBox1_Click(object sender, EventArgs e)
-        {
-            var a = toolStripComboBox_renamingMode.Text;
-        }
     }
 
 }

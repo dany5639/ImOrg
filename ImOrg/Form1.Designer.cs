@@ -257,7 +257,6 @@
             "Add at the end"});
             this.toolStripComboBox_renamingMode.Name = "toolStripComboBox1";
             this.toolStripComboBox_renamingMode.Size = new System.Drawing.Size(121, 23);
-            this.toolStripComboBox_renamingMode.Click += new System.EventHandler(this.ToolStripComboBox1_Click);
             // 
             // Form1
             // 
