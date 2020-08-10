@@ -33,7 +33,10 @@ namespace ImOrg
         private Color backgroundColor = Color.Black;
         private static List<string> logq = new List<string>();
         private int previouslySelectedItem = -1;
+        private int prevIndex1 = -1;
         private int videoSkipSeconds = 5;
+        private string fullPath = "";
+
         private class itemInfo
         {
             public string filename;
@@ -140,6 +143,13 @@ namespace ImOrg
         {
             InitializeComponent();
 
+            // using this to allow the user to scroll trough the file list containing videos without loading every video causing severe stuttering and a massive memory leak
+            // WMP library has a massive memory leak when opening videos successively rapidely, is significantly reduced when letting a video play for 5-10 seconds before opening a new one
+            // unable to create a thread specifically for WMP to destroy to avoid this memory leak
+
+            timer1.Stop();
+            timer1.Interval = 1000; // to adjust
+
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(2000, 1, 1)
                                     .AddDays(version.Build).AddSeconds(version.Revision * 2);
@@ -161,8 +171,9 @@ namespace ImOrg
 
             toolStripComboBox_renamingMode.SelectedIndex = 1;
 
-#if debug
+#if DEBUG
             isDebug = true;
+            axWindowsMediaPlayer1.settings.mute = true;
 #endif
 
             if (isDebug)
@@ -309,14 +320,22 @@ namespace ImOrg
         }
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
+            if (axWindowsMediaPlayer1.currentMedia != null)
+                unloadVideo();
+
+            prevIndex1 = listBox_files.SelectedIndex;
+
+            timer1.Enabled = false;
+
             var currentFile = (ListBox)sender;
             if (currentFile.SelectedItem == null)
                 return;
 
+            // don't do anything if the selected file didn't change
             if (currentFile.SelectedIndex == previouslySelectedItem)
                 return;
 
-            var fullPath = items[currentFile.SelectedIndex].fullpath;
+            fullPath = items[currentFile.SelectedIndex].fullpath;
 
             if (!File.Exists(fullPath))
             {
@@ -324,18 +343,16 @@ namespace ImOrg
                 return;
             }
 
-            unloadVideo();
-
             // verify if it's a video
             if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
-                loadVideo(fullPath);
-                pictureBox1.Hide();
+                timer1.Enabled = true;
             }
             else
             {
                 if (isVideoPlayerUnavailable() != true) // stop an already playing video
                 {
+                    timer1.Enabled = false;
                     unloadVideo();
                     pictureBox1.LoadAsync(fullPath);
                     pictureBox1.Show();
@@ -402,11 +419,18 @@ namespace ImOrg
                     items[selectedIndex].newFilenameTemp = nf;
                     items[selectedIndex].toRename = true;
 
-                    previousNewFilenameTemp = nf;
+                    if (nf != "")
+                        previousNewFilenameTemp = nf;
+
+                    if (nf == "")
+                        break;
 
                     ToolStrip.Text = $"Renaming queued: {oldFileName} to {nf}";
+                     
+                    RenameFile();
 
                     nf = "";
+
                     return;
 
                 case Keys.Escape:
@@ -485,7 +509,8 @@ namespace ImOrg
                     // use the last renamed file as template
                     // maybe change key or let the user customize it
                     nf = previousNewFilenameTemp;
-                    ToolStrip.Text = $"Reusing: {previousNewFilenameTemp}"; // maybe use to undo
+                    if (nf != "")
+                        ToolStrip.Text = $"Reusing: {nf}"; // maybe use to undo
                     return;
 
                 case Keys.F2: // change renaming mode
@@ -520,7 +545,8 @@ namespace ImOrg
                     break;
             }
 
-            ToolStrip.Text = $"New name: {nf}";
+            if (nf != "")
+                ToolStrip.Text = $"New name: {nf}";
 
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
@@ -549,6 +575,18 @@ namespace ImOrg
 
         }
         private void Timer1_Tick(object sender, EventArgs e)
+        {
+            if (listBox_files.SelectedIndex == -1)
+                return;
+
+            if (prevIndex1 == listBox_files.SelectedIndex)
+            {
+                loadVideo(fullPath);
+                pictureBox1.Hide();
+                timer1.Enabled = false;
+            }
+        }
+        private void Timer2_Tick(object sender, EventArgs e)
         {
             RenameFile();
         }
@@ -793,6 +831,7 @@ namespace ImOrg
         {
             axWindowsMediaPlayer1.URL = fullPath;
             axWindowsMediaPlayer1.Show();
+            prevIndex1 = listBox_files.SelectedIndex;
         }
         private void unloadVideo()
         {
