@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,7 +28,7 @@ namespace ImOrg
         /// </summary>
         private Dictionary<int, itemInfo> items = new Dictionary<int, itemInfo>();
 
-        private bool isDebug = false;
+        private bool isDebug = true;
         private bool isDebugDontMove = false;
         private string newFilenameTemp = "";
         private string previousNewFilenameTemp = "";
@@ -54,6 +55,13 @@ namespace ImOrg
            video,
            text,
            unsupported
+        }
+        private enum renamingMode
+        {
+            move,
+            replace,
+            start,
+            end,
         }
         #endregion
 
@@ -109,7 +117,9 @@ namespace ImOrg
 
             // set default video jump seconds length
             // change videoSkipSeconds for the default value
-            toolStripTextBox1.Text = "5";
+            toolStripTextBox_videoSkipLength.Text = "5";
+
+            toolStripComboBox_renamingMode.SelectedIndex = 1;
 
             if (isDebug)
             {
@@ -272,6 +282,8 @@ namespace ImOrg
                 return;
             }
 
+            unloadVideo();
+
             // verify if it's a video
             if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
@@ -431,6 +443,16 @@ namespace ImOrg
                     ToolStrip.Text = $"Reusing: {previousNewFilenameTemp}"; // maybe use to undo
                     return;
 
+                case Keys.F2: // change renaming mode
+                    var np = toolStripComboBox_renamingMode.SelectedIndex;
+                    if (np == toolStripComboBox_renamingMode.Items.Count - 1)
+                        np = -1;
+
+                    np = np + 1;
+                    toolStripComboBox_renamingMode.SelectedIndex = np;
+                    ToolStrip.Text = $"Renaming mode: {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}";
+                    return;
+
                 case Keys.F11: // resize video
                     resizeVideo();
                     return;
@@ -483,8 +505,7 @@ namespace ImOrg
         }
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            if(!isDebug)
-                RenameFile();
+            RenameFile();
         }
         private bool RenameFile()
         {
@@ -505,17 +526,17 @@ namespace ImOrg
                 if (!canRenameVideo(item.fullpath))
                     continue;
 
-                if (isDebug)
-                {
-                    Console.WriteLine($"");
-                    Console.WriteLine($"Processing:" +
-                        $"\nitem        {i}" +
-                        $"\ntoRename    {item.toRename}" +
-                        $"\noldFullpath {item.fullpath}" +
-                        $"\noldFilename {item.filename}" +
-                        $"\nnewNameTemp {item.newFilenameTemp}" +
-                        $"\n");
-                }
+                // if (isDebug)
+                // {
+                //     Console.WriteLine($"");
+                //     Console.WriteLine($"Processing:" +
+                //         $"\nitem        {i}" +
+                //         $"\ntoRename    {item.toRename}" +
+                //         $"\noldFullpath {item.fullpath}" +
+                //         $"\noldFilename {item.filename}" +
+                //         $"\nnewNameTemp {item.newFilenameTemp}" +
+                //         $"\n");
+                // }
 
                 var oldFullpath = item.fullpath;
                 var newFullpath = "";
@@ -529,56 +550,86 @@ namespace ImOrg
                 }
 
                 var ogFileInfo = new FileInfo(oldFullpath);
-                newFullpath = $"{ogFileInfo.Directory}\\{item.newFilenameTemp}{ogFileInfo.Extension}";
+                var ogFileInfoDirectory = ogFileInfo.Directory.ToString();
 
-                if (newNameMovesToFolderToolStripMenuItem.Checked)
+                var filenameWithoutExtension = $"{item.filename.Substring(0, item.filename.Length - ogFileInfo.Extension.Length)}";
+                if (isDebug) Console.WriteLine($"newFullpath before {oldFullpath}");
+                switch ((renamingMode)toolStripComboBox_renamingMode.SelectedIndex)
                 {
-                    newTempFilename = $"\\{item.newFilenameTemp}\\{item.filename}";
-                    newFullpath = $"{ogFileInfo.Directory}\\{item.newFilenameTemp}\\{item.filename}";
+                    case renamingMode.move:
+                        ogFileInfoDirectory = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
 
-                    if (!Directory.Exists($"{ogFileInfo.Directory}\\{item.newFilenameTemp}"))
-                        Directory.CreateDirectory($"{ogFileInfo.Directory}\\{item.newFilenameTemp}");
+                        if (!Directory.Exists($"{ogFileInfoDirectory}\\{item.newFilenameTemp}"))
+                            Directory.CreateDirectory($"{ogFileInfoDirectory}\\{item.newFilenameTemp}");
+
+                        item.newFilenameTemp = ogFileInfo.Name.Substring(0, ogFileInfo.Name.Length - ogFileInfo.Extension.Length);
+                        newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
+                        break;
+
+                    case renamingMode.replace:
+                        newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
+                        break;
+
+                    case renamingMode.start:
+                        newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp} {filenameWithoutExtension}";
+                        break;
+
+                    case renamingMode.end:
+                        newFullpath = $"{ogFileInfoDirectory}\\{filenameWithoutExtension} {item.newFilenameTemp}";
+                        break;
+
+                    default:
+                        throw new Exception("New name position: Index out of bounds");
 
                 }
+                if (isDebug) Console.WriteLine($"newFullpath after  {newFullpath}");
 
-                // rename file if a file already exists with the same name. a fast enough computer might fail on miliseconds aswel (fff)
-                // with every rename, add 2 more characters for the date formatting
-                // considering the user wouldn't rename a lot of files before the rename timer ticks, it shouldn't even get to milisecond renaming
-                var format = "";
-                var format2 = "yyyyMMddhhmmssffff"; // year month day hour minute second milisecond
-                var k = -1;
-                while (File.Exists(newFullpath))
+                if (File.Exists($"{newFullpath}{ogFileInfo.Extension}"))
                 {
-                    k++;
-                    format = format2.Substring(0, 4 + k * 2);
-                    newFullpath = $"" +
-                        $"{ogFileInfo.Directory}\\" +
-                        $"{newTempFilename}_" +
-                        $"{DateTime.Now.ToString(format)}{ogFileInfo.Extension}";
-
-                    if (newNameMovesToFolderToolStripMenuItem.Checked)
+                    var k = -1;
+                    var newFullpath2 = newFullpath;
+                    if (newFullpath.Last() != ")".ToCharArray()[0])
                     {
-                        newFullpath = $"{ogFileInfo.Directory}" +
-                            $"\\{item.newFilenameTemp}" +
-                            $"\\{item.filename.Substring(0, item.filename.Length - ogFileInfo.Extension.Length)}" +
-                            $"_{DateTime.Now.ToString(format)}" +
-                            $"{ogFileInfo.Extension}";
+                        while (File.Exists($"{newFullpath}{ogFileInfo.Extension}"))
+                        {
+                            k++;
+                            newFullpath = $"{newFullpath2} ({k})";
+                        }
+                        goto done1;
                     }
 
-                    // absolute worst case scenario, if for some reason all the files already exist
-                    if (k > 10000)
-                        continue;
+                    var a = newFullpath.LastIndexOf("(".ToCharArray()[0]);
+                    var value = newFullpath.Substring(a + 1, newFullpath.Length - a - 2);
+                    int.TryParse(value, NumberStyles.Integer, null, out int lastInt);
+                    while (File.Exists($"{newFullpath}{ogFileInfo.Extension}"))
+                    {
+                        k++;
+                        newFullpath = $"{newFullpath2} ({k})";
+                    }
                 }
+
+                done1:
+
+                newFullpath = $"{newFullpath}{ogFileInfo.Extension}";
+
+                if (isDebug) Console.WriteLine($"newFullpath after2 {newFullpath}");
 
                 if (!isDebugDontMove)
                 {
+                    // testing video stop to fix freeze when renaming
+                    if (item.type == itemType.video)
+                        axWindowsMediaPlayer1.Ctlcontrols.stop();
+
                     try
                     {
-                        File.Move(oldFullpath, newFullpath); // TODO move filename error handling here }
+                        File.Move(oldFullpath, $"{newFullpath}");
                     }
                     catch
                     {
                         ToolStrip.Text = $"ERROR: failed to rename {oldFullpath} to {newFullpath}";
+                        // video files go trough this multiple times until they can be renamed due to file being used
+                        if (item.type != itemType.video)
+                            item.toRename = false;
                         continue;
                     }
                 }
@@ -589,23 +640,21 @@ namespace ImOrg
                 item.fullpath = newFullpath;
                 item.filename = newFullpath.Split("\\".ToCharArray()).Last();
                 item.newFilenameTemp = "";
-
-                if (item.toRename == true)
-                    listBox_files.Items[i] = item.filename;
-
                 item.toRename = false;
 
-                if (isDebug)
-                {
-                    Console.WriteLine($"");
-                    Console.WriteLine($"Processed :" +
-                        $"\nitem        {i}" +
-                        $"\ntoRename    {item.toRename}" +
-                        $"\noldFullpath {item.fullpath}" +
-                        $"\noldFilename {item.filename}" +
-                        $"\nnewNameTemp {item.newFilenameTemp}" +
-                        $"\n");
-                }
+                listBox_files.Items[i] = item.filename;
+
+                // if (isDebug)
+                // {
+                //     Console.WriteLine($"");
+                //     Console.WriteLine($"Processed :" +
+                //         $"\nitem        {i}" +
+                //         $"\ntoRename    {item.toRename}" +
+                //         $"\noldFullpath {item.fullpath}" +
+                //         $"\noldFilename {item.filename}" +
+                //         $"\nnewNameTemp {item.newFilenameTemp}" +
+                //         $"\n");
+                // }
 
             }
 
@@ -683,6 +732,7 @@ namespace ImOrg
                 "Shortcuts list:" +
                 "\nESC : cancel last new name." +
                 "\nF1  : use the last typed name." +
+                "\nF2  : change renaming mode." +
                 "\nF11 : change video view mode" +
                 "\nF12 : change image view mode" +
                 "\n" +
@@ -789,7 +839,17 @@ namespace ImOrg
 
         private void ToolStripTextBox1_textChanged(object sender, EventArgs e)
         {
-            int.TryParse(toolStripTextBox1.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
+            int.TryParse(toolStripTextBox_videoSkipLength.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
+        }
+
+        private void NewNameMovesToFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ToolStripComboBox1_Click(object sender, EventArgs e)
+        {
+            var a = toolStripComboBox_renamingMode.Text;
         }
     }
 

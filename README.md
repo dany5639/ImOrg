@@ -1,30 +1,42 @@
 # ImOrg
 Image and video files renaming tool.
+Recommended branch: WMP
 
 Features:
 - Directory tree to explore your local drives.
-- Load images and videos.
-- Rename files by typing the new name.
-- Change program background and text colors.
+- View images and videos.
+- Rename or move files by typing a new filename.
+- Customize background and text color.
+- Change image or video format.
+- Auto rename to avoid filename conflict.
 
 Instructions:
-- Compile with Visual Studio 2019 Community Edition or download a precompiled version from the Releases page.
-- Extract and run the program.
-- Select the drive, folder, or expand, to view files in the bottom file list.
-- Click on a file or use arrow keys to view the image or video.
-- Only supported files will be shown.
-- Click at the bottom left to display all file types.
+- Compile with Visual Studio 2019 Community Edition or download a precompiled version from the Releases page or from DeepStringDump\bin\Release for a more regular binary push.
+- Open a folder, click on a file at the bottom of the app and use up/down arrow keys to view the next or previous image or video.
+- Only supported files will be shown. Click on the dropdown list at the bottom left to show all files or change various settings.
+- Current keybinds:
+ESC : cancel last new name
+F1  : use the last typed name
+F2  : change renaming mode
+F11 : change video view mode
+F12 : change image view mode
 
-To Do:
-- Implement CTRL+Z or other functionality to revert name changes.
-- Save settings to file.
-- Replace Windows Media Player with FFMPEG for more codes compatibility.
-- Prevent delay when renaming videos.
-- Preload images for a faster viewing experience.
-- Notify the user if a file is unreadable.
-- Notify the user if a file has the wrong extension.
+Features to add:
+- Implement CTRL+Z or other key to revert name changes.
+- Save settings and last used path to appdata.
+- Replace Windows Media Player with FFMPEG for more codecs compatibility, eliminate memory leak, and speed up video loading and renaming.
 - Add text files support.
-- Add more file types support.
+- Hex viewer for unsupported files.
+- Preload images for a faster viewing experience.
+- Implement a proper fullscreen mode.
+- Files list auto scroll should keep the highlighted item in the middle of the list, to see above and bellow it.
+
+Current known issues:
+- Short freeze when renaming a video, occurs randomly. (probably due to memory leak)
+- Can't rename when there's only one file in the selected folder.
+
+Current major issues:
+- Severe memory leak when reading certain video files.
 
 Tested supported file formats:
 - Image: jpg, png, gif, tif, bmp, ico, tiff, jpeg
@@ -34,12 +46,11 @@ Unsupported file formats:
 - Image: webp, dds, tga
 - Video: flv
 
-Complete list of supported file formats based on the used libraries.
+Complete list of supported file formats based on the used Windows Media Player library.
 - Any file type supported by WinForms PictureBox:
 (BMP, GIF, JPEG, EXIF, PNG and TIFF)
 - Any file type supported by Windows Media Player:
 (asf, wma, wmv, wm, asx, wax, wvx, wmx, wpl, dvr-ms, wmd, avi, mpg, mpeg, m1v, mp2, mp3, mpa, mpe, m3u, mid, midi, rmi, aif, aifc, aiff, au, snd, wav, cda, ivf, wmz, wms, mov, m4a, mp4, m4v, mp4v, 3g2, 3gp2, 3gp, 3gpp, aac, adt, adts, m2ts, flac)
 
 See DeepStringDump\bin\Release for more regular binary push than the releases page.
-
-![Image of current version on WMP branch.](https://github.com/dany5639/ImOrg/releases/download/1.0/2020-01-18.17_11_32-ImOrg.jpg)
+![Image of current version](https://github.com/dany5639/ImOrg/releases/download/1.0/2020-01-18.17_11_32-ImOrg.jpg)

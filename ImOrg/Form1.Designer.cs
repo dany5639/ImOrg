@@ -39,17 +39,18 @@
             this.rGBBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newNameMovesToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sortFilesByTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.videoScrollingSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripTextBox_videoSkipLength = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.button_debug_rename = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
+            this.renamingTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBox_renamingMode = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
@@ -109,13 +110,13 @@
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rGBTextToolStripMenuItem,
             this.rGBBackgroundToolStripMenuItem,
-            this.allowUPDOWNToRenameToolStripMenuItem,
+            this.toolStripSeparator1,
             this.allowAnyFiletypeToolStripMenuItem,
-            this.newNameMovesToFolderToolStripMenuItem,
+            this.allowUPDOWNToRenameToolStripMenuItem,
             this.sortFilesByTypeToolStripMenuItem,
-            this.toolStripMenuItem1,
+            this.renamingTypeToolStripMenuItem,
             this.videoScrollingSpeedToolStripMenuItem,
-            this.toolStripSeparator1});
+            this.toolStripMenuItem1});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -125,14 +126,14 @@
             // rGBTextToolStripMenuItem
             // 
             this.rGBTextToolStripMenuItem.Name = "rGBTextToolStripMenuItem";
-            this.rGBTextToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.rGBTextToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.rGBTextToolStripMenuItem.Text = "RGB Text";
             this.rGBTextToolStripMenuItem.Click += new System.EventHandler(this.RGBTextToolStripMenuItem_Click);
             // 
             // rGBBackgroundToolStripMenuItem
             // 
             this.rGBBackgroundToolStripMenuItem.Name = "rGBBackgroundToolStripMenuItem";
-            this.rGBBackgroundToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.rGBBackgroundToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.rGBBackgroundToolStripMenuItem.Text = "RGB Background";
             this.rGBBackgroundToolStripMenuItem.Click += new System.EventHandler(this.RGBBackgroundToolStripMenuItem_Click);
             // 
@@ -142,22 +143,15 @@
             this.allowUPDOWNToRenameToolStripMenuItem.CheckOnClick = true;
             this.allowUPDOWNToRenameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.allowUPDOWNToRenameToolStripMenuItem.Name = "allowUPDOWNToRenameToolStripMenuItem";
-            this.allowUPDOWNToRenameToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.allowUPDOWNToRenameToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.allowUPDOWNToRenameToolStripMenuItem.Text = "Allow Up/Down to rename";
             // 
             // allowAnyFiletypeToolStripMenuItem
             // 
             this.allowAnyFiletypeToolStripMenuItem.CheckOnClick = true;
             this.allowAnyFiletypeToolStripMenuItem.Name = "allowAnyFiletypeToolStripMenuItem";
-            this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.allowAnyFiletypeToolStripMenuItem.Text = "Allow any filetype";
-            // 
-            // newNameMovesToFolderToolStripMenuItem
-            // 
-            this.newNameMovesToFolderToolStripMenuItem.CheckOnClick = true;
-            this.newNameMovesToFolderToolStripMenuItem.Name = "newNameMovesToFolderToolStripMenuItem";
-            this.newNameMovesToFolderToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.newNameMovesToFolderToolStripMenuItem.Text = "New name moves to folder";
             // 
             // sortFilesByTypeToolStripMenuItem
             // 
@@ -165,35 +159,35 @@
             this.sortFilesByTypeToolStripMenuItem.CheckOnClick = true;
             this.sortFilesByTypeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.sortFilesByTypeToolStripMenuItem.Name = "sortFilesByTypeToolStripMenuItem";
-            this.sortFilesByTypeToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.sortFilesByTypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.sortFilesByTypeToolStripMenuItem.Text = "Sort files by type";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(217, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(215, 22);
             this.toolStripMenuItem1.Text = "Info";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
             // videoScrollingSpeedToolStripMenuItem
             // 
             this.videoScrollingSpeedToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripTextBox1});
+            this.toolStripTextBox_videoSkipLength});
             this.videoScrollingSpeedToolStripMenuItem.Name = "videoScrollingSpeedToolStripMenuItem";
-            this.videoScrollingSpeedToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.videoScrollingSpeedToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.videoScrollingSpeedToolStripMenuItem.Text = "Video jump amount";
             // 
             // toolStripTextBox1
             // 
-            this.toolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.toolStripTextBox1.Name = "toolStripTextBox1";
-            this.toolStripTextBox1.Size = new System.Drawing.Size(100, 23);
-            this.toolStripTextBox1.TextChanged += new System.EventHandler(this.ToolStripTextBox1_textChanged);
+            this.toolStripTextBox_videoSkipLength.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox_videoSkipLength.Name = "toolStripTextBox1";
+            this.toolStripTextBox_videoSkipLength.Size = new System.Drawing.Size(100, 23);
+            this.toolStripTextBox_videoSkipLength.TextChanged += new System.EventHandler(this.ToolStripTextBox1_textChanged);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(214, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(212, 6);
             // 
             // ToolStrip
             // 
@@ -246,6 +240,25 @@
             this.axWindowsMediaPlayer1.TabIndex = 10;
             this.axWindowsMediaPlayer1.StatusChange += new System.EventHandler(this.AxWindowsMediaPlayer1_StatusChange);
             // 
+            // renamingTypeToolStripMenuItem
+            // 
+            this.renamingTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripComboBox_renamingMode});
+            this.renamingTypeToolStripMenuItem.Name = "renamingTypeToolStripMenuItem";
+            this.renamingTypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.renamingTypeToolStripMenuItem.Text = "Renaming type";
+            // 
+            // toolStripComboBox1
+            // 
+            this.toolStripComboBox_renamingMode.Items.AddRange(new object[] {
+            "Move to folder",
+            "Replace",
+            "Add at start",
+            "Add at the end"});
+            this.toolStripComboBox_renamingMode.Name = "toolStripComboBox1";
+            this.toolStripComboBox_renamingMode.Size = new System.Drawing.Size(121, 23);
+            this.toolStripComboBox_renamingMode.Click += new System.EventHandler(this.ToolStripComboBox1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -283,7 +296,6 @@
         private System.Windows.Forms.ToolStripMenuItem rGBBackgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newNameMovesToFolderToolStripMenuItem;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button button_debug_rename;
         private System.Windows.Forms.RichTextBox richTextBox1;
@@ -292,7 +304,9 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem videoScrollingSpeedToolStripMenuItem;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoSkipLength;
+        private System.Windows.Forms.ToolStripMenuItem renamingTypeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox_renamingMode;
     }
 }
 
