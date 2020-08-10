@@ -31,11 +31,13 @@ namespace ImOrg
         private string previousNewFilenameTemp = "";
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
-        private static List<string> logq = new List<string>();
+        private List<string> logq = new List<string>(); // even after so long, i still don't have a clue what "static" exactly means
         private int previouslySelectedItem = -1;
         private int prevIndex1 = -1;
         private int videoSkipSeconds = 5;
         private string fullPath = "";
+        private static string oldFullpath = "";
+        private static string newFullpath = "";
 
         private class itemInfo
         {
@@ -148,7 +150,7 @@ namespace ImOrg
             // unable to create a thread specifically for WMP to destroy to avoid this memory leak
 
             timer1.Stop();
-            timer1.Interval = 1000; // to adjust
+            timer1.Interval = 500; // to adjust
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddSeconds(version.Revision * 2);
@@ -620,8 +622,7 @@ namespace ImOrg
                 //         $"\n");
                 // }
 
-                var oldFullpath = item.fullpath;
-                var newFullpath = "";
+                oldFullpath = item.fullpath;
                 var newTempFilename = item.newFilenameTemp;
 
                 if (!new FileInfo(oldFullpath).Exists)
@@ -705,7 +706,7 @@ namespace ImOrg
 
                     try
                     {
-                        File.Move(oldFullpath, $"{newFullpath}");
+                        MoveItem();
                     }
                     catch
                     {
@@ -890,6 +891,16 @@ namespace ImOrg
         private void ToolStripTextBox1_textChanged(object sender, EventArgs e)
         {
             int.TryParse(toolStripTextBox_videoSkipLength.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
+        }
+        public static void FileMove()
+        {
+            File.Move(oldFullpath, newFullpath);
+        }
+        private void MoveItem()
+        {
+            var threadStart = new ThreadStart(FileMove);
+            var thread = new Thread(threadStart);
+            thread.Start();
         }
 
     }
