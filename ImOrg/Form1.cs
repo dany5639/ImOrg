@@ -915,7 +915,9 @@ namespace ImOrg
         }
         public static void FileMove()
         {
-            Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, new FileInfo(newFullpath).Name);
+            var filename = new FileInfo(newFullpath).Name;
+            if (!File.Exists(filename)) // this shouldn't happen, but it did, twice so far
+                Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
         }
         private void MoveItemAbsolute()
         {
