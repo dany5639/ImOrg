@@ -8,7 +8,7 @@ Features:
 - Rename or move files by typing a new filename.
 - Customize background and text color.
 - Change image or video format.
-- Auto rename to avoid filename conflict.
+- Auto rename to avoid filename conflict using windows's standard method: (?).
 
 Instructions:
 - Compile with Visual Studio 2019 Community Edition or download a precompiled version from the Releases page or from DeepStringDump\bin\Release for a more regular binary push.

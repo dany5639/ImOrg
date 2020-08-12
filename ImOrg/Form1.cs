@@ -189,7 +189,7 @@ namespace ImOrg
 
                 for (int j = 0; j < treeView_folders.Nodes.Count; j++)
                 {
-                    if (treeView_folders.Nodes[3].Nodes[j].Text.ToString() != "UNSORTED_SFW")
+                    if (treeView_folders.Nodes[i].Nodes[j].Text.ToString() != "UNSORTED_SFW")
                         continue;
 
                     treeView_folders.SelectedNode = treeView_folders.Nodes[i].Nodes[j];
