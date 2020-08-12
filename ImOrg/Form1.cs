@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.FileIO;
 
 namespace ImOrg
 {
@@ -47,6 +48,7 @@ namespace ImOrg
             public string newFilenameTemp;
             public string extension;
             public bool toRename;
+            public bool relativePath;
             public itemType type;
         }
         private enum itemType
@@ -175,15 +177,27 @@ namespace ImOrg
 #if DEBUG
             isDebug = true;
             axWindowsMediaPlayer1.settings.mute = true;
+            button_debug_rename.Show();
+            log($"DEBUG: isDebug {isDebug}");
+            treeView_folders.Nodes[3].Expand();
+            var a = treeView_folders.Nodes[3].Nodes[0];
+
+            for (int i = 0; i < treeView_folders.Nodes.Count; i++)
+            {
+                if (treeView_folders.Nodes[i].Text.ToString() != "R:")
+                    continue;
+
+                for (int j = 0; j < treeView_folders.Nodes.Count; j++)
+                {
+                    if (treeView_folders.Nodes[3].Nodes[j].Text.ToString() != "UNSORTED_SFW")
+                        continue;
+
+                    treeView_folders.SelectedNode = treeView_folders.Nodes[i].Nodes[j];
+                }
+            }
+
 #endif
 
-            if (isDebug)
-            {
-                button_debug_rename.Show();
-                log($"DEBUG: isDebug {isDebug}");
-                treeView_folders.Nodes[3].Expand();
-                treeView_folders.SelectedNode = treeView_folders.Nodes[3].Nodes[3]; // badev
-            }
         }
         private void GetDrivesList()
         {
@@ -647,6 +661,7 @@ namespace ImOrg
 
                         item.newFilenameTemp = ogFileInfo.Name.Substring(0, ogFileInfo.Name.Length - ogFileInfo.Extension.Length);
                         newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
+                        item.relativePath = true;
                         break;
 
                     case renamingMode.replace:
@@ -706,7 +721,13 @@ namespace ImOrg
 
                     try
                     {
-                        MoveItem();
+                        if (item.relativePath)
+                        {
+                            File.Move(oldFullpath, newFullpath);
+                            item.relativePath = false; // reset this incase it gets renamed again
+                        }
+                        else
+                            MoveItemAbsolute();
                     }
                     catch
                     {
@@ -894,9 +915,9 @@ namespace ImOrg
         }
         public static void FileMove()
         {
-            File.Move(oldFullpath, newFullpath);
+            Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, new FileInfo(newFullpath).Name);
         }
-        private void MoveItem()
+        private void MoveItemAbsolute()
         {
             var threadStart = new ThreadStart(FileMove);
             var thread = new Thread(threadStart);
