@@ -9,3 +9,4 @@ ImOrg/obj/
 ImOrg/bin/Release/AxInterop.WMPLib.dll
 ImOrg/bin/Release/Interop.WMPLib.dll
 *.dll
+*.dll

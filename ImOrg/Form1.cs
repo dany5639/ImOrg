@@ -114,6 +114,13 @@ namespace ImOrg
                 Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] {in_}");
 
         }
+        public void log2(string in_)
+        {
+            richTextBox1.Text = $"{richTextBox1.Text}\n[{DateTime.Now.ToString("hhmmss")}] {in_}";
+
+            ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
+
+        }
         public static bool WriteCsv(List<string> in_, string file)
         {
             var fileOut = new FileInfo(file);
@@ -151,8 +158,9 @@ namespace ImOrg
             // WMP library has a massive memory leak when opening videos successively rapidely, is significantly reduced when letting a video play for 5-10 seconds before opening a new one
             // unable to create a thread specifically for WMP to destroy to avoid this memory leak
 
-            timer1.Stop();
-            timer1.Interval = 500; // to adjust
+            timerVideo.Stop();
+            timerVideo.Interval = 500; // to adjust
+            timerRename.Interval = 2000;
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddSeconds(version.Revision * 2);
@@ -328,10 +336,6 @@ namespace ImOrg
                 i++;
             }
 
-            if (isDebug)
-                foreach (var a in items)
-                    Console.WriteLine($"{a.Key} {a.Value.extension}");
-
         }
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
@@ -340,7 +344,7 @@ namespace ImOrg
 
             prevIndex1 = listBox_files.SelectedIndex;
 
-            timer1.Enabled = false;
+            timerVideo.Enabled = false;
 
             var currentFile = (ListBox)sender;
             if (currentFile.SelectedItem == null)
@@ -361,13 +365,13 @@ namespace ImOrg
             // verify if it's a video
             if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
-                timer1.Enabled = true;
+                timerVideo.Enabled = true;
             }
             else
             {
                 if (isVideoPlayerUnavailable() != true) // stop an already playing video
                 {
-                    timer1.Enabled = false;
+                    timerVideo.Enabled = false;
                     unloadVideo();
                     pictureBox1.LoadAsync(fullPath);
                     pictureBox1.Show();
@@ -589,23 +593,23 @@ namespace ImOrg
             SetAppColors();
 
         }
-        private void Timer1_Tick(object sender, EventArgs e)
+        private void TimerVideo_Tick(object sender, EventArgs e)
         {
             if (listBox_files.SelectedIndex == -1)
                 return;
 
             if (prevIndex1 == listBox_files.SelectedIndex)
             {
-                loadVideo(fullPath);
+                loadVideo();
                 pictureBox1.Hide();
-                timer1.Enabled = false;
+                timerVideo.Enabled = false;
             }
         }
-        private void Timer2_Tick(object sender, EventArgs e)
+        private void TimerRename_Tick(object sender, EventArgs e)
         {
             RenameFile();
         }
-        private bool RenameFile()
+        private void RenameFile()
         {
             // wait what about moving directories
             for (int i = 0; i < items.Count; i++)
@@ -643,8 +647,14 @@ namespace ImOrg
                 {
                     log($"RenameOrMoveItems(): error: file doesn't exists." +
                         $"prevFileName = {oldFullpath};");
-                    return false;
+                    continue;
                 }
+
+                // something causes a renaming thread to end faster than the next one, which causes a name conflict
+                // add some delay between namings
+                // warning: it will cause a stuttery experience
+                Thread.Sleep(100);
+
 
                 var ogFileInfo = new FileInfo(oldFullpath);
                 var ogFileInfoDirectory = ogFileInfo.Directory.ToString();
@@ -723,7 +733,9 @@ namespace ImOrg
                     {
                         if (item.relativePath)
                         {
+                            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] File.Move start");
                             File.Move(oldFullpath, newFullpath);
+                            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] File.Move start");
                             item.relativePath = false; // reset this incase it gets renamed again
                         }
                         else
@@ -739,8 +751,7 @@ namespace ImOrg
                     }
                 }
 
-                log($"Renamed {oldFullpath} to {newFullpath}");
-                ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
+                log2($"Renamed {oldFullpath} to {newFullpath}");
 
                 item.fullpath = newFullpath;
                 item.filename = newFullpath.Split("\\".ToCharArray()).Last();
@@ -762,8 +773,6 @@ namespace ImOrg
                 // }
 
             }
-
-            return true;
 
         }
         private void Button1_Click(object sender, EventArgs e)
@@ -848,11 +857,10 @@ namespace ImOrg
             }
 
         }
-        private void loadVideo(string fullPath)
+        private void loadVideo()
         {
             axWindowsMediaPlayer1.URL = fullPath;
             axWindowsMediaPlayer1.Show();
-            prevIndex1 = listBox_files.SelectedIndex;
         }
         private void unloadVideo()
         {
@@ -915,9 +923,20 @@ namespace ImOrg
         }
         public static void FileMove()
         {
+            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] RenameFile start");
             var filename = new FileInfo(newFullpath).Name;
-            if (!File.Exists(filename)) // this shouldn't happen, but it did, twice so far
-                Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
+            // this shouldn't happen, but it did, 3 times so far
+            // occurs when user is renaming files too fast and both files have the same name
+            if (!File.Exists(filename))
+            {
+                try
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
+                }
+                catch
+                { }
+            }
+            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] RenameFile end");
         }
         private void MoveItemAbsolute()
         {

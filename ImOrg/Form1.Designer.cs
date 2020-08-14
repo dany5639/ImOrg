@@ -47,11 +47,11 @@
             this.toolStripTextBox_videoSkipLength = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.timerVideo = new System.Windows.Forms.Timer(this.components);
             this.button_debug_rename = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
-            this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.timerRename = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
@@ -217,9 +217,9 @@
             // 
             // timer1
             // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
+            this.timerVideo.Enabled = true;
+            this.timerVideo.Interval = 1000;
+            this.timerVideo.Tick += new System.EventHandler(this.TimerVideo_Tick);
             // 
             // button_debug_rename
             // 
@@ -261,9 +261,9 @@
             // 
             // timer2
             // 
-            this.timer2.Enabled = true;
-            this.timer2.Interval = 1000;
-            this.timer2.Tick += new System.EventHandler(this.Timer2_Tick);
+            this.timerRename.Enabled = true;
+            this.timerRename.Interval = 1000;
+            this.timerRename.Tick += new System.EventHandler(this.TimerRename_Tick);
             // 
             // Form1
             // 
@@ -302,7 +302,7 @@
         private System.Windows.Forms.ToolStripMenuItem rGBBackgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer timerVideo;
         private System.Windows.Forms.Button button_debug_rename;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
@@ -313,7 +313,7 @@
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoSkipLength;
         private System.Windows.Forms.ToolStripMenuItem renamingTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_renamingMode;
-        private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.Timer timerRename;
     }
 }
 
