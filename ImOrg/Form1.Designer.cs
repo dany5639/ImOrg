@@ -215,7 +215,7 @@
             this.ToolStrip.Text = "Idle";
             this.ToolStrip.Click += new System.EventHandler(this.ToolStrip_Click);
             // 
-            // timer1
+            // timerVideo
             // 
             this.timerVideo.Enabled = true;
             this.timerVideo.Interval = 1000;
@@ -259,7 +259,7 @@
             this.axWindowsMediaPlayer1.TabIndex = 10;
             this.axWindowsMediaPlayer1.StatusChange += new System.EventHandler(this.AxWindowsMediaPlayer1_StatusChange);
             // 
-            // timer2
+            // timerRename
             // 
             this.timerRename.Enabled = true;
             this.timerRename.Interval = 1000;

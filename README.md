@@ -36,7 +36,7 @@ Current known issues:
 - Can't rename when there's only one file in the selected folder.
 
 Current major issues:
-- Severe memory leak when reading certain video files.
+- Severe artifacting and playback problem on 60fps videos when WMP thinks it's on a secondary monitor.
 
 Tested supported file formats:
 - Image: jpg, png, gif, tif, bmp, ico, tiff, jpeg
