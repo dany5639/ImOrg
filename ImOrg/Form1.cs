@@ -446,7 +446,7 @@ namespace ImOrg
 
                     ToolStrip.Text = $"Renaming queued: {oldFileName} to {nf}";
                      
-                    RenameFile();
+                    RenameFiles();
 
                     nf = "";
 
@@ -607,9 +607,9 @@ namespace ImOrg
         }
         private void TimerRename_Tick(object sender, EventArgs e)
         {
-            RenameFile();
+            RenameFiles();
         }
-        private void RenameFile()
+        private void RenameFiles()
         {
             // wait what about moving directories
             for (int i = 0; i < items.Count; i++)
@@ -739,7 +739,11 @@ namespace ImOrg
                             item.relativePath = false; // reset this incase it gets renamed again
                         }
                         else
+                        {
+                            // incase async file rename fails, unset this to fool the loop next time into moving the file normally
+                            item.relativePath = false;
                             MoveItemAbsolute();
+                        }
                     }
                     catch
                     {
@@ -777,7 +781,7 @@ namespace ImOrg
         }
         private void Button1_Click(object sender, EventArgs e)
         {
-            RenameFile();
+            RenameFiles();
         }
         private void ToolStrip_Click(object sender, EventArgs e)
         {
@@ -934,7 +938,9 @@ namespace ImOrg
                     Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
                 }
                 catch
-                { }
+                {
+
+                }
             }
             Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] RenameFile end");
         }
