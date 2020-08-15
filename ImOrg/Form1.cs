@@ -420,7 +420,7 @@ namespace ImOrg
                     return;
 
                 case Keys.F11: // resize video
-                    resizeVideo();
+                    throw new NotImplementedException();
                     return;
 
                 case Keys.F12: // resize image
@@ -498,10 +498,6 @@ namespace ImOrg
 
                 // skip files if new name was failed to be set
                 if (item.newFilenameTemp == "")
-                    continue;
-
-                // // ignore the currently playing video for now as it causes a temporary freezing
-                if (!canRenameVideo(item.fullpath))
                     continue;
 
                 if (false)
@@ -706,57 +702,7 @@ namespace ImOrg
             PictureBoxSizeMode.Zoom
         };
         
-        #region AxWMPLib video player controls
-        private void resizeVideo()
-        {
-            if (axWindowsMediaPlayer1.stretchToFit)
-                axWindowsMediaPlayer1.stretchToFit = false;
-            else
-                axWindowsMediaPlayer1.stretchToFit = true;
-            ToolStrip.Text = $"Video stretch to fit: {axWindowsMediaPlayer1.stretchToFit}";
-        }
-        private void AxWindowsMediaPlayer1_StatusChange(object sender, EventArgs e)
-        {
-            if (false)
-            {
-                Console.WriteLine(axWindowsMediaPlayer1.playState);
-            }
-
-            if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
-            {
-                try
-                {
-                    axWindowsMediaPlayer1.Ctlcontrols.play();
-                }
-                catch { }
-            }
-
-        }
-        private void AxloadVideo(string fullPath)
-        {
-            axWindowsMediaPlayer1.URL = fullPath;
-            axWindowsMediaPlayer1.Show();
-        }
-        private void AxunloadVideo()
-        {
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
-            axWindowsMediaPlayer1.Hide();
-        }
-        private bool AxisVideoPlayerUnavailable()
-        {
-            return axWindowsMediaPlayer1.Ctlcontrols == null;
-        }
-        private bool canRenameVideo(string path)
-        {
-            if (axWindowsMediaPlayer1.currentMedia != null)
-                if (axWindowsMediaPlayer1.currentMedia.sourceURL == path && axWindowsMediaPlayer1.playState != WMPLib.WMPPlayState.wmppsStopped)
-                    return false;
-
-            return true;
-        }
-        #endregion
-        
-        #region testing FFMPEG
+        #region FFMPEG
         public Process ffplay = new Process();
 
         private void TestFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
@@ -772,9 +718,6 @@ namespace ImOrg
             Thread.Sleep(500);
 
             SetParent(ffplay.MainWindowHandle, pictureBox1.Handle); // attempt failed to stick it to the program main window
-
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
-            axWindowsMediaPlayer1.Hide();
 
             log($"TestFfmpegToolStripMenuItem_Click(): args: {sender.ToString()}, {e.ToString()}; playing a video using ffmpeg.");
         }

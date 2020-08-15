@@ -15,9 +15,10 @@ namespace ImOrg
         [STAThread]
         static void Main()
         {
-            if (!File.Exists("AxInterop.WMPLib.dll") || !File.Exists("Interop.WMPLib.dll"))
+            if (!File.Exists("ffplay.exe"))
             {
-                MessageBox.Show("ERROR: this library is required to play videos: AxInterop.WMPLib.dll & Interop.WMPLib.dll. This cannot continue.");
+                MessageBox.Show("ERROR: FFMPEG video player is required. This cannot continue." +
+                    "ToDo: integrate a video playback library.");
                 return;
             }
 
