@@ -98,5 +98,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Bitmap1.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="blank.mp4" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
