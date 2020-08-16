@@ -182,9 +182,10 @@ namespace ImOrg
 
             toolStripComboBox_renamingMode.SelectedIndex = 1;
 
+            axWindowsMediaPlayer1.settings.mute = true;
+
 #if DEBUG
             isDebug = true;
-            axWindowsMediaPlayer1.settings.mute = true;
             button_debug_rename.Show();
             log($"DEBUG: isDebug {isDebug}");
             treeView_folders.Nodes[3].Expand();
