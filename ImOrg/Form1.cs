@@ -38,10 +38,11 @@ namespace ImOrg
         {
             ffplay.StartInfo.FileName = "ffplay.exe";
 
-            // problem to fix: first frame sometimes appears for a single frame at the top left corner
+            // no idea why 8 and 30, maybe title bar + borders
+
             ffplay.StartInfo.Arguments = $"" +
-                $"-left {this.Location.X} " +
-                $"-top {this.Location.Y} " +
+                $"-left {pictureBox1.Location.X + this.Location.X + 8} " +
+                $"-top {pictureBox1.Location.Y + this.Location.Y + 30} " +
                 $"-x {pictureBox1.Width} " +
                 $"-y {pictureBox1.Height} " +
                 $"-noborder " +
@@ -50,8 +51,8 @@ namespace ImOrg
                 $""; 
 
             ffplay.StartInfo.CreateNoWindow = true;
-            ffplay.StartInfo.RedirectStandardInput = true;
-            ffplay.StartInfo.RedirectStandardOutput = true;
+            ffplay.StartInfo.RedirectStandardInput = false;
+            ffplay.StartInfo.RedirectStandardOutput = false;
             ffplay.StartInfo.UseShellExecute = false;
 
         }
@@ -69,22 +70,27 @@ namespace ImOrg
         {
             InitializeComponent();
 
+            initializeTimers();
+
+            // exclussive to this project
+            numericUpDown_spamParent.Value = 8; // delay between attempts to attach it. ugly method
+            numericUpDown_startSetParent.Value = 100; // delay before starting the attempts to attach it
+
+            // test only
+            // exclussive to this project
+            fullpaths = Directory.EnumerateFiles(@"E:\VID\Shadowplay\Halo  The Master Chief Collection\").ToList();
+            foreach (var a in fullpaths)
+                comboBox1.Items.Add(a);
+            comboBox1.SelectedIndex = 0;
+
+        }
+        private void initializeTimers()
+        {
             timer_startSetParent.Interval = 100; // ms time between opening ffplay and attempting to attach it to the main window. range: 400-700
             timer_spamParent.Interval = 8; // ms time between each attempt to attach it to the main window; 16 is every frame
 
             timer_startSetParent.Stop();
             timer_spamParent.Stop();
-
-            numericUpDown_spamParent.Value = 8;
-            numericUpDown_startSetParent.Value = 100;
-
-            // test only
-            fullpaths = Directory.EnumerateFiles(@"E:\VID\Shadowplay\Halo  The Master Chief Collection\").ToList();
-            foreach (var a in fullpaths)
-                comboBox1.Items.Add(a);
-
-            comboBox1.SelectedIndex = 0;
-
         }
         private void Timer_startSetParent_Tick(object sender, EventArgs e)
         {
@@ -173,8 +179,8 @@ namespace ImOrg
         private void button_loadVideo_click(object sender, EventArgs e)
         {
             ffplay_loadVideo();
-            timer_startSetParent.Start();
         }
+        #region exclussive to this project
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             fullpath = comboBox1.SelectedItem.ToString();
@@ -187,7 +193,22 @@ namespace ImOrg
         {
             timer_startSetParent.Interval = (int)numericUpDown_startSetParent.Value;
         }
+        #endregion
 
+        private void Main_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
