@@ -31,16 +31,12 @@
             this.components = new System.ComponentModel.Container();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
-            this.label3 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.numericUpDown_startSetParent = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown_spamParent = new System.Windows.Forms.NumericUpDown();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button_loadVideo = new System.Windows.Forms.Button();
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_startSetParent)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_spamParent)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -59,67 +55,12 @@
             // 
             this.timer_startSetParent.Tick += new System.EventHandler(this.Timer_startSetParent_Tick);
             // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(93, 555);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(119, 13);
-            this.label3.TabIndex = 13;
-            this.label3.Text = "Delay before first attach";
-            this.label3.Click += new System.EventHandler(this.Label3_Click);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(93, 529);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(122, 13);
-            this.label1.TabIndex = 11;
-            this.label1.Text = "Delay between attaches";
-            this.label1.Click += new System.EventHandler(this.Label1_Click);
-            // 
-            // numericUpDown_startSetParent
-            // 
-            this.numericUpDown_startSetParent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.numericUpDown_startSetParent.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.numericUpDown_startSetParent.Location = new System.Drawing.Point(12, 553);
-            this.numericUpDown_startSetParent.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericUpDown_startSetParent.Name = "numericUpDown_startSetParent";
-            this.numericUpDown_startSetParent.Size = new System.Drawing.Size(75, 20);
-            this.numericUpDown_startSetParent.TabIndex = 10;
-            this.numericUpDown_startSetParent.ValueChanged += new System.EventHandler(this.NumericUpDown3_ValueChanged);
-            // 
-            // numericUpDown_spamParent
-            // 
-            this.numericUpDown_spamParent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.numericUpDown_spamParent.Location = new System.Drawing.Point(12, 527);
-            this.numericUpDown_spamParent.Maximum = new decimal(new int[] {
-            64,
-            0,
-            0,
-            0});
-            this.numericUpDown_spamParent.Name = "numericUpDown_spamParent";
-            this.numericUpDown_spamParent.Size = new System.Drawing.Size(75, 20);
-            this.numericUpDown_spamParent.TabIndex = 9;
-            this.numericUpDown_spamParent.ValueChanged += new System.EventHandler(this.NumericUpDown2_ValueChanged);
-            // 
             // comboBox1
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(12, 579);
+            this.comboBox1.Location = new System.Drawing.Point(12, 530);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(768, 21);
             this.comboBox1.TabIndex = 7;
@@ -128,7 +69,7 @@
             // button_loadVideo
             // 
             this.button_loadVideo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_loadVideo.Location = new System.Drawing.Point(12, 498);
+            this.button_loadVideo.Location = new System.Drawing.Point(12, 501);
             this.button_loadVideo.Name = "button_loadVideo";
             this.button_loadVideo.Size = new System.Drawing.Size(75, 23);
             this.button_loadVideo.TabIndex = 5;
@@ -140,26 +81,41 @@
             // 
             this.timer_spamParent.Tick += new System.EventHandler(this.Timer_spamParent_Tick);
             // 
+            // textBox1
+            // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.Location = new System.Drawing.Point(93, 503);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(597, 20);
+            this.textBox1.TabIndex = 8;
+            this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(696, 506);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Videos root path";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(795, 612);
+            this.ClientSize = new System.Drawing.Size(795, 563);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.numericUpDown_startSetParent);
-            this.Controls.Add(this.numericUpDown_spamParent);
             this.Controls.Add(this.button_loadVideo);
             this.Name = "Main";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
-            this.Load += new System.EventHandler(this.Main_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_startSetParent)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_spamParent)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -172,9 +128,7 @@
         private System.Windows.Forms.Timer timer_spamParent;
         private System.Windows.Forms.Button button_loadVideo;
         private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.NumericUpDown numericUpDown_spamParent;
-        private System.Windows.Forms.NumericUpDown numericUpDown_startSetParent;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
     }
 }

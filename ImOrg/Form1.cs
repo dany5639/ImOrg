@@ -24,10 +24,7 @@ namespace ImOrg
         #endregion
         #region constants and variables
         public string fullpath = "";
-        public List<string> fullpaths = new List<string>
-        {
-            "",
-        };
+        public List<string> fullpaths = new List<string>();
         public Process ffplay = new Process();
         #endregion
         public void log(string in_)
@@ -71,18 +68,6 @@ namespace ImOrg
             InitializeComponent();
 
             initializeTimers();
-
-            // exclussive to this project
-            numericUpDown_spamParent.Value = 8; // delay between attempts to attach it. ugly method
-            numericUpDown_startSetParent.Value = 100; // delay before starting the attempts to attach it
-
-            // test only
-            // exclussive to this project
-            fullpaths = Directory.EnumerateFiles(@"E:\VID\Shadowplay\Halo  The Master Chief Collection\").ToList();
-            foreach (var a in fullpaths)
-                comboBox1.Items.Add(a);
-            comboBox1.SelectedIndex = 0;
-
         }
         private void initializeTimers()
         {
@@ -122,12 +107,7 @@ namespace ImOrg
         }
         private void moveVideoWindow()
         {
-            MoveWindow(ffplay.MainWindowHandle,
-                0,
-                0,
-                pictureBox1.Width,
-                pictureBox1.Height,
-                true);
+            MoveWindow(ffplay.MainWindowHandle,0,0,pictureBox1.Width,pictureBox1.Height,true);
         }
         private void ffplay_attachVideo()
         {
@@ -185,30 +165,24 @@ namespace ImOrg
         {
             fullpath = comboBox1.SelectedItem.ToString();
         }
-        private void NumericUpDown2_ValueChanged(object sender, EventArgs e)
+        private void TextBox1_TextChanged(object sender, EventArgs e)
         {
-            timer_spamParent.Interval = (int)numericUpDown_spamParent.Value;
-        }
-        private void NumericUpDown3_ValueChanged(object sender, EventArgs e)
-        {
-            timer_startSetParent.Interval = (int)numericUpDown_startSetParent.Value;
+            var tt = textBox1.Text;
+            if (!Directory.Exists(tt))
+                return;
+
+            fullpaths = Directory.EnumerateFiles(tt).ToList();
+
+            foreach (var a in fullpaths)
+                comboBox1.Items.Add(a);
+
+            if (comboBox1.Items.Count == 0)
+                return;
+
+            comboBox1.SelectedIndex = 0;
         }
         #endregion
 
-        private void Main_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Label1_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 
 }
