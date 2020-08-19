@@ -158,12 +158,6 @@ namespace ImOrg
             // WMP library has a massive memory leak when opening videos successively rapidely, is significantly reduced when letting a video play for 5-10 seconds before opening a new one
             // unable to create a thread specifically for WMP to destroy to avoid this memory leak
 
-            // give the app a second to boot and then attach FFMPEG
-            timerVideo.Start();
-            timerVideo.Interval = 1000;
-
-            timerRename.Start();
-            timerRename.Interval = 1000;
 
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddSeconds(version.Revision * 2);
@@ -185,7 +179,6 @@ namespace ImOrg
 
             toolStripComboBox_renamingMode.SelectedIndex = 1;
 
-            initializeVideoPlayer();
 
 #if DEBUG
             isDebug = true;
@@ -372,16 +365,12 @@ namespace ImOrg
                 return;
             }
 
-            // verify if it's a video
             if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
-                // timerVideo.Enabled = true;
-                // loadVideo();
             }
             else
             {
                 // throw new Exception("TODO: Stop video playback here.");
-                // timerVideo.Enabled = false;
                 pictureBox1.LoadAsync(fullPath);
                 pictureBox1.Show();
             }
@@ -603,9 +592,6 @@ namespace ImOrg
         }
         private void TimerVideo_Tick(object sender, EventArgs e)
         {
-            initializeVideoPlayer();
-            timerVideo.Stop();
-
             // if (listBox_files.SelectedIndex == -1)
             //     return;
             // 
@@ -648,7 +634,7 @@ namespace ImOrg
                 // something causes a renaming thread to end faster than the next one, which causes a name conflict
                 // add some delay between namings
                 // warning: it will cause a stuttery experience
-                Thread.Sleep(100);
+                Thread.Sleep(100); // move to its own thread to avoid stutters
 
                 var ogFileInfo = new FileInfo(oldFullpath);
                 var ogFileInfoDirectory = ogFileInfo.Directory.ToString();
@@ -821,23 +807,6 @@ namespace ImOrg
             PictureBoxSizeMode.StretchImage,
             PictureBoxSizeMode.Zoom
         };
-
-        #region FFMPEG
-        public Process ffplay = new Process();
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // need to close all FFMPEG processes
-            // doesn't work at all
-
-            if (ffplay.SynchronizingObject == null)
-                return;
-
-            if (!ffplay.HasExited)
-                ffplay.Kill();
-
-            log($"Form1_FormClosing(): args: {sender.ToString()}, {e.ToString()}; kill ffmpeg first before closing.");
-        }
-        #endregion
         private void ToolStripTextBox1_textChanged(object sender, EventArgs e)
         {
             int.TryParse(toolStripTextBox_videoSkipLength.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
@@ -869,127 +838,7 @@ namespace ImOrg
             thread.Start();
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SetForegroundWindow(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        Process currentProcess = Process.GetCurrentProcess();
-        private void loadVideo()
-        {
-            // // spawns the video in the right location
-            // ffplay.StartInfo.Arguments = $"" +
-            //     $"-left {this.DesktopLocation.X + pictureBox1.Location.X + 3} " +
-            //     $"-top {this.DesktopLocation.Y + 31} " +
-            //     $"-x {pictureBox1.Width} " +
-            //     $"-y {pictureBox1.Height} " +
-            //     $"-noborder " +
-            //     $"\"{fullPath}\"" +
-            //     $"";
-            // 
-            // ffplay.StartInfo.Arguments = $"" +
-            //     $"-left 0 " +
-            //     $"-top 0 " +
-            //     $"-x 800 " +
-            //     $"-y 600 " +
-            //     $"-noborder " +
-            //     $"\"{fullPath}\"" +
-            //     $"";
-            // 
-            // ffplay.StartInfo.CreateNoWindow = true;
-            // ffplay.StartInfo.RedirectStandardOutput = true;
-            // ffplay.StartInfo.UseShellExecute = false;
-            // ffplay.Start();
-            // 
-            // // current problem here: video spazes out of the intended location for 500ms
-            // Thread.Sleep(500); // required otherwise ffmpeg window doesn't stick to the main program window
-            // 
-            // if (!ffplay.HasExited)
-            //     ffplay.Kill();
-            // // attach video to the main program window
-            // // also inadvertedly moves the video out of the program window
-            // SetParent(ffplay.MainWindowHandle, this.Handle);
-        }
-        private void initializeVideoPlayer()
-        {
-            try { ffplay.Kill(); }
-            catch { }
 
-            // Console.WriteLine($"{this.Location.X} {this.Location.Y}");
-            // Console.WriteLine($"{pictureBox1.Location.X} {pictureBox1.Location.Y}");
-
-            ffplay.StartInfo.FileName = "ffplay.exe";
-
-            // spawns the video in the right location
-            ffplay.StartInfo.Arguments = $"" +
-                $"-left {this.DesktopLocation.X + pictureBox1.Location.X + 3} " +
-                $"-top {this.DesktopLocation.Y + 31} " +
-                $"-x {pictureBox1.Width} " +
-                $"-y {pictureBox1.Height} " +
-                $"-noborder " +
-                // $"\"blank.mp4\"" +
-                $"\"R:\\UNSORTED_SFW\\x.mp4\"" +
-                $"";
-
-            ffplay.StartInfo.Arguments = $"" +
-                $"-left 0 " +
-                $"-top 0 " +
-                $"-x 800 " +
-                $"-y 600 " +
-                $"-noborder " +
-                // $"\"blank.mp4\"" +
-                $"\"R:\\UNSORTED_SFW\\x.mp4\"" +
-                $"";
-
-            ffplay.StartInfo.CreateNoWindow = true;
-            ffplay.StartInfo.RedirectStandardOutput = true;
-            ffplay.StartInfo.UseShellExecute = false;
-
-            initializeVideoPlayer2();
-
-            // ffplay.Start();
-            // 
-            // // current problem here: video spazes out of the intended location for 500ms
-            // Thread.Sleep(500); // required otherwise ffmpeg window doesn't stick to the main program window
-            // 
-            // // attach video to the main program window
-            // // also inadvertedly moves the video out of the program window
-            // SetParent(ffplay.MainWindowHandle, this.Handle);
-            // 
-            // // move video window back to the correct location
-            // MoveWindow(ffplay.MainWindowHandle,
-            //     pictureBox1.Location.X,
-            //     pictureBox1.Location.Y,
-            //     pictureBox1.Width,
-            //     pictureBox1.Height,
-            //     true);
-            // 
-            // // let the user continue scrolling trough the file list instead of control being taken over by the video player
-            // Thread.Sleep(500);
-            // IntPtr hWnd = currentProcess.MainWindowHandle;
-            // if (hWnd != IntPtr.Zero)
-            // {
-            //     SetForegroundWindow(hWnd);
-            //     ShowWindow(hWnd, 5);
-            // }
-        }
-        private void unloadVideo()
-        {
-            try { ffplay.Kill(); }
-            catch { }
-        }
-        public static void ffplay2()
-        {
-
-        }
-        private void initializeVideoPlayer2()
-        {
-            var threadStart = new ThreadStart(ffplay2);
-            var thread = new Thread(threadStart);
-            thread.Start();
-        }
+      
     }
 }

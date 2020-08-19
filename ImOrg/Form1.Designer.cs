@@ -51,6 +51,8 @@
             this.button_debug_rename = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.timerRename = new System.Windows.Forms.Timer(this.components);
+            this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
+            this._spamParent = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -255,15 +257,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1251, 740);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.treeView_folders);
-            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.button_debug_rename);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.richTextBox1);
             this.Name = "Form1";
             this.Text = "ImOrg";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
@@ -296,6 +297,8 @@
         private System.Windows.Forms.ToolStripMenuItem renamingTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_renamingMode;
         private System.Windows.Forms.Timer timerRename;
+        private System.Windows.Forms.Timer timer_startSetParent;
+        private System.Windows.Forms.Timer _spamParent;
     }
 }
 
