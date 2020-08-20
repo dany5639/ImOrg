@@ -115,15 +115,14 @@ namespace ImOrg
         #region utilities
         public void log(string in_)
         {
-            richTextBox1.Text = $"{richTextBox1.Text}\n[{DateTime.Now.ToString("hhmmss")}] {in_}";
+            var date = DateTime.Now.ToString("hhmmss:fff");
 
-            if (isDebug)
-                Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] {in_}");
+            Console.WriteLine($"[{date}] {in_}");
 
         }
-        public void log2(string in_)
+        public void log_ts(string in_)
         {
-            richTextBox1.Text = $"{richTextBox1.Text}\n[{DateTime.Now.ToString("hhmmss")}] {in_}";
+            var date = DateTime.Now.ToString("hhmmss:fff");
 
             ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
 
@@ -189,8 +188,6 @@ namespace ImOrg
             this.ForeColor = textColor;
             ToolStrip.BackColor = Color.White;
             ToolStrip.ForeColor = Color.Black;
-            richTextBox1.BackColor = backgroundColor;
-            richTextBox1.ForeColor = textColor;
 
         }
         #endregion
@@ -217,8 +214,6 @@ namespace ImOrg
 
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // best view mode
 
-            richTextBox1.Hide(); // hide debug text window, only show when clicking on the status bar label
-
             // set default video jump seconds length
             // change videoSkipSeconds for the default value
             toolStripTextBox_videoSkipLength.Text = "5";
@@ -233,7 +228,7 @@ namespace ImOrg
 
             for (int i = 0; i < treeView_folders.Nodes.Count; i++)
             {
-                Console.WriteLine($"Found Disk: {treeView_folders.Nodes[i].Text.ToString()}");
+                log($"Found Disk: {treeView_folders.Nodes[i].Text.ToString()}");
                 if (treeView_folders.Nodes[i].Text.ToString() != "R:")
                     continue;
 
@@ -243,7 +238,7 @@ namespace ImOrg
                 // ok well this suddenly doesn't work anymore, great
                 for (int j = 0; j < treeView_folders.Nodes.Count; j++)
                 {
-                    Console.WriteLine($"Found directory: {treeView_folders.Nodes[i].Nodes[j].Text.ToString()}");
+                    log($"Found directory: {treeView_folders.Nodes[i].Nodes[j].Text.ToString()}");
                     if (treeView_folders.Nodes[i].Nodes[j].Text.ToString() != "UNSORTED_SFW")
                         continue;
 
@@ -260,8 +255,7 @@ namespace ImOrg
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
-            if (isDebug)
-                Console.WriteLine($"Size changed: {this.Size.Width}x{this.Size.Height}");
+            log($"Size changed: {this.Size.Width}x{this.Size.Height}");
         }
         #endregion
 
@@ -564,8 +558,8 @@ namespace ImOrg
                     pictureBox1.SizeMode = availablePictureModes[a + 1];
 
                     pictureBox1.ClientSize = new Size(
-                        richTextBox1.Size.Width,
-                        richTextBox1.Size.Height);
+                        panel1.Size.Width,
+                        panel1.Size.Height);
 
                     ToolStrip.Text = $"Picture scaling: {pictureBox1.SizeMode}";
                     return;
@@ -587,13 +581,6 @@ namespace ImOrg
         #endregion
 
         #region Toolstrip
-        private void ToolStrip_Click(object sender, EventArgs e)
-        {
-            if (richTextBox1.Visible)
-                richTextBox1.Hide();
-            else
-                richTextBox1.Show();
-        }
         private void ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var dialogBox = new Form();
@@ -661,7 +648,8 @@ namespace ImOrg
                 var ogFileInfoDirectory = ogFileInfo.Directory.ToString();
                 var filenameWithoutExtension = item.filenameWithoutExtension;
 
-                if (isDebug) Console.WriteLine($"newFullpath before {oldFullpath}");
+                log($"newFullpath before {oldFullpath}");
+
                 switch ((renamingMode)toolStripComboBox_renamingMode.SelectedIndex)
                 {
                     case renamingMode.move:
@@ -691,7 +679,8 @@ namespace ImOrg
                         throw new Exception("New name position: Index out of bounds");
 
                 }
-                if (isDebug) Console.WriteLine($"newFullpath after  {newFullpath}");
+
+                log($"newFullpath after  {newFullpath}");
 
                 if (File.Exists($"{newFullpath}{ogFileInfo.Extension}"))
                 {
@@ -721,7 +710,7 @@ namespace ImOrg
 
                 newFullpath = $"{newFullpath}{ogFileInfo.Extension}";
 
-                if (isDebug) Console.WriteLine($"newFullpath after2 {newFullpath}");
+                log($"newFullpath after2 {newFullpath}");
 
                 if (!isDebugDontMove)
                 {
@@ -734,9 +723,9 @@ namespace ImOrg
                     {
                         if (item.relativePath)
                         {
-                            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] File.Move start");
+                            log($"File.Move start");
                             File.Move(oldFullpath, newFullpath);
-                            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] File.Move start");
+                            log($"File.Move start");
                             item.relativePath = false; // reset this incase it gets renamed again
                         }
                         else
@@ -756,7 +745,7 @@ namespace ImOrg
                     }
                 }
 
-                log2($"Renamed {oldFullpath} to {newFullpath}");
+                log_ts($"Renamed {oldFullpath} to {newFullpath}");
 
                 item.fullpath = newFullpath;
                 item.filename = newFullpath.Split("\\".ToCharArray()).Last();
@@ -769,9 +758,9 @@ namespace ImOrg
 
         }
 
-        public static void FileMove()
+        public void FileMove()
         {
-            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] RenameFile start");
+            log($"RenameFile start");
             var filename = new FileInfo(newFullpath).Name;
             // this shouldn't happen, but it did, 3 times so far
             // occurs when user is renaming files too fast and both files have the same name
@@ -779,15 +768,14 @@ namespace ImOrg
             {
                 try
                 {
-                    throw new Exception("TODO: Rename video with visualBasic.");
-                    // Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
+                    Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
                 }
                 catch
                 {
-
+                    log($"RenameFile end");
                 }
             }
-            Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] RenameFile end");
+            log($"RenameFile end");
         }
         private void MoveItemAbsolute()
         {

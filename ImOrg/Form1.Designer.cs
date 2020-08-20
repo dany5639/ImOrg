@@ -49,10 +49,10 @@
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerVideo = new System.Windows.Forms.Timer(this.components);
             this.button_debug_rename = new System.Windows.Forms.Button();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.timerRename = new System.Windows.Forms.Timer(this.components);
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this._spamParent = new System.Windows.Forms.Timer(this.components);
+            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -213,7 +213,6 @@
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(26, 17);
             this.ToolStrip.Text = "Idle";
-            this.ToolStrip.Click += new System.EventHandler(this.ToolStrip_Click);
             // 
             // timerVideo
             // 
@@ -234,35 +233,30 @@
             this.button_debug_rename.Visible = false;
             this.button_debug_rename.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox1.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(207, 0);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(1044, 614);
-            this.richTextBox1.TabIndex = 13;
-            this.richTextBox1.Text = "";
-            // 
             // timerRename
             // 
             this.timerRename.Enabled = true;
             this.timerRename.Interval = 1000;
             this.timerRename.Tick += new System.EventHandler(this.TimerRename_Tick);
             // 
+            // panel1
+            // 
+            this.panel1.Location = new System.Drawing.Point(207, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1044, 614);
+            this.panel1.TabIndex = 13;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1251, 740);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.button_debug_rename);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
             this.Text = "ImOrg";
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
@@ -288,7 +282,6 @@
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
         private System.Windows.Forms.Timer timerVideo;
         private System.Windows.Forms.Button button_debug_rename;
-        private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.ToolStripMenuItem sortFilesByTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -299,6 +292,7 @@
         private System.Windows.Forms.Timer timerRename;
         private System.Windows.Forms.Timer timer_startSetParent;
         private System.Windows.Forms.Timer _spamParent;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 

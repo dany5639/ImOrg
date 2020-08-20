@@ -1,11 +1,4 @@
 
-ImOrg/bin/Debug
-ImOrg/obj/
-.vs/ImOrg/v16/.suo
-.vs/ImOrg/v16/Server/sqlite3/db.lock
-.vs/ImOrg/v16/Server/sqlite3/storage.ide
-.vs/ImOrg/v16/Server/sqlite3/storage.ide-shm
-.vs/ImOrg/v16/Server/sqlite3/storage.ide-wal
-ImOrg/bin/Release/AxInterop.WMPLib.dll
-ImOrg/bin/Release/Interop.WMPLib.dll
-ImOrg/bin/x64/Debug/ffplay.exe
+.vs/ImOrg/v16
+ImOrg/bin/x64/Debug
+ImOrg/obj
