@@ -8,3 +8,4 @@ ImOrg/obj/
 .vs/ImOrg/v16/Server/sqlite3/storage.ide-wal
 ImOrg/bin/Release/AxInterop.WMPLib.dll
 ImOrg/bin/Release/Interop.WMPLib.dll
+ImOrg/bin/x64/Debug/ffplay.exe
