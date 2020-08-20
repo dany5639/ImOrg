@@ -103,6 +103,13 @@ namespace ImOrg
                     return itemType.unsupported;
             }
         }
+        private List<PictureBoxSizeMode> availablePictureModes = new List<PictureBoxSizeMode> {
+            PictureBoxSizeMode.AutoSize,
+            PictureBoxSizeMode.CenterImage,
+            PictureBoxSizeMode.Normal,
+            PictureBoxSizeMode.StretchImage,
+            PictureBoxSizeMode.Zoom
+        };
         #endregion
 
         #region utilities
@@ -150,6 +157,45 @@ namespace ImOrg
 
         }
         #endregion
+
+        #region Theme related
+        private void RGBTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorDialog1.ShowDialog();
+            // prevent text color from being the same as background color
+            if (colorDialog1.Color == backgroundColor)
+                return;
+            textColor = colorDialog1.Color;
+
+            SetAppColors();
+
+        }
+        private void RGBBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorDialog1.ShowDialog();
+            backgroundColor = colorDialog1.Color;
+
+            SetAppColors();
+
+        }
+        private void SetAppColors()
+        {
+            pictureBox1.BackColor = backgroundColor;
+            listBox_files.BackColor = backgroundColor;
+            listBox_files.ForeColor = textColor;
+            treeView_folders.BackColor = backgroundColor;
+            treeView_folders.ForeColor = textColor;
+            this.BackColor = backgroundColor;
+            this.ForeColor = textColor;
+            ToolStrip.BackColor = Color.White;
+            ToolStrip.ForeColor = Color.Black;
+            richTextBox1.BackColor = backgroundColor;
+            richTextBox1.ForeColor = textColor;
+
+        }
+        #endregion
+
+        #region Main and main window
         public Form1()
         {
             InitializeComponent();
@@ -212,6 +258,28 @@ namespace ImOrg
 #endif
 
         }
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            if (isDebug)
+                Console.WriteLine($"Size changed: {this.Size.Width}x{this.Size.Height}");
+        }
+        #endregion
+
+        #region unused
+        private bool showDefaultImage(string oldFilename, string newFilename) // keep old code
+        {
+            // need to show a different image since the currently viewed item is being read
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            Stream myStream = myAssembly.GetManifestResourceStream("ImOrg.Bitmap1.bmp");
+            Bitmap bmp = new Bitmap(myStream);
+
+            pictureBox1.Image = bmp;
+
+            return true;
+        }
+        #endregion
+
+        #region Disks and directories related
         private void GetDrivesList()
         {
             // todo: change to a proper way to get the list of available drives instead of going A 0x41 to Z 0x58
@@ -246,21 +314,7 @@ namespace ImOrg
             }
 
         }
-        private void SetAppColors()
-        {
-            pictureBox1.BackColor = backgroundColor;
-            listBox_files.BackColor = backgroundColor;
-            listBox_files.ForeColor = textColor;
-            treeView_folders.BackColor = backgroundColor;
-            treeView_folders.ForeColor = textColor;
-            this.BackColor = backgroundColor;
-            this.ForeColor = textColor;
-            ToolStrip.BackColor = Color.White;
-            ToolStrip.ForeColor = Color.Black;
-            richTextBox1.BackColor = backgroundColor;
-            richTextBox1.ForeColor = textColor;
 
-        }
         private void TreeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             // folder has been expanded, find all the folders in it
@@ -343,50 +397,9 @@ namespace ImOrg
             }
 
         }
-        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
-        {
-            prevIndex1 = listBox_files.SelectedIndex;
-
-            timerVideo.Enabled = false;
-
-            var currentFile = (ListBox)sender;
-            if (currentFile.SelectedItem == null)
-                return;
-
-            // don't do anything if the selected file didn't change
-            if (currentFile.SelectedIndex == previouslySelectedItem)
-                return;
-
-            fullPath = items[currentFile.SelectedIndex].fullpath;
-
-            if (!File.Exists(fullPath))
-            {
-                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
-                return;
-            }
-
-            if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
-            {
-            }
-            else
-            {
-                // throw new Exception("TODO: Stop video playback here.");
-                pictureBox1.LoadAsync(fullPath);
-                pictureBox1.Show();
-            }
-
-            // check if this should be placed after RenameFile(); or not
-            previouslySelectedItem = currentFile.SelectedIndex;
-
-            // let's try renaming the files here, after viewing a new item
-            // nope, causes a temporary freeze when viewing videos
-            // RenameFile();
-
-            // try to scroll the files list further to see the next files
-            // ...
-            // can't find any method to increment scroll by one
-
-        }
+        #endregion
+       
+        #region keys related
         private void ListBox_files_KeyDown(object sender, KeyEventArgs e) // press a key
         {
             if (listBox_files.SelectedItem == null)
@@ -571,41 +584,49 @@ namespace ImOrg
             e.Handled = true;
 
         }
-        private void RGBTextToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            colorDialog1.ShowDialog();
-            // prevent text color from being the same as background color
-            if (colorDialog1.Color == backgroundColor)
-                return;
-            textColor = colorDialog1.Color;
+        #endregion
 
-            SetAppColors();
+        #region Toolstrip
+        private void ToolStrip_Click(object sender, EventArgs e)
+        {
+            if (richTextBox1.Visible)
+                richTextBox1.Hide();
+            else
+                richTextBox1.Show();
+        }
+        private void ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var dialogBox = new Form();
+            dialogBox.Text = "Info";
+            dialogBox.BackColor = backgroundColor;
+            dialogBox.ForeColor = textColor;
+            var label = new Label();
+            label.AutoSize = true;
+            label.Font = new Font("Consolas", 10.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label.Text =
+                "Shortcuts list:" +
+                "\nESC : cancel last new name." +
+                "\nF1  : use the last typed name." +
+                "\nF2  : change renaming mode." +
+                "\nF11 : change video view mode" +
+                "\nF12 : change image view mode" +
+                "\n" +
+                "";
+
+            label.ForeColor = textColor;
+            label.Location = new Point { X = 10, Y = 10 };
+            dialogBox.Controls.Add(label);
+
+            dialogBox.ShowDialog();
 
         }
-        private void RGBBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ToolStripTextBox1_textChanged(object sender, EventArgs e)
         {
-            colorDialog1.ShowDialog();
-            backgroundColor = colorDialog1.Color;
+            int.TryParse(toolStripTextBox_videoSkipLength.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
+        }
+        #endregion
 
-            SetAppColors();
-
-        }
-        private void TimerVideo_Tick(object sender, EventArgs e)
-        {
-            // if (listBox_files.SelectedIndex == -1)
-            //     return;
-            // 
-            // if (prevIndex1 == listBox_files.SelectedIndex)
-            // {
-            //     loadVideo();
-            //     pictureBox1.Hide();
-            //     timerVideo.Enabled = false;
-            // }
-        }
-        private void TimerRename_Tick(object sender, EventArgs e)
-        {
-            RenameFiles();
-        }
+        #region Move File
         private void RenameFiles()
         {
             // wait what about moving directories
@@ -747,70 +768,7 @@ namespace ImOrg
             }
 
         }
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            RenameFiles();
-        }
-        private void ToolStrip_Click(object sender, EventArgs e)
-        {
-            if (richTextBox1.Visible)
-                richTextBox1.Hide();
-            else
-                richTextBox1.Show();
-        }
-        private bool showDefaultImage(string oldFilename, string newFilename) // keep old code
-        {
-            // need to show a different image since the currently viewed item is being read
-            Assembly myAssembly = Assembly.GetExecutingAssembly();
-            Stream myStream = myAssembly.GetManifestResourceStream("ImOrg.Bitmap1.bmp");
-            Bitmap bmp = new Bitmap(myStream);
 
-            pictureBox1.Image = bmp;
-
-            return true;
-        }
-        private void ToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            var dialogBox = new Form();
-            dialogBox.Text = "Info";
-            dialogBox.BackColor = backgroundColor;
-            dialogBox.ForeColor = textColor;
-            var label = new Label();
-            label.AutoSize = true;
-            label.Font = new Font("Consolas", 10.25F, FontStyle.Regular, GraphicsUnit.Point);
-            label.Text =
-                "Shortcuts list:" +
-                "\nESC : cancel last new name." +
-                "\nF1  : use the last typed name." +
-                "\nF2  : change renaming mode." +
-                "\nF11 : change video view mode" +
-                "\nF12 : change image view mode" +
-                "\n" +
-                "";
-
-            label.ForeColor = textColor;
-            label.Location = new Point { X = 10, Y = 10 };
-            dialogBox.Controls.Add(label);
-
-            dialogBox.ShowDialog();
-
-        }
-        private void Form1_SizeChanged(object sender, EventArgs e)
-        {
-            if (isDebug)
-                Console.WriteLine($"Size changed: {this.Size.Width}x{this.Size.Height}");
-        }
-        private List<PictureBoxSizeMode> availablePictureModes = new List<PictureBoxSizeMode> {
-            PictureBoxSizeMode.AutoSize,
-            PictureBoxSizeMode.CenterImage,
-            PictureBoxSizeMode.Normal,
-            PictureBoxSizeMode.StretchImage,
-            PictureBoxSizeMode.Zoom
-        };
-        private void ToolStripTextBox1_textChanged(object sender, EventArgs e)
-        {
-            int.TryParse(toolStripTextBox_videoSkipLength.Text, System.Globalization.NumberStyles.Integer, null, out videoSkipSeconds);
-        }
         public static void FileMove()
         {
             Console.WriteLine($"[{DateTime.Now.ToString("hhmmss.fff")}] RenameFile start");
@@ -837,8 +795,76 @@ namespace ImOrg
             var thread = new Thread(threadStart);
             thread.Start();
         }
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            RenameFiles();
+        }
+        #endregion
 
+        #region Timers
+        private void TimerVideo_Tick(object sender, EventArgs e)
+        {
+            // if (listBox_files.SelectedIndex == -1)
+            //     return;
+            // 
+            // if (prevIndex1 == listBox_files.SelectedIndex)
+            // {
+            //     loadVideo();
+            //     pictureBox1.Hide();
+            //     timerVideo.Enabled = false;
+            // }
+        }
+        private void TimerRename_Tick(object sender, EventArgs e)
+        {
+            RenameFiles();
+        }
+        #endregion
 
-      
+        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
+        {
+            prevIndex1 = listBox_files.SelectedIndex;
+
+            timerVideo.Enabled = false;
+
+            var currentFile = (ListBox)sender;
+            if (currentFile.SelectedItem == null)
+                return;
+
+            // don't do anything if the selected file didn't change
+            if (currentFile.SelectedIndex == previouslySelectedItem)
+                return;
+
+            fullPath = items[currentFile.SelectedIndex].fullpath;
+
+            if (!File.Exists(fullPath))
+            {
+                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
+                return;
+            }
+
+            if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
+            {
+            }
+            else
+            {
+                // throw new Exception("TODO: Stop video playback here.");
+                pictureBox1.LoadAsync(fullPath);
+                pictureBox1.Show();
+            }
+
+            // check if this should be placed after RenameFile(); or not
+            previouslySelectedItem = currentFile.SelectedIndex;
+
+            // let's try renaming the files here, after viewing a new item
+            // nope, causes a temporary freeze when viewing videos
+            // RenameFile();
+
+            // try to scroll the files list further to see the next files
+            // ...
+            // can't find any method to increment scroll by one
+
+        }
+
     }
+
 }
