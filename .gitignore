@@ -3,3 +3,5 @@
 ImOrg/obj
 Debug/
 Debug
+ImOrg/bin/x64/Debug/ImOrg.exe
+ImOrg/bin/x64/Debug/ImOrg.pdb
