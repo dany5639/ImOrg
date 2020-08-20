@@ -47,11 +47,9 @@
             this.toolStripTextBox_videoSkipLength = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timerVideo = new System.Windows.Forms.Timer(this.components);
             this.button_debug_rename = new System.Windows.Forms.Button();
-            this.timerRename = new System.Windows.Forms.Timer(this.components);
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
-            this._spamParent = new System.Windows.Forms.Timer(this.components);
+            this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -214,12 +212,6 @@
             this.ToolStrip.Size = new System.Drawing.Size(26, 17);
             this.ToolStrip.Text = "Idle";
             // 
-            // timerVideo
-            // 
-            this.timerVideo.Enabled = true;
-            this.timerVideo.Interval = 1000;
-            this.timerVideo.Tick += new System.EventHandler(this.TimerVideo_Tick);
-            // 
             // button_debug_rename
             // 
             this.button_debug_rename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -233,14 +225,12 @@
             this.button_debug_rename.Visible = false;
             this.button_debug_rename.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // timerRename
-            // 
-            this.timerRename.Enabled = true;
-            this.timerRename.Interval = 1000;
-            this.timerRename.Tick += new System.EventHandler(this.TimerRename_Tick);
-            // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.panel1.Location = new System.Drawing.Point(207, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1044, 614);
@@ -251,12 +241,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1251, 740);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.button_debug_rename);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "ImOrg";
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
@@ -280,7 +270,6 @@
         private System.Windows.Forms.ToolStripMenuItem rGBBackgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
-        private System.Windows.Forms.Timer timerVideo;
         private System.Windows.Forms.Button button_debug_rename;
         private System.Windows.Forms.ToolStripMenuItem sortFilesByTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
@@ -289,9 +278,8 @@
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoSkipLength;
         private System.Windows.Forms.ToolStripMenuItem renamingTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_renamingMode;
-        private System.Windows.Forms.Timer timerRename;
         private System.Windows.Forms.Timer timer_startSetParent;
-        private System.Windows.Forms.Timer _spamParent;
+        private System.Windows.Forms.Timer timer_spamParent;
         private System.Windows.Forms.Panel panel1;
     }
 }

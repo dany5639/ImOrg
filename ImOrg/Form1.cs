@@ -26,18 +26,16 @@ namespace ImOrg
         private Dictionary<int, itemInfo> items = new Dictionary<int, itemInfo>();
 
         private bool isDebug = false;
-        private bool isDebugDontMove = false;
         private string nf = "";
         private string previousNewFilenameTemp = "";
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
-        private List<string> logq = new List<string>(); // even after so long, i still don't have a clue what "static" exactly means
         private int previouslySelectedItem = -1;
-        private int prevIndex1 = -1;
         private int videoSkipSeconds = 5;
         private string fullPath = "";
-        private static string oldFullpath = "";
-        private static string newFullpath = "";
+        private string oldFullpath = "";
+        private string newFullpath = "";
+        private List<int> indexesToName = new List<int>();
 
         private class itemInfo
         {
@@ -401,9 +399,9 @@ namespace ImOrg
 
             var oldFileName = listBox_files.SelectedItem.ToString();
 
-            if (false) // debug
-                if (e.KeyCode != Keys.ShiftKey)
-                    ToolStrip.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
+            // if (false) // debug
+            //     if (e.KeyCode != Keys.ShiftKey)
+            //         ToolStrip.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
 
             switch (e.KeyCode)
             {
@@ -450,9 +448,12 @@ namespace ImOrg
 
                     ToolStrip.Text = $"Renaming queued: {oldFileName} to {nf}";
 
-                    // RenameFiles();
-
                     nf = "";
+
+                    if (indexesToName.Contains(selectedIndex))
+                        return;
+
+                    indexesToName.Add(selectedIndex);
 
                     return;
 
@@ -551,6 +552,7 @@ namespace ImOrg
                     return;
 
                 case Keys.F12: // resize image
+                    // well this completely broke out of nowhere
                     var a = (int)pictureBox1.SizeMode;
                     if (a + 1 == availablePictureModes.Count)
                         a = -1;
@@ -614,35 +616,30 @@ namespace ImOrg
         #endregion
 
         #region Move File
-        private void RenameFiles()
+        private void managePreviousItems()
         {
-            // wait what about moving directories
-            for (int i = 0; i < items.Count; i++)
+            var indexesToRemove = new List<int>();
+
+            foreach (var i in indexesToName)
             {
+                // wait what about moving directories
                 var item = items[i];
 
                 // skip files that don't need to be renamed
                 if (item.toRename == false)
-                    continue;
+                    return; // shouldn't happen
 
                 // skip files if new name was failed to be set
                 if (item.newFilenameTemp == "")
-                    continue;
+                    return;
 
                 oldFullpath = item.fullpath;
-                var newTempFilename = item.newFilenameTemp;
 
                 if (!new FileInfo(oldFullpath).Exists)
                 {
-                    log($"RenameOrMoveItems(): error: file doesn't exists." +
-                        $"prevFileName = {oldFullpath};");
-                    continue;
+                    log($"RenameOrMoveItems(): error: file doesn't exists. prevFileName = {oldFullpath};");
+                    return;
                 }
-
-                // something causes a renaming thread to end faster than the next one, which causes a name conflict
-                // add some delay between namings
-                // warning: it will cause a stuttery experience
-                Thread.Sleep(100); // move to its own thread to avoid stutters
 
                 var ogFileInfo = new FileInfo(oldFullpath);
                 var ogFileInfoDirectory = ogFileInfo.Directory.ToString();
@@ -682,6 +679,7 @@ namespace ImOrg
 
                 log($"newFullpath after  {newFullpath}");
 
+                // rename by adding the standard windows method: (?)
                 if (File.Exists($"{newFullpath}{ogFileInfo.Extension}"))
                 {
                     var k = -1;
@@ -712,53 +710,38 @@ namespace ImOrg
 
                 log($"newFullpath after2 {newFullpath}");
 
-                if (!isDebugDontMove)
+                if (item.relativePath)
                 {
-                    // testing video stop to fix freeze when renaming
-                    if (listBox_files.SelectedIndex == i)
-                        if (item.type == itemType.video)
-                            throw new Exception("TODO: Stop video playback.");
-
-                    try
-                    {
-                        if (item.relativePath)
-                        {
-                            log($"File.Move start");
-                            File.Move(oldFullpath, newFullpath);
-                            log($"File.Move start");
-                            item.relativePath = false; // reset this incase it gets renamed again
-                        }
-                        else
-                        {
-                            // incase async file rename fails, unset this to fool the loop next time into moving the file normally
-                            item.relativePath = false;
-                            MoveItemAbsolute();
-                        }
-                    }
-                    catch
-                    {
-                        ToolStrip.Text = $"ERROR: failed to rename {oldFullpath} to {newFullpath}";
-                        // video files go trough this multiple times until they can be renamed due to file being used
-                        if (item.type != itemType.video)
-                            item.toRename = false;
-                        continue;
-                    }
+                    log($"File.Move start");
+                    File.Move(oldFullpath, newFullpath);
+                    log($"File.Move start");
                 }
+                else
+                    MoveItemAbsolute();
 
-                log_ts($"Renamed {oldFullpath} to {newFullpath}");
+                // a last check
+                if (!File.Exists(newFullpath))
+                {
+                    log_ts($"Failed to rename {oldFullpath} to {newFullpath}");
+                    continue;
+                }
 
                 item.fullpath = newFullpath;
                 item.filename = newFullpath.Split("\\".ToCharArray()).Last();
                 item.newFilenameTemp = "";
                 item.toRename = false;
+                item.relativePath = false;
 
                 listBox_files.Items[i] = item.filename;
+
+                log_ts($"Renamed {oldFullpath} to {newFullpath}");
+
+                indexesToRemove.Add(i);
 
             }
 
         }
-
-        public void FileMove()
+        private void FileMove()
         {
             log($"RenameFile start");
             var filename = new FileInfo(newFullpath).Name;
@@ -785,7 +768,7 @@ namespace ImOrg
         }
         private void Button1_Click(object sender, EventArgs e)
         {
-            RenameFiles();
+            managePreviousItems();
         }
         #endregion
 
@@ -802,18 +785,10 @@ namespace ImOrg
             //     timerVideo.Enabled = false;
             // }
         }
-        private void TimerRename_Tick(object sender, EventArgs e)
-        {
-            RenameFiles();
-        }
         #endregion
 
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
-            prevIndex1 = listBox_files.SelectedIndex;
-
-            timerVideo.Enabled = false;
-
             var currentFile = (ListBox)sender;
             if (currentFile.SelectedItem == null)
                 return;
@@ -832,6 +807,8 @@ namespace ImOrg
 
             if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
             {
+                // loadVideo();
+                throw new NotImplementedException();
             }
             else
             {
@@ -850,6 +827,8 @@ namespace ImOrg
             // try to scroll the files list further to see the next files
             // ...
             // can't find any method to increment scroll by one
+
+            managePreviousItems();
 
         }
 
