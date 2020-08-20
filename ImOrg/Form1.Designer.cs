@@ -50,7 +50,6 @@
             this.button_debug_rename = new System.Windows.Forms.Button();
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
-            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -91,6 +90,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Resize += new System.EventHandler(this.PictureBox1_Resize);
             // 
             // statusStrip1
             // 
@@ -225,16 +225,13 @@
             this.button_debug_rename.Visible = false;
             this.button_debug_rename.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // panel1
+            // timer_startSetParent
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.panel1.Location = new System.Drawing.Point(207, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1044, 614);
-            this.panel1.TabIndex = 13;
+            this.timer_startSetParent.Tick += new System.EventHandler(this.Timer_startSetParent_Tick);
+            // 
+            // timer_spamParent
+            // 
+            this.timer_spamParent.Tick += new System.EventHandler(this.Timer_spamParent_Tick);
             // 
             // Form1
             // 
@@ -246,9 +243,10 @@
             this.Controls.Add(this.button_debug_rename);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
-            this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "ImOrg";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
@@ -280,7 +278,6 @@
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_renamingMode;
         private System.Windows.Forms.Timer timer_startSetParent;
         private System.Windows.Forms.Timer timer_spamParent;
-        private System.Windows.Forms.Panel panel1;
     }
 }
 
