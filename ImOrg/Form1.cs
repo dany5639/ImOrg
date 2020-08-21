@@ -616,7 +616,8 @@ namespace ImOrg
         #region Move File
         private void managePreviousItems()
         {
-            var indexesToRemove = new List<int>();
+            var processedIndexes = new List<int>();
+            log($"managePreviousItems(): indexesToName {indexesToName.Count}");
 
             foreach (var i in indexesToName)
             {
@@ -715,12 +716,26 @@ namespace ImOrg
                     log($"File.Move start");
                 }
                 else
-                    MoveItemAbsolute();
+                {
+                    // MoveItemAbsolute();
+                    var filename = new FileInfo(newFullpath).Name;
+                    if (!File.Exists(filename))
+                    {
+                        try
+                        {
+                            Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
+                        }
+                        catch
+                        {
+                            log_ts($"Failed: RenameFile(): {oldFullpath} to {newFullpath}");
+                        }
+                    }
+                }
 
                 // a last check
                 if (!File.Exists(newFullpath))
                 {
-                    log_ts($"Failed to rename {oldFullpath} to {newFullpath}");
+                    log_ts($"Failed to rename {oldFullpath} to {newFullpath}: new file doesn't exist.");
                     continue;
                 }
 
@@ -734,29 +749,23 @@ namespace ImOrg
 
                 log_ts($"Renamed {oldFullpath} to {newFullpath}");
 
-                indexesToRemove.Add(i);
+                processedIndexes.Add(i);
 
             }
+
+            // remove all indexes that were processed
+            var indexesToNameTemp = new List<int>();
+            foreach (var i in indexesToName)
+                if (!processedIndexes.Contains(i))
+                    indexesToNameTemp.Add(i);
+
+            indexesToName.Clear();
+            foreach (var i in indexesToNameTemp)
+                indexesToName.Add(i);
 
         }
         private void FileMove()
-        {
-            log($"RenameFile start");
-            var filename = new FileInfo(newFullpath).Name;
-            // this shouldn't happen, but it did, 3 times so far
-            // occurs when user is renaming files too fast and both files have the same name
-            if (!File.Exists(filename))
-            {
-                try
-                {
-                    Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(oldFullpath, filename);
-                }
-                catch
-                {
-                    log($"RenameFile end");
-                }
-            }
-            log($"RenameFile end");
+        { 
         }
         private void MoveItemAbsolute()
         {
@@ -838,7 +847,7 @@ namespace ImOrg
 
         #region FFPLAY
         public Process ffplay = new Process();
-        private void ffmpeg_setInfo()
+        private void ffplay_setInfo()
         {
             ffplay.StartInfo.FileName = "ffplay.exe";
 
@@ -860,7 +869,7 @@ namespace ImOrg
             ffplay.StartInfo.UseShellExecute = false;
 
         }
-        public void ffplay_startThread()
+        private void ffplay_startThread()
         {
             ffplay.Start();
         }
@@ -908,6 +917,7 @@ namespace ImOrg
                 moveVideoWindow();
             }
 
+            this.Focus();
         }
         private void moveVideoWindow()
         {
@@ -937,7 +947,7 @@ namespace ImOrg
             ffplay_kill(); // don't allow other instances for now, as i can't kill the already existing instance
 
             log("ffplay_loadVideo(): ffmpeg_setInfo()");
-            ffmpeg_setInfo();
+            ffplay_setInfo();
 
             log("ffplay_loadVideo(): ffmpeg_startThread()");
             ffplay_Thread();
@@ -963,6 +973,9 @@ namespace ImOrg
 
         #endregion
 
+        // current major problems:
+        // while playing a video, can't use up/down arrows to view other items
+        // can't rename videos
     }
 
 }
