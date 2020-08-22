@@ -47,9 +47,9 @@
             this.toolStripTextBox_videoSkipLength = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
-            this.button_debug_rename = new System.Windows.Forms.Button();
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
+            this.timer_refocusMain = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -212,19 +212,6 @@
             this.ToolStrip.Size = new System.Drawing.Size(26, 17);
             this.ToolStrip.Text = "Idle";
             // 
-            // button_debug_rename
-            // 
-            this.button_debug_rename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_debug_rename.BackColor = System.Drawing.Color.Black;
-            this.button_debug_rename.Location = new System.Drawing.Point(1050, 713);
-            this.button_debug_rename.Name = "button_debug_rename";
-            this.button_debug_rename.Size = new System.Drawing.Size(201, 27);
-            this.button_debug_rename.TabIndex = 12;
-            this.button_debug_rename.Text = "Akward debug button to manually move";
-            this.button_debug_rename.UseVisualStyleBackColor = false;
-            this.button_debug_rename.Visible = false;
-            this.button_debug_rename.Click += new System.EventHandler(this.Button1_Click);
-            // 
             // timer_startSetParent
             // 
             this.timer_startSetParent.Tick += new System.EventHandler(this.Timer_startSetParent_Tick);
@@ -233,6 +220,11 @@
             // 
             this.timer_spamParent.Tick += new System.EventHandler(this.Timer_spamParent_Tick);
             // 
+            // timer_refocusMain
+            // 
+            this.timer_refocusMain.Interval = 1000;
+            this.timer_refocusMain.Tick += new System.EventHandler(this.Timer_refocusMain_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -240,7 +232,6 @@
             this.ClientSize = new System.Drawing.Size(1251, 740);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.treeView_folders);
-            this.Controls.Add(this.button_debug_rename);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
             this.Name = "Form1";
@@ -268,7 +259,6 @@
         private System.Windows.Forms.ToolStripMenuItem rGBBackgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
-        private System.Windows.Forms.Button button_debug_rename;
         private System.Windows.Forms.ToolStripMenuItem sortFilesByTypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -278,6 +268,7 @@
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_renamingMode;
         private System.Windows.Forms.Timer timer_startSetParent;
         private System.Windows.Forms.Timer timer_spamParent;
+        private System.Windows.Forms.Timer timer_refocusMain;
     }
 }
 

@@ -225,7 +225,7 @@ namespace ImOrg
 
 #if DEBUG
             isDebug = true;
-            button_debug_rename.Show();
+
             log($"DEBUG: isDebug {isDebug}");
 
             for (int i = 0; i < treeView_folders.Nodes.Count; i++)
@@ -409,19 +409,26 @@ namespace ImOrg
 
             switch (e.KeyCode)
             {
+                case Keys.Left:
+                    SetForegroundWindow((int)ffplay.MainWindowHandle);
+                    e.Handled = true;
+                    timer_refocusMain.Start();
+                    return;
+                case Keys.Right:
+                    SetForegroundWindow((int)ffplay.MainWindowHandle);
+                    e.Handled = true;
+                    timer_refocusMain.Start();
+                    return;
+                default:
+                    break;
+            }
+
+            switch (e.KeyCode)
+            {
                 case Keys.Alt:
                 case Keys.ShiftKey:
                 case Keys.ControlKey:
                     break;
-
-                case Keys.Left:
-                    throw new Exception("TODO: Video skip forward.");
-                    e.Handled = true;
-                    return;
-                case Keys.Right:
-                    throw new Exception("TODO: Video skip backwards.");
-                    e.Handled = true;
-                    return;
 
                 case Keys.Up:
                 case Keys.Down:
@@ -773,10 +780,6 @@ namespace ImOrg
             var thread = new Thread(threadStart);
             thread.Start();
         }
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            managePreviousItems();
-        }
         #endregion
 
         #region Timers
@@ -843,6 +846,8 @@ namespace ImOrg
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        [DllImport("user32.dll")]
+        public static extern int SetForegroundWindow(int hwnd);
         #endregion
 
         #region FFPLAY
@@ -886,6 +891,9 @@ namespace ImOrg
 
             timer_startSetParent.Stop();
             timer_spamParent.Stop();
+
+            timer_refocusMain.Stop();
+            timer_refocusMain.Interval = 800;
         }
         private void Timer_startSetParent_Tick(object sender, EventArgs e)
         {
@@ -917,7 +925,8 @@ namespace ImOrg
                 moveVideoWindow();
             }
 
-            this.Focus();
+            SetForegroundWindow((int)this.Handle);
+
         }
         private void moveVideoWindow()
         {
@@ -970,11 +979,16 @@ namespace ImOrg
             log("ffplay_kill");
             ffplay_kill();
         }
-
+        private void Timer_refocusMain_Tick(object sender, EventArgs e)
+        {
+            // this is so janky i hate it
+            // need a way to control ffplay without focusing its window, like a process.sendCommand()
+            SetForegroundWindow((int)this.Handle);
+            timer_refocusMain.Stop();
+        }
         #endregion
 
         // current major problems:
-        // while playing a video, can't use up/down arrows to view other items
         // can't rename videos
     }
 
