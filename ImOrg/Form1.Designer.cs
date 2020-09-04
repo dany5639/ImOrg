@@ -90,7 +90,9 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.LoadCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.PictureBox1_LoadCompleted);
             this.pictureBox1.Resize += new System.EventHandler(this.PictureBox1_Resize);
+            this.pictureBox1.ParentChanged += new System.EventHandler(this.PictureBox1_ParentChanged);
             // 
             // statusStrip1
             // 

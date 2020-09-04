@@ -783,18 +783,6 @@ namespace ImOrg
         #endregion
 
         #region Timers
-        private void TimerVideo_Tick(object sender, EventArgs e)
-        {
-            // if (listBox_files.SelectedIndex == -1)
-            //     return;
-            // 
-            // if (prevIndex1 == listBox_files.SelectedIndex)
-            // {
-            //     loadVideo();
-            //     pictureBox1.Hide();
-            //     timerVideo.Enabled = false;
-            // }
-        }
         #endregion
 
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
@@ -952,6 +940,11 @@ namespace ImOrg
         }
         private void ffplay_loadVideo()
         {
+            timer_refocusMain.Stop();
+            timer_spamParent.Stop();
+            timer_startSetParent.Stop();
+            
+
             log("ffplay_loadVideo(): ffplay_kill()");
             ffplay_kill(); // don't allow other instances for now, as i can't kill the already existing instance
 
@@ -986,10 +979,20 @@ namespace ImOrg
             SetForegroundWindow((int)this.Handle);
             timer_refocusMain.Stop();
         }
+        private void PictureBox1_LoadCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+
+        }
+        private void PictureBox1_ParentChanged(object sender, EventArgs e)
+        {
+
+        }
         #endregion
 
         // current major problems:
-        // can't rename videos
+        // when moving to a folder, 2 folders are made instead of just one
+        // when scrolling immediately after a video starts playing, the video window can fail to attach
+
     }
 
 }
