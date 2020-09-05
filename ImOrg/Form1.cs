@@ -310,7 +310,6 @@ namespace ImOrg
             }
 
         }
-
         private void TreeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             // folder has been expanded, find all the folders in it
@@ -343,6 +342,7 @@ namespace ImOrg
         }
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e) // a folder has been selected, scan for all supported files
         {
+            indexesToName.Clear();
             listBox_files.Items.Clear();
             items.Clear();
 
@@ -809,8 +809,8 @@ namespace ImOrg
             }
             else
             {
-                if (previouslySelectedItem != -1)
-                    if (items[previouslySelectedItem].type == itemType.video)
+                // if (previouslySelectedItem != -1)
+                //     if (items[previouslySelectedItem].type == itemType.video)
                         ffplay_kill(); // kill only if the player is up
 
                 pictureBox1.LoadAsync(fullPath);
@@ -890,7 +890,7 @@ namespace ImOrg
         }
         private void Timer_spamParent_Tick(object sender, EventArgs e)
         {
-            log($"Timer_spamParent_Tick");
+            // log($"Timer_spamParent_Tick");
 
             // this is quite ugly, i need a way to find out that the ffplay window has spawned, and not spam a function to attach it every specified tick
             // ffplay.WaitForInputIdle(500); // try this
