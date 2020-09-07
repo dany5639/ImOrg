@@ -50,6 +50,7 @@
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
             this.timer_refocusMain = new System.Windows.Forms.Timer(this.components);
+            this.startVideoMutedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -117,6 +118,7 @@
             this.sortFilesByTypeToolStripMenuItem,
             this.renamingTypeToolStripMenuItem,
             this.videoScrollingSpeedToolStripMenuItem,
+            this.startVideoMutedToolStripMenuItem,
             this.toolStripMenuItem1});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -227,6 +229,15 @@
             this.timer_refocusMain.Interval = 1000;
             this.timer_refocusMain.Tick += new System.EventHandler(this.Timer_refocusMain_Tick);
             // 
+            // startVideoMutedToolStripMenuItem
+            // 
+            this.startVideoMutedToolStripMenuItem.Checked = true;
+            this.startVideoMutedToolStripMenuItem.CheckOnClick = true;
+            this.startVideoMutedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.startVideoMutedToolStripMenuItem.Name = "startVideoMutedToolStripMenuItem";
+            this.startVideoMutedToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.startVideoMutedToolStripMenuItem.Text = "Start video muted";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -271,6 +282,7 @@
         private System.Windows.Forms.Timer timer_startSetParent;
         private System.Windows.Forms.Timer timer_spamParent;
         private System.Windows.Forms.Timer timer_refocusMain;
+        private System.Windows.Forms.ToolStripMenuItem startVideoMutedToolStripMenuItem;
     }
 }
 

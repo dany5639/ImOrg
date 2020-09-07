@@ -224,33 +224,38 @@ namespace ImOrg
             initializeTimers();
 
 #if DEBUG
-            isDebug = true;
-
-            log($"DEBUG: isDebug {isDebug}");
-
-            for (int i = 0; i < treeView_folders.Nodes.Count; i++)
+            try // ...
             {
-                log($"Found Disk: {treeView_folders.Nodes[i].Text.ToString()}");
-                if (treeView_folders.Nodes[i].Text.ToString() != "R:")
-                    continue;
+                isDebug = true;
 
-                treeView_folders.SelectedNode = treeView_folders.Nodes[i];
-                treeView_folders.SelectedNode.Expand();
+                log($"DEBUG: isDebug {isDebug}");
 
-                // ok well this suddenly doesn't work anymore, great
-                for (int j = 0; j < treeView_folders.Nodes.Count; j++)
+                for (int i = 0; i < treeView_folders.Nodes.Count; i++)
                 {
-                    log($"Found directory: {treeView_folders.Nodes[i].Nodes[j].Text.ToString()}");
-                    if (treeView_folders.Nodes[i].Nodes[j].Text.ToString() != "UNSORTED_SFW")
+                    log($"Found Disk: {treeView_folders.Nodes[i].Text.ToString()}");
+                    if (treeView_folders.Nodes[i].Text.ToString() != "R:")
                         continue;
 
-                    // treeView_folders.SelectedNode = treeView_folders.Nodes[i].Nodes[j];
-                    var a = treeView_folders.SelectedNode.Nodes[j].Nodes[0];
+                    treeView_folders.SelectedNode = treeView_folders.Nodes[i];
+                    treeView_folders.SelectedNode.Expand();
+
+                    // ok well this suddenly doesn't work anymore, great
+                    for (int j = 0; j < treeView_folders.Nodes.Count; j++)
+                    {
+                        log($"Found directory: {treeView_folders.Nodes[i].Nodes[j].Text.ToString()}");
+                        if (treeView_folders.Nodes[i].Nodes[j].Text.ToString() != "UNSORTED_SFW")
+                            continue;
+
+                        // treeView_folders.SelectedNode = treeView_folders.Nodes[i].Nodes[j];
+                        var a = treeView_folders.SelectedNode.Nodes[j].Nodes[0];
+                        return;
+                    }
+
                     return;
                 }
-
-                return;
             }
+            catch
+            { }
 
 #endif
 
@@ -751,6 +756,11 @@ namespace ImOrg
                 item.newFilenameTemp = "";
                 item.toRename = false;
                 item.relativePath = false;
+                item.filenameWithoutExtension = filenameWithoutExtension;
+                var di = item.filename.LastIndexOf(".".ToCharArray()[0]);
+                var el = item.filename.Length - di;
+
+                item.filenameWithoutExtension = $"{item.filename.Substring(0, item.filename.Length - el)}";
 
                 listBox_files.Items[i] = item.filename;
 
@@ -846,13 +856,15 @@ namespace ImOrg
 
             // no idea why 8 and 30, maybe title bar + borders
 
+            var volume = startVideoMutedToolStripMenuItem.Checked == true ? "0" : "100";
+
             ffplay.StartInfo.Arguments = $"" +
                 $"-left {pictureBox1.Location.X + this.Location.X + 8} " +
                 $"-top {pictureBox1.Location.Y + this.Location.Y + 30} " +
                 $"-x {pictureBox1.Width} " +
                 $"-y {pictureBox1.Height} " +
                 $"-noborder " +
-                $"-volume 0 " +
+                $"-volume {volume} " +
                 $"\"{fullPath}\"" +
                 $"";
 
