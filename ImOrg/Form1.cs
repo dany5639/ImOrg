@@ -666,8 +666,8 @@ namespace ImOrg
                     case renamingMode.move:
                         ogFileInfoDirectory = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
 
-                        if (!Directory.Exists($"{ogFileInfoDirectory}\\{item.newFilenameTemp}"))
-                            Directory.CreateDirectory($"{ogFileInfoDirectory}\\{item.newFilenameTemp}");
+                        if (!Directory.Exists($"{ogFileInfoDirectory}"))
+                            Directory.CreateDirectory($"{ogFileInfoDirectory}");
 
                         item.newFilenameTemp = ogFileInfo.Name.Substring(0, ogFileInfo.Name.Length - ogFileInfo.Extension.Length);
                         newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
