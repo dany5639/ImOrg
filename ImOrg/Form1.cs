@@ -351,6 +351,9 @@ namespace ImOrg
             listBox_files.Items.Clear();
             items.Clear();
 
+            if (!Directory.Exists(e.Node.FullPath))
+                return;
+
             var files = Directory.EnumerateFiles($"{e.Node.FullPath}\\");
             var files2 = files.ToList();
             files2.Sort();
