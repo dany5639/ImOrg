@@ -472,11 +472,15 @@ namespace ImOrg
             switch (e.KeyCode)
             {
                 case Keys.Left:
+                    if (!ffplay_isRunning)
+                        break;
                     SetForegroundWindow((int)ffplay.MainWindowHandle);
                     e.Handled = true;
                     timer_refocusMain.Start();
                     return;
                 case Keys.Right:
+                    if (!ffplay_isRunning)
+                        break;
                     SetForegroundWindow((int)ffplay.MainWindowHandle);
                     e.Handled = true;
                     timer_refocusMain.Start();
