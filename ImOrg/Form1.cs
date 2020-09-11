@@ -221,13 +221,9 @@ namespace ImOrg
 
             initializeTimers();
 
-            numericUpDown1.Hide();
-
 #if DEBUG
             isDebug = true;
             log($"DEBUG mode");
-
-            numericUpDown1.Show();
 
             try // ...
             {
@@ -1008,61 +1004,18 @@ namespace ImOrg
         #endregion
 
         #region Timers
-        #endregion
-
-        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
+        private void Timer_refocusMain_Tick(object sender, EventArgs e)
         {
-            var currentFile = (ListBox)sender;
-            if (currentFile.SelectedItem == null)
-                return;
-
-            // don't do anything if the selected file didn't change incase the user clicked outside and needs to click back to rename it
-            if (currentFile.SelectedIndex == previouslySelectedItem)
-                return;
-
-            fullPath = items[currentFile.SelectedIndex].fullpath;
-
-            if (items[currentFile.SelectedIndex].type == itemType.directory)
-            {
-                if (!Directory.Exists(fullPath))
-                {
-                    ToolStrip.Text = $"ERROR: cannot find {fullPath}";
-                    return;
-                }
-
-                goto skipForDirectory;
-            }
-
-            if (!File.Exists(fullPath))
-            {
-                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
-                return;
-            }
-
-            if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
-            {
-                ffplay_loadVideo();
-            }
-            else
-            {
-                // if (previouslySelectedItem != -1)
-                //     if (items[previouslySelectedItem].type == itemType.video)
-                        ffplay_kill(); // kill only if the player is up
-
-                pictureBox1.LoadAsync(fullPath);
-
-            }
-
-            skipForDirectory:
-
-            // check if this should be placed after RenameFile(); or not
-            previouslySelectedItem = currentFile.SelectedIndex;
-
-            // try to scroll the files list further to see the next files
-            // ...
-            // can't find any method to increment scroll by one
-
+            // this is so janky i hate it
+            // need a way to control ffplay without focusing its window, like a process.sendCommand()
+            SetForegroundWindow((int)this.Handle);
+            timer_refocusMain.Stop();
         }
+        private void Timer_renameItems_Tick(object sender, EventArgs e)
+        {
+            managePreviousItems();
+        }
+        #endregion
 
         #region FFPLAY DLL
         [DllImport("user32.dll")]
@@ -1227,29 +1180,64 @@ namespace ImOrg
             // log("ffplay_kill");
             ffplay_kill();
         }
-        private void Timer_refocusMain_Tick(object sender, EventArgs e)
-        {
-            // this is so janky i hate it
-            // need a way to control ffplay without focusing its window, like a process.sendCommand()
-            SetForegroundWindow((int)this.Handle);
-            timer_refocusMain.Stop();
-        }
-
-        private void Timer_renameItems_Tick(object sender, EventArgs e)
-        {
-            managePreviousItems();
-        }
-
-        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-            timer_renameItems.Interval = (int)numericUpDown1.Value;
-        }
 
         #endregion
 
+        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
+        {
+            var currentFile = (ListBox)sender;
+            if (currentFile.SelectedItem == null)
+                return;
+
+            // don't do anything if the selected file didn't change incase the user clicked outside and needs to click back to rename it
+            if (currentFile.SelectedIndex == previouslySelectedItem)
+                return;
+
+            fullPath = items[currentFile.SelectedIndex].fullpath;
+
+            if (items[currentFile.SelectedIndex].type == itemType.directory)
+            {
+                if (!Directory.Exists(fullPath))
+                {
+                    ToolStrip.Text = $"ERROR: cannot find {fullPath}";
+                    return;
+                }
+
+                goto skipForDirectory;
+            }
+
+            if (!File.Exists(fullPath))
+            {
+                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
+                return;
+            }
+
+            if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
+            {
+                ffplay_loadVideo();
+            }
+            else
+            {
+                // if (previouslySelectedItem != -1)
+                //     if (items[previouslySelectedItem].type == itemType.video)
+                ffplay_kill(); // kill only if the player is up
+
+                pictureBox1.LoadAsync(fullPath);
+
+            }
+
+            skipForDirectory:
+
+            // check if this should be placed after RenameFile(); or not
+            previouslySelectedItem = currentFile.SelectedIndex;
+
+            // try to scroll the files list further to see the next files
+            // ...
+            // can't find any method to increment scroll by one
+
+        }
+
         // current major problems:
-        // when moving to a folder, 2 folders are made instead of just one
-        // when scrolling immediately after a video starts playing, the video window can fail to attach
 
     }
 
