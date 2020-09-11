@@ -27,8 +27,8 @@ namespace ImOrg
 
         private bool isDebug = false;
         private bool ffplay_isRunning = false;
-        private string nf = "";
-        private string previousNewFilenameTemp = "";
+        private string currNewName = "";
+        private string previousNewFilename = "";
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
         private int previouslySelectedItem = -1;
@@ -514,18 +514,36 @@ namespace ImOrg
                     if (items[selectedIndex].newFilenameTemp != "")
                         break;
 
-                    items[selectedIndex].newFilenameTemp = nf;
+                    items[selectedIndex].newFilenameTemp = currNewName; // me a day later: what's this for?
                     items[selectedIndex].toRename = true;
 
-                    if (nf != "")
-                        previousNewFilenameTemp = nf;
+                    if (currNewName != "")
+                        previousNewFilename = currNewName;
 
-                    if (nf == "")
+                    if (currNewName == "")
                         break;
 
-                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {nf}";
+                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
 
-                    nf = "";
+                    currNewName = "";
+
+                    if (indexesToName.Contains(selectedIndex))
+                        return;
+
+                    indexesToName.Add(selectedIndex);
+
+                    timer_renameItems.Start();
+                    return;
+
+                case Keys.F3:
+                    selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
+
+                    var it = items[selectedIndex];
+                    var og = it.originalFullpath;
+                    items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - it.extension.Length - og.LastIndexOf("\\") - 1);
+                    items[selectedIndex].toRename = true;
+
+                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
 
                     if (indexesToName.Contains(selectedIndex))
                         return;
@@ -536,35 +554,35 @@ namespace ImOrg
                     return;
 
                 case Keys.Escape:
-                    nf = "";
+                    currNewName = "";
                     ToolStrip.Text = $"Name reset."; // maybe use to undo
                     return;
 
                 #region numbers and signs
-                case Keys.OemMinus: nf = $"{nf}_"; break;
-                case Keys.Subtract: nf = $"{nf}-"; break;
-                case Keys.NumPad0: nf = $"{nf}0"; break;
-                case Keys.NumPad1: nf = $"{nf}1"; break;
-                case Keys.NumPad2: nf = $"{nf}2"; break;
-                case Keys.NumPad3: nf = $"{nf}3"; break;
-                case Keys.NumPad4: nf = $"{nf}4"; break;
-                case Keys.NumPad5: nf = $"{nf}5"; break;
-                case Keys.NumPad6: nf = $"{nf}6"; break;
-                case Keys.NumPad7: nf = $"{nf}7"; break;
-                case Keys.NumPad8: nf = $"{nf}8"; break;
-                case Keys.NumPad9: nf = $"{nf}9"; break;
-                case Keys.Space: nf = $"{nf} "; break;
-                case Keys.Add: nf = $"{nf}+"; break;
-                case Keys.D0: nf = $"{nf}0"; break;
-                case Keys.D1: nf = $"{nf}1"; break;
-                case Keys.D2: nf = $"{nf}2"; break;
-                case Keys.D3: nf = $"{nf}3"; break;
-                case Keys.D4: nf = $"{nf}4"; break;
-                case Keys.D5: nf = $"{nf}5"; break;
-                case Keys.D6: nf = $"{nf}6"; break;
-                case Keys.D7: nf = $"{nf}7"; break;
-                case Keys.D8: nf = $"{nf}8"; break;
-                case Keys.D9: nf = $"{nf}9"; break;
+                case Keys.OemMinus: currNewName = $"{currNewName}_"; break;
+                case Keys.Subtract: currNewName = $"{currNewName}-"; break;
+                case Keys.NumPad0: currNewName = $"{currNewName}0"; break;
+                case Keys.NumPad1: currNewName = $"{currNewName}1"; break;
+                case Keys.NumPad2: currNewName = $"{currNewName}2"; break;
+                case Keys.NumPad3: currNewName = $"{currNewName}3"; break;
+                case Keys.NumPad4: currNewName = $"{currNewName}4"; break;
+                case Keys.NumPad5: currNewName = $"{currNewName}5"; break;
+                case Keys.NumPad6: currNewName = $"{currNewName}6"; break;
+                case Keys.NumPad7: currNewName = $"{currNewName}7"; break;
+                case Keys.NumPad8: currNewName = $"{currNewName}8"; break;
+                case Keys.NumPad9: currNewName = $"{currNewName}9"; break;
+                case Keys.Space: currNewName = $"{currNewName} "; break;
+                case Keys.Add: currNewName = $"{currNewName}+"; break;
+                case Keys.D0: currNewName = $"{currNewName}0"; break;
+                case Keys.D1: currNewName = $"{currNewName}1"; break;
+                case Keys.D2: currNewName = $"{currNewName}2"; break;
+                case Keys.D3: currNewName = $"{currNewName}3"; break;
+                case Keys.D4: currNewName = $"{currNewName}4"; break;
+                case Keys.D5: currNewName = $"{currNewName}5"; break;
+                case Keys.D6: currNewName = $"{currNewName}6"; break;
+                case Keys.D7: currNewName = $"{currNewName}7"; break;
+                case Keys.D8: currNewName = $"{currNewName}8"; break;
+                case Keys.D9: currNewName = $"{currNewName}9"; break;
                 #endregion
 
                 #region letters
@@ -595,24 +613,24 @@ namespace ImOrg
                 case Keys.Y:
                 case Keys.Z:
                     if (e.Shift)
-                        nf = $"{nf}{e.KeyCode}";
+                        currNewName = $"{currNewName}{e.KeyCode}";
                     else
-                        nf = $"{nf}{e.KeyCode.ToString().ToLower()}";
+                        currNewName = $"{currNewName}{e.KeyCode.ToString().ToLower()}";
                     break;
                 #endregion
 
                 case Keys.Back:
-                    if (nf != "")
-                        nf = nf.Remove(nf.Length - 1, 1);
+                    if (currNewName != "")
+                        currNewName = currNewName.Remove(currNewName.Length - 1, 1);
                     break;
 
                 // press this key to use the last used filename
                 case Keys.F1:
                     // use the last renamed file as template
                     // maybe change key or let the user customize it
-                    nf = previousNewFilenameTemp;
-                    if (nf != "")
-                        ToolStrip.Text = $"Reusing: {nf}"; // maybe use to undo
+                    currNewName = previousNewFilename;
+                    if (currNewName != "")
+                        ToolStrip.Text = $"Reusing: {currNewName}"; // maybe use to undo
                     return;
 
                 case Keys.F2: // change renaming mode
@@ -625,8 +643,6 @@ namespace ImOrg
                     ToolStrip.Text = $"Renaming mode: {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}";
                     return;
 
-                case Keys.F11:
-                    return;
 
                 case Keys.F12: // resize image
                     // well this completely broke out of nowhere
@@ -643,8 +659,8 @@ namespace ImOrg
                     break;
             }
 
-            if (nf != "")
-                ToolStrip.Text = $"New name: {nf}";
+            if (currNewName != "")
+                ToolStrip.Text = $"New name: {currNewName}";
 
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
@@ -670,6 +686,7 @@ namespace ImOrg
                 "\nESC : cancel last new name." +
                 "\nF1  : use the last typed name." +
                 "\nF2  : change renaming mode." +
+                "\nF3  : restore the original filename from before renaming it in this session." +
                 "\nF12 : change image view mode" +
                 "\n" +
                 "";
@@ -957,8 +974,8 @@ namespace ImOrg
                     }
                     catch (Exception err)
                     {
-                        previousNewFilenameTemp = "";
-                        nf = "";
+                        previousNewFilename = "";
+                        currNewName = "";
 
                         log_ts($"Failed: MoveDirectory(): {oldFullpath} to {newFullpath}");
                         log($"ERROR on managePreviousItems(): move directory: {err}");
