@@ -527,28 +527,10 @@ namespace ImOrg
 
                     currNewName = "";
 
-                    if (indexesToName.Contains(selectedIndex))
-                        return;
+                    if (!indexesToName.Contains(selectedIndex))
+                        indexesToName.Add(selectedIndex);
 
-                    indexesToName.Add(selectedIndex);
-
-                    timer_renameItems.Start();
-                    return;
-
-                case Keys.F3:
-                    selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
-
-                    var it = items[selectedIndex];
-                    var og = it.originalFullpath;
-                    items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - it.extension.Length - og.LastIndexOf("\\") - 1);
-                    items[selectedIndex].toRename = true;
-
-                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
-
-                    if (indexesToName.Contains(selectedIndex))
-                        return;
-
-                    indexesToName.Add(selectedIndex);
+                    // return; // need to handle this better, if an item is stuck in a renaming loop, i need to give it a new name
 
                     timer_renameItems.Start();
                     return;
@@ -643,6 +625,28 @@ namespace ImOrg
                     ToolStrip.Text = $"Renaming mode: {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}";
                     return;
 
+                case Keys.F3:
+                    selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
+
+                    var it = items[selectedIndex];
+                    var og = it.originalFullpath;
+
+                    if (it.type == itemType.directory)
+                        items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - og.LastIndexOf("\\") - 1);
+                    else
+                        items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - it.extension.Length - og.LastIndexOf("\\") - 1);
+
+                    items[selectedIndex].toRename = true;
+
+                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
+
+                    if (indexesToName.Contains(selectedIndex))
+                        return;
+
+                    indexesToName.Add(selectedIndex);
+
+                    timer_renameItems.Start();
+                    return;
 
                 case Keys.F12: // resize image
                     // well this completely broke out of nowhere
@@ -722,11 +726,11 @@ namespace ImOrg
 
                 // skip files that don't need to be renamed
                 if (item.toRename == false)
-                    return; // shouldn't happen
+                    continue; // shouldn't happen
 
                 // skip files if new name was failed to be set
                 if (item.newFilenameTemp == "")
-                    return;
+                    continue;
 
                 oldFullpath = item.fullpath;
 
@@ -802,6 +806,7 @@ namespace ImOrg
                         k++;
                         newFullpath = $"{newFullpath2} ({k})";
                     }
+
                 }
 
                 done1:
@@ -812,12 +817,19 @@ namespace ImOrg
 
                 if (item.relativePath)
                 {
-                    File.Move(oldFullpath, newFullpath);
-                    log($"Moved {oldFullpath} to {newFullpath}");
+                    try
+                    {
+                        File.Move(oldFullpath, newFullpath);
+                        log($"Moved {oldFullpath} to {newFullpath}");
+                    }
+                    catch (IOException err)
+                    {
+                        log_ts($"Failed on managePreviousItems() on files: {oldFullpath} to {newFullpath}: {err}");
+                        continue;
+                    }
                 }
                 else
                 {
-                    // MoveItemAbsolute();
                     var filename = new FileInfo(newFullpath).Name;
                     if (!File.Exists(filename))
                     {
@@ -869,11 +881,11 @@ namespace ImOrg
 
                 // skip files that don't need to be renamed
                 if (item.toRename == false)
-                    return; // shouldn't happen
+                    continue; // shouldn't happen
 
                 // skip files if new name was failed to be set
                 if (item.newFilenameTemp == "")
-                    return;
+                    continue;
 
                 oldFullpath = item.fullpath;
 
@@ -954,9 +966,15 @@ namespace ImOrg
 
                 if (item.relativePath)
                 {
-                    log($"Directory.Move start");
-                    Directory.Move(oldFullpath, newFullpath);
-                    log($"Directory.Move start");
+                    try
+                    {
+                        Directory.Move(oldFullpath, newFullpath);
+                        log_ts($"Renamed {oldFullpath} to {newFullpath}");
+                    }
+                    catch (IOException err)
+                    {
+                        log($"Failed: Directory.Move(): {err}");
+                    }
                 }
                 else
                 {
@@ -974,11 +992,11 @@ namespace ImOrg
                     }
                     catch (Exception err)
                     {
-                        previousNewFilename = "";
-                        currNewName = "";
+                        // previousNewFilename = "";
+                        // currNewName = "";
 
-                        log_ts($"Failed: MoveDirectory(): {oldFullpath} to {newFullpath}");
                         log($"ERROR on managePreviousItems(): move directory: {err}");
+                        continue;
                     }
                 }
 
@@ -1012,15 +1030,7 @@ namespace ImOrg
                 indexesToName.Add(i);
 
             timer_renameItems.Stop();
-        }
-        private void FileMove()
-        { 
-        }
-        private void MoveItemAbsolute()
-        {
-            var threadStart = new ThreadStart(FileMove);
-            var thread = new Thread(threadStart);
-            thread.Start();
+
         }
         #endregion
 
@@ -1206,6 +1216,8 @@ namespace ImOrg
 
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
+            timer_renameItems.Start(); // if a video failed to get renamed previously, attempt now
+
             var currentFile = (ListBox)sender;
             if (currentFile.SelectedItem == null)
                 return;
