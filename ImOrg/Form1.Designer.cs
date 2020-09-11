@@ -39,20 +39,24 @@
             this.rGBBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allowFolderHandlingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sortFilesByTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renamingTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_renamingMode = new System.Windows.Forms.ToolStripComboBox();
             this.videoScrollingSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox_videoSkipLength = new System.Windows.Forms.ToolStripTextBox();
+            this.startVideoMutedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
             this.timer_refocusMain = new System.Windows.Forms.Timer(this.components);
-            this.startVideoMutedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.timer_renameItems = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // treeView_folders
@@ -91,9 +95,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.LoadCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.PictureBox1_LoadCompleted);
             this.pictureBox1.Resize += new System.EventHandler(this.PictureBox1_Resize);
-            this.pictureBox1.ParentChanged += new System.EventHandler(this.PictureBox1_ParentChanged);
             // 
             // statusStrip1
             // 
@@ -114,6 +116,7 @@
             this.rGBBackgroundToolStripMenuItem,
             this.toolStripSeparator1,
             this.allowAnyFiletypeToolStripMenuItem,
+            this.allowFolderHandlingToolStripMenuItem,
             this.allowUPDOWNToRenameToolStripMenuItem,
             this.sortFilesByTypeToolStripMenuItem,
             this.renamingTypeToolStripMenuItem,
@@ -151,6 +154,13 @@
             this.allowAnyFiletypeToolStripMenuItem.Name = "allowAnyFiletypeToolStripMenuItem";
             this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.allowAnyFiletypeToolStripMenuItem.Text = "Allow any filetype";
+            // 
+            // allowFolderHandlingToolStripMenuItem
+            // 
+            this.allowFolderHandlingToolStripMenuItem.CheckOnClick = true;
+            this.allowFolderHandlingToolStripMenuItem.Name = "allowFolderHandlingToolStripMenuItem";
+            this.allowFolderHandlingToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.allowFolderHandlingToolStripMenuItem.Text = "Allow folder handling";
             // 
             // allowUPDOWNToRenameToolStripMenuItem
             // 
@@ -203,6 +213,15 @@
             this.toolStripTextBox_videoSkipLength.Size = new System.Drawing.Size(100, 23);
             this.toolStripTextBox_videoSkipLength.TextChanged += new System.EventHandler(this.ToolStripTextBox1_textChanged);
             // 
+            // startVideoMutedToolStripMenuItem
+            // 
+            this.startVideoMutedToolStripMenuItem.Checked = true;
+            this.startVideoMutedToolStripMenuItem.CheckOnClick = true;
+            this.startVideoMutedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.startVideoMutedToolStripMenuItem.Name = "startVideoMutedToolStripMenuItem";
+            this.startVideoMutedToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.startVideoMutedToolStripMenuItem.Text = "Start video muted";
+            // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
@@ -229,20 +248,46 @@
             this.timer_refocusMain.Interval = 1000;
             this.timer_refocusMain.Tick += new System.EventHandler(this.Timer_refocusMain_Tick);
             // 
-            // startVideoMutedToolStripMenuItem
+            // numericUpDown1
             // 
-            this.startVideoMutedToolStripMenuItem.Checked = true;
-            this.startVideoMutedToolStripMenuItem.CheckOnClick = true;
-            this.startVideoMutedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.startVideoMutedToolStripMenuItem.Name = "startVideoMutedToolStripMenuItem";
-            this.startVideoMutedToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.startVideoMutedToolStripMenuItem.Text = "Start video muted";
+            this.numericUpDown1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericUpDown1.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Location = new System.Drawing.Point(1015, 721);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            20000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown1.TabIndex = 12;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
+            // 
+            // timer_renameItems
+            // 
+            this.timer_renameItems.Interval = 1000;
+            this.timer_renameItems.Tick += new System.EventHandler(this.Timer_renameItems_Tick);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1251, 740);
+            this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.statusStrip1);
@@ -255,6 +300,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -283,6 +329,9 @@
         private System.Windows.Forms.Timer timer_spamParent;
         private System.Windows.Forms.Timer timer_refocusMain;
         private System.Windows.Forms.ToolStripMenuItem startVideoMutedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allowFolderHandlingToolStripMenuItem;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Timer timer_renameItems;
     }
 }
 
