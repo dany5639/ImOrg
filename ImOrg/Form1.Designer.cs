@@ -35,25 +35,29 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.rGBTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rGBBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TextToolStripMenuItem_foreColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_backColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_changeFont = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_allowAnyFiletype = new System.Windows.Forms.ToolStripMenuItem();
             this.imagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.videosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.directoriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unsupportedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allowFolderHandlingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sortFilesByTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.renamingTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem_itemSettings = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem_settings_text = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox_textLength = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripMenuItem_settings_video = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_allowUPDOWNToRename = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_sortFilesByType = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_renamingType = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_renamingMode = new System.Windows.Forms.ToolStripComboBox();
-            this.videoScrollingSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripTextBox_videoSkipLength = new System.Windows.Forms.ToolStripTextBox();
-            this.startVideoMutedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.infoToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItem_info = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.howManyLinesToReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem_settings_video_mute = new System.Windows.Forms.ToolStripMenuItem();
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
             this.timer_refocusMain = new System.Windows.Forms.Timer(this.components);
@@ -77,7 +81,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
-            this.fontToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox_videoFastForwardSeconds = new System.Windows.Forms.ToolStripTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -142,121 +146,151 @@
             // 
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.rGBTextToolStripMenuItem,
-            this.rGBBackgroundToolStripMenuItem,
-            this.fontToolStripMenuItem2,
+            this.TextToolStripMenuItem_foreColor,
+            this.ToolStripMenuItem_backColor,
+            this.ToolStripMenuItem_changeFont,
             this.toolStripSeparator1,
-            this.allowAnyFiletypeToolStripMenuItem,
-            this.allowFolderHandlingToolStripMenuItem,
-            this.allowUPDOWNToRenameToolStripMenuItem,
-            this.sortFilesByTypeToolStripMenuItem,
-            this.renamingTypeToolStripMenuItem,
-            this.videoScrollingSpeedToolStripMenuItem,
-            this.startVideoMutedToolStripMenuItem,
-            this.infoToolStripMenuItem1});
+            this.ToolStripMenuItem_allowAnyFiletype,
+            this.toolStripMenuItem_itemSettings,
+            this.ToolStripMenuItem_allowUPDOWNToRename,
+            this.ToolStripMenuItem_sortFilesByType,
+            this.ToolStripMenuItem_renamingType,
+            this.ToolStripMenuItem_info});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
             // 
-            // rGBTextToolStripMenuItem
+            // TextToolStripMenuItem_foreColor
             // 
-            this.rGBTextToolStripMenuItem.Name = "rGBTextToolStripMenuItem";
-            this.rGBTextToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.rGBTextToolStripMenuItem.Text = "RGB Text";
-            this.rGBTextToolStripMenuItem.Click += new System.EventHandler(this.RGBTextToolStripMenuItem_Click);
+            this.TextToolStripMenuItem_foreColor.Name = "TextToolStripMenuItem_foreColor";
+            this.TextToolStripMenuItem_foreColor.Size = new System.Drawing.Size(215, 22);
+            this.TextToolStripMenuItem_foreColor.Text = "RGB Text";
+            this.TextToolStripMenuItem_foreColor.Click += new System.EventHandler(this.RGBTextToolStripMenuItem_Click);
             // 
-            // rGBBackgroundToolStripMenuItem
+            // ToolStripMenuItem_backColor
             // 
-            this.rGBBackgroundToolStripMenuItem.Name = "rGBBackgroundToolStripMenuItem";
-            this.rGBBackgroundToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.rGBBackgroundToolStripMenuItem.Text = "RGB Background";
-            this.rGBBackgroundToolStripMenuItem.Click += new System.EventHandler(this.RGBBackgroundToolStripMenuItem_Click);
+            this.ToolStripMenuItem_backColor.Name = "ToolStripMenuItem_backColor";
+            this.ToolStripMenuItem_backColor.Size = new System.Drawing.Size(215, 22);
+            this.ToolStripMenuItem_backColor.Text = "RGB Background";
+            this.ToolStripMenuItem_backColor.Click += new System.EventHandler(this.RGBBackgroundToolStripMenuItem_Click);
+            // 
+            // ToolStripMenuItem_changeFont
+            // 
+            this.ToolStripMenuItem_changeFont.Name = "ToolStripMenuItem_changeFont";
+            this.ToolStripMenuItem_changeFont.Size = new System.Drawing.Size(215, 22);
+            this.ToolStripMenuItem_changeFont.Text = "Select Font";
+            this.ToolStripMenuItem_changeFont.Click += new System.EventHandler(this.FontToolStripMenuItem2_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(212, 6);
             // 
-            // allowAnyFiletypeToolStripMenuItem
+            // ToolStripMenuItem_allowAnyFiletype
             // 
-            this.allowAnyFiletypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItem_allowAnyFiletype.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.imagesToolStripMenuItem,
             this.videosToolStripMenuItem,
             this.textToolStripMenuItem,
             this.directoriesToolStripMenuItem,
             this.unsupportedToolStripMenuItem});
-            this.allowAnyFiletypeToolStripMenuItem.Name = "allowAnyFiletypeToolStripMenuItem";
-            this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.allowAnyFiletypeToolStripMenuItem.Text = "Allow the following items:";
+            this.ToolStripMenuItem_allowAnyFiletype.Name = "ToolStripMenuItem_allowAnyFiletype";
+            this.ToolStripMenuItem_allowAnyFiletype.Size = new System.Drawing.Size(215, 22);
+            this.ToolStripMenuItem_allowAnyFiletype.Text = "View item types";
             // 
             // imagesToolStripMenuItem
             // 
             this.imagesToolStripMenuItem.CheckOnClick = true;
             this.imagesToolStripMenuItem.Name = "imagesToolStripMenuItem";
-            this.imagesToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.imagesToolStripMenuItem.Text = "Images";
+            this.imagesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.imagesToolStripMenuItem.Text = "Show images";
             // 
             // videosToolStripMenuItem
             // 
             this.videosToolStripMenuItem.CheckOnClick = true;
             this.videosToolStripMenuItem.Name = "videosToolStripMenuItem";
-            this.videosToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.videosToolStripMenuItem.Text = "Videos";
+            this.videosToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.videosToolStripMenuItem.Text = "Show videos";
             // 
             // textToolStripMenuItem
             // 
             this.textToolStripMenuItem.CheckOnClick = true;
             this.textToolStripMenuItem.Name = "textToolStripMenuItem";
-            this.textToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.textToolStripMenuItem.Text = "Text";
+            this.textToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.textToolStripMenuItem.Text = "Show text files";
             // 
             // directoriesToolStripMenuItem
             // 
             this.directoriesToolStripMenuItem.CheckOnClick = true;
             this.directoriesToolStripMenuItem.Name = "directoriesToolStripMenuItem";
-            this.directoriesToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.directoriesToolStripMenuItem.Text = "Directories";
+            this.directoriesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.directoriesToolStripMenuItem.Text = "Show directories/folders";
             // 
             // unsupportedToolStripMenuItem
             // 
+            this.unsupportedToolStripMenuItem.CheckOnClick = true;
             this.unsupportedToolStripMenuItem.Name = "unsupportedToolStripMenuItem";
-            this.unsupportedToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.unsupportedToolStripMenuItem.Text = "Unsupported";
+            this.unsupportedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.unsupportedToolStripMenuItem.Text = "Show unsupported formats";
             // 
-            // allowFolderHandlingToolStripMenuItem
+            // toolStripMenuItem_itemSettings
             // 
-            this.allowFolderHandlingToolStripMenuItem.CheckOnClick = true;
-            this.allowFolderHandlingToolStripMenuItem.Name = "allowFolderHandlingToolStripMenuItem";
-            this.allowFolderHandlingToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.allowFolderHandlingToolStripMenuItem.Text = "Allow folder handling";
+            this.toolStripMenuItem_itemSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem_settings_text,
+            this.toolStripMenuItem_settings_video});
+            this.toolStripMenuItem_itemSettings.Name = "toolStripMenuItem_itemSettings";
+            this.toolStripMenuItem_itemSettings.Size = new System.Drawing.Size(215, 22);
+            this.toolStripMenuItem_itemSettings.Text = "Item types settings";
             // 
-            // allowUPDOWNToRenameToolStripMenuItem
+            // toolStripMenuItem_settings_text
             // 
-            this.allowUPDOWNToRenameToolStripMenuItem.Checked = true;
-            this.allowUPDOWNToRenameToolStripMenuItem.CheckOnClick = true;
-            this.allowUPDOWNToRenameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.allowUPDOWNToRenameToolStripMenuItem.Name = "allowUPDOWNToRenameToolStripMenuItem";
-            this.allowUPDOWNToRenameToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.allowUPDOWNToRenameToolStripMenuItem.Text = "Allow Up/Down to rename";
+            this.toolStripMenuItem_settings_text.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBox_textLength});
+            this.toolStripMenuItem_settings_text.Name = "toolStripMenuItem_settings_text";
+            this.toolStripMenuItem_settings_text.Size = new System.Drawing.Size(254, 22);
+            this.toolStripMenuItem_settings_text.Text = "Text lines count";
             // 
-            // sortFilesByTypeToolStripMenuItem
+            // toolStripTextBox_textLength
             // 
-            this.sortFilesByTypeToolStripMenuItem.Checked = true;
-            this.sortFilesByTypeToolStripMenuItem.CheckOnClick = true;
-            this.sortFilesByTypeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.sortFilesByTypeToolStripMenuItem.Name = "sortFilesByTypeToolStripMenuItem";
-            this.sortFilesByTypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.sortFilesByTypeToolStripMenuItem.Text = "Sort files by type";
+            this.toolStripTextBox_textLength.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox_textLength.Name = "toolStripTextBox_textLength";
+            this.toolStripTextBox_textLength.Size = new System.Drawing.Size(100, 23);
             // 
-            // renamingTypeToolStripMenuItem
+            // toolStripMenuItem_settings_video
             // 
-            this.renamingTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem_settings_video.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripTextBox_videoFastForwardSeconds});
+            this.toolStripMenuItem_settings_video.Name = "toolStripMenuItem_settings_video";
+            this.toolStripMenuItem_settings_video.Size = new System.Drawing.Size(254, 22);
+            this.toolStripMenuItem_settings_video.Text = "Fast forward seconds count";
+            // 
+            // ToolStripMenuItem_allowUPDOWNToRename
+            // 
+            this.ToolStripMenuItem_allowUPDOWNToRename.Checked = true;
+            this.ToolStripMenuItem_allowUPDOWNToRename.CheckOnClick = true;
+            this.ToolStripMenuItem_allowUPDOWNToRename.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ToolStripMenuItem_allowUPDOWNToRename.Name = "ToolStripMenuItem_allowUPDOWNToRename";
+            this.ToolStripMenuItem_allowUPDOWNToRename.Size = new System.Drawing.Size(215, 22);
+            this.ToolStripMenuItem_allowUPDOWNToRename.Text = "Allow Up/Down to rename";
+            // 
+            // ToolStripMenuItem_sortFilesByType
+            // 
+            this.ToolStripMenuItem_sortFilesByType.Checked = true;
+            this.ToolStripMenuItem_sortFilesByType.CheckOnClick = true;
+            this.ToolStripMenuItem_sortFilesByType.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ToolStripMenuItem_sortFilesByType.Name = "ToolStripMenuItem_sortFilesByType";
+            this.ToolStripMenuItem_sortFilesByType.Size = new System.Drawing.Size(215, 22);
+            this.ToolStripMenuItem_sortFilesByType.Text = "Sort files by type";
+            // 
+            // ToolStripMenuItem_renamingType
+            // 
+            this.ToolStripMenuItem_renamingType.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripComboBox_renamingMode});
-            this.renamingTypeToolStripMenuItem.Name = "renamingTypeToolStripMenuItem";
-            this.renamingTypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.renamingTypeToolStripMenuItem.Text = "Renaming type";
+            this.ToolStripMenuItem_renamingType.Name = "ToolStripMenuItem_renamingType";
+            this.ToolStripMenuItem_renamingType.Size = new System.Drawing.Size(215, 22);
+            this.ToolStripMenuItem_renamingType.Text = "Renaming type";
             // 
             // toolStripComboBox_renamingMode
             // 
@@ -268,36 +302,12 @@
             this.toolStripComboBox_renamingMode.Name = "toolStripComboBox_renamingMode";
             this.toolStripComboBox_renamingMode.Size = new System.Drawing.Size(121, 23);
             // 
-            // videoScrollingSpeedToolStripMenuItem
+            // ToolStripMenuItem_info
             // 
-            this.videoScrollingSpeedToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripTextBox_videoSkipLength});
-            this.videoScrollingSpeedToolStripMenuItem.Name = "videoScrollingSpeedToolStripMenuItem";
-            this.videoScrollingSpeedToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.videoScrollingSpeedToolStripMenuItem.Text = "Video jump amount";
-            // 
-            // toolStripTextBox_videoSkipLength
-            // 
-            this.toolStripTextBox_videoSkipLength.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.toolStripTextBox_videoSkipLength.Name = "toolStripTextBox_videoSkipLength";
-            this.toolStripTextBox_videoSkipLength.Size = new System.Drawing.Size(100, 23);
-            this.toolStripTextBox_videoSkipLength.TextChanged += new System.EventHandler(this.ToolStripTextBox1_textChanged);
-            // 
-            // startVideoMutedToolStripMenuItem
-            // 
-            this.startVideoMutedToolStripMenuItem.Checked = true;
-            this.startVideoMutedToolStripMenuItem.CheckOnClick = true;
-            this.startVideoMutedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.startVideoMutedToolStripMenuItem.Name = "startVideoMutedToolStripMenuItem";
-            this.startVideoMutedToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.startVideoMutedToolStripMenuItem.Text = "Start video muted";
-            // 
-            // infoToolStripMenuItem1
-            // 
-            this.infoToolStripMenuItem1.Name = "infoToolStripMenuItem1";
-            this.infoToolStripMenuItem1.Size = new System.Drawing.Size(215, 22);
-            this.infoToolStripMenuItem1.Text = "Info";
-            this.infoToolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
+            this.ToolStripMenuItem_info.Name = "ToolStripMenuItem_info";
+            this.ToolStripMenuItem_info.Size = new System.Drawing.Size(215, 22);
+            this.ToolStripMenuItem_info.Text = "Info";
+            this.ToolStripMenuItem_info.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
             // ToolStrip
             // 
@@ -305,6 +315,24 @@
             this.ToolStrip.Size = new System.Drawing.Size(26, 17);
             this.ToolStrip.Text = "Idle";
             this.ToolStrip.Click += new System.EventHandler(this.ToolStrip_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(219, 22);
+            this.toolStripMenuItem1.Text = "Fast forward seconds count";
+            // 
+            // howManyLinesToReadToolStripMenuItem
+            // 
+            this.howManyLinesToReadToolStripMenuItem.Name = "howManyLinesToReadToolStripMenuItem";
+            this.howManyLinesToReadToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.howManyLinesToReadToolStripMenuItem.Text = "How many lines to read:";
+            // 
+            // toolStripMenuItem_settings_video_mute
+            // 
+            this.toolStripMenuItem_settings_video_mute.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripMenuItem_settings_video_mute.Name = "toolStripMenuItem_settings_video_mute";
+            this.toolStripMenuItem_settings_video_mute.Size = new System.Drawing.Size(100, 23);
             // 
             // timer_startSetParent
             // 
@@ -606,12 +634,11 @@
             this.richTextBox1.TabIndex = 13;
             this.richTextBox1.Text = "";
             // 
-            // fontToolStripMenuItem2
+            // toolStripTextBox_videoFastForwardSeconds
             // 
-            this.fontToolStripMenuItem2.Name = "fontToolStripMenuItem2";
-            this.fontToolStripMenuItem2.Size = new System.Drawing.Size(215, 22);
-            this.fontToolStripMenuItem2.Text = "Select Font";
-            this.fontToolStripMenuItem2.Click += new System.EventHandler(this.FontToolStripMenuItem2_Click);
+            this.toolStripTextBox_videoFastForwardSeconds.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox_videoFastForwardSeconds.Name = "toolStripTextBox_videoFastForwardSeconds";
+            this.toolStripTextBox_videoFastForwardSeconds.Size = new System.Drawing.Size(100, 23);
             // 
             // Form1
             // 
@@ -652,22 +679,18 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel ToolStrip;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
-        private System.Windows.Forms.ToolStripMenuItem rGBTextToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem rGBBackgroundToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sortFilesByTypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem TextToolStripMenuItem_foreColor;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_backColor;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_allowUPDOWNToRename;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_allowAnyFiletype;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_sortFilesByType;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_info;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem videoScrollingSpeedToolStripMenuItem;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoSkipLength;
-        private System.Windows.Forms.ToolStripMenuItem renamingTypeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_renamingType;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_renamingMode;
         private System.Windows.Forms.Timer timer_startSetParent;
         private System.Windows.Forms.Timer timer_spamParent;
         private System.Windows.Forms.Timer timer_refocusMain;
-        private System.Windows.Forms.ToolStripMenuItem startVideoMutedToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem allowFolderHandlingToolStripMenuItem;
         private System.Windows.Forms.Timer timer_renameItems;
         private System.Windows.Forms.Timer timer_killRogueFFPLAY;
         private System.Windows.Forms.Panel panel1;
@@ -693,7 +716,15 @@
         private System.Windows.Forms.ToolStripMenuItem directoriesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unsupportedToolStripMenuItem;
         private System.Windows.Forms.FontDialog fontDialog1;
-        private System.Windows.Forms.ToolStripMenuItem fontToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_changeFont;
+        private System.Windows.Forms.ToolStripMenuItem howManyLinesToReadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_textLength;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_itemSettings;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_text;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_video;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_video_mute;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoFastForwardSeconds;
     }
 }
 
