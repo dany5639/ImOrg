@@ -64,6 +64,17 @@ namespace ImOrg
             PictureBoxSizeMode.StretchImage,
             PictureBoxSizeMode.Zoom
         };
+        private enum SortType
+        {
+            a_z_ascending,
+            a_z_descending,
+            type_a,
+            type_d,
+            size_a,
+            size_d
+        }
+        private List<SortType> sortType = new List<SortType> {
+        };
         #endregion
 
         #region utilities
@@ -75,34 +86,6 @@ namespace ImOrg
         private void log_ts(string in_)
         {
             ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
-
-        }
-        private static bool WriteCsv(List<string> in_, string file)
-        {
-            var fileOut = new FileInfo(file);
-            if (File.Exists(file))
-                File.Delete(file);
-
-            int i = -1;
-            try
-            {
-                using (var csvStream = fileOut.OpenWrite())
-                using (var csvWriter = new StreamWriter(csvStream))
-                {
-                    foreach (var a in in_)
-                    {
-                        csvStream.Position = csvStream.Length;
-                        csvWriter.WriteLine(a);
-                        i++;
-                    }
-                }
-            }
-            catch (Exception err)
-            {
-                return false;
-            }
-
-            return true;
 
         }
         private static List<string> ReadCsv(string filename, int lineCount = 1)
@@ -251,11 +234,7 @@ namespace ImOrg
 
             richTextBox1.Hide();
 
-            imagesToolStripMenuItem.Checked = true;
-            videosToolStripMenuItem.Checked = true;
-            textToolStripMenuItem.Checked = true;
-            directoriesToolStripMenuItem.Checked = true;
-            unsupportedToolStripMenuItem.Checked = false;
+            toolStripComboBox_sortType.SelectedIndex = 0;
 
 #if DEBUG
             DoDebugStuf();

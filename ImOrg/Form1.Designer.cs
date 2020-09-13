@@ -49,8 +49,10 @@
             this.toolStripMenuItem_settings_text = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox_textLength = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem_settings_video = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripTextBox_videoFastForwardSeconds = new System.Windows.Forms.ToolStripTextBox();
             this.ToolStripMenuItem_allowUPDOWNToRename = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_sortFilesByType = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBox_sortType = new System.Windows.Forms.ToolStripComboBox();
             this.ToolStripMenuItem_renamingType = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_renamingMode = new System.Windows.Forms.ToolStripComboBox();
             this.ToolStripMenuItem_info = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,7 +83,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
-            this.toolStripTextBox_videoFastForwardSeconds = new System.Windows.Forms.ToolStripTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -202,35 +203,45 @@
             // 
             // imagesToolStripMenuItem
             // 
+            this.imagesToolStripMenuItem.Checked = true;
             this.imagesToolStripMenuItem.CheckOnClick = true;
+            this.imagesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.imagesToolStripMenuItem.Name = "imagesToolStripMenuItem";
             this.imagesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.imagesToolStripMenuItem.Text = "Show images";
             // 
             // videosToolStripMenuItem
             // 
+            this.videosToolStripMenuItem.Checked = true;
             this.videosToolStripMenuItem.CheckOnClick = true;
+            this.videosToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.videosToolStripMenuItem.Name = "videosToolStripMenuItem";
             this.videosToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.videosToolStripMenuItem.Text = "Show videos";
             // 
             // textToolStripMenuItem
             // 
+            this.textToolStripMenuItem.Checked = true;
             this.textToolStripMenuItem.CheckOnClick = true;
+            this.textToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.textToolStripMenuItem.Name = "textToolStripMenuItem";
             this.textToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.textToolStripMenuItem.Text = "Show text files";
             // 
             // directoriesToolStripMenuItem
             // 
+            this.directoriesToolStripMenuItem.Checked = true;
             this.directoriesToolStripMenuItem.CheckOnClick = true;
+            this.directoriesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.directoriesToolStripMenuItem.Name = "directoriesToolStripMenuItem";
             this.directoriesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.directoriesToolStripMenuItem.Text = "Show directories/folders";
             // 
             // unsupportedToolStripMenuItem
             // 
+            this.unsupportedToolStripMenuItem.Checked = true;
             this.unsupportedToolStripMenuItem.CheckOnClick = true;
+            this.unsupportedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.unsupportedToolStripMenuItem.Name = "unsupportedToolStripMenuItem";
             this.unsupportedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.unsupportedToolStripMenuItem.Text = "Show unsupported formats";
@@ -249,7 +260,7 @@
             this.toolStripMenuItem_settings_text.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripTextBox_textLength});
             this.toolStripMenuItem_settings_text.Name = "toolStripMenuItem_settings_text";
-            this.toolStripMenuItem_settings_text.Size = new System.Drawing.Size(254, 22);
+            this.toolStripMenuItem_settings_text.Size = new System.Drawing.Size(219, 22);
             this.toolStripMenuItem_settings_text.Text = "Text lines count";
             // 
             // toolStripTextBox_textLength
@@ -263,8 +274,14 @@
             this.toolStripMenuItem_settings_video.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripTextBox_videoFastForwardSeconds});
             this.toolStripMenuItem_settings_video.Name = "toolStripMenuItem_settings_video";
-            this.toolStripMenuItem_settings_video.Size = new System.Drawing.Size(254, 22);
+            this.toolStripMenuItem_settings_video.Size = new System.Drawing.Size(219, 22);
             this.toolStripMenuItem_settings_video.Text = "Fast forward seconds count";
+            // 
+            // toolStripTextBox_videoFastForwardSeconds
+            // 
+            this.toolStripTextBox_videoFastForwardSeconds.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox_videoFastForwardSeconds.Name = "toolStripTextBox_videoFastForwardSeconds";
+            this.toolStripTextBox_videoFastForwardSeconds.Size = new System.Drawing.Size(100, 23);
             // 
             // ToolStripMenuItem_allowUPDOWNToRename
             // 
@@ -277,12 +294,24 @@
             // 
             // ToolStripMenuItem_sortFilesByType
             // 
-            this.ToolStripMenuItem_sortFilesByType.Checked = true;
             this.ToolStripMenuItem_sortFilesByType.CheckOnClick = true;
-            this.ToolStripMenuItem_sortFilesByType.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ToolStripMenuItem_sortFilesByType.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripComboBox_sortType});
             this.ToolStripMenuItem_sortFilesByType.Name = "ToolStripMenuItem_sortFilesByType";
             this.ToolStripMenuItem_sortFilesByType.Size = new System.Drawing.Size(215, 22);
             this.ToolStripMenuItem_sortFilesByType.Text = "Sort files by type";
+            // 
+            // toolStripComboBox_sortType
+            // 
+            this.toolStripComboBox_sortType.Items.AddRange(new object[] {
+            "A-Z Ascending",
+            "A-Z Descending",
+            "Type/Extension Ascending",
+            "Type/Extension Descending",
+            "Size Ascending",
+            "Size Descending"});
+            this.toolStripComboBox_sortType.Name = "toolStripComboBox_sortType";
+            this.toolStripComboBox_sortType.Size = new System.Drawing.Size(121, 23);
             // 
             // ToolStripMenuItem_renamingType
             // 
@@ -634,12 +663,6 @@
             this.richTextBox1.TabIndex = 13;
             this.richTextBox1.Text = "";
             // 
-            // toolStripTextBox_videoFastForwardSeconds
-            // 
-            this.toolStripTextBox_videoFastForwardSeconds.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.toolStripTextBox_videoFastForwardSeconds.Name = "toolStripTextBox_videoFastForwardSeconds";
-            this.toolStripTextBox_videoFastForwardSeconds.Size = new System.Drawing.Size(100, 23);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -725,6 +748,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_video;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_video_mute;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoFastForwardSeconds;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox_sortType;
     }
 }
 
