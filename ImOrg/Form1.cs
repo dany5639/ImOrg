@@ -29,8 +29,8 @@ namespace ImOrg
         private bool ffplay_isRunning = false;
         private string currNewName = "";
         private string prevNewName = "";
-        private Color textColor = Color.White;
-        private Color backgroundColor = Color.Black;
+        private Color ForeColor_ = Color.White;
+        private Color BackColor_ = Color.Black;
         private int previouslySelectedItem = -1;
         private int videoSkipSeconds = 5;
         private string fullPath = "";
@@ -91,6 +91,7 @@ namespace ImOrg
                 case ".mkv":
 
                 // UNTESTED but in the list of supported formats:
+                #region FFPLAY
                 case ".3dostr":
                 case ".3g2":
                 case ".3gp":
@@ -444,20 +445,24 @@ namespace ImOrg
                 case ".xwma":
                 case ".yop":
                 case ".yuv4mpegpipe":
-
                     return itemType.video;
+                #endregion
 
+                #region TXT
                 case ".txt":
                 case ".csv":
                 case ".log":
                 case ".xml":
-                    // ".flv", // definitely not supported
+                case ".json":
+                case ".xaml":
                     return itemType.text;
+                #endregion
 
                 case "Directory":
                     return itemType.directory;
 
                 default:
+                    log($"File format not currently supported: {extension}");
                     return itemType.unsupported;
             }
         }
@@ -471,17 +476,17 @@ namespace ImOrg
         #endregion
 
         #region utilities
-        public void log(string in_)
+        private void log(string in_)
         {
             Console.WriteLine($"[{DateTime.Now.ToString("hhmmss:fff")}] {in_}");
 
         }
-        public void log_ts(string in_)
+        private void log_ts(string in_)
         {
             ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
 
         }
-        public static bool WriteCsv(List<string> in_, string file)
+        private static bool WriteCsv(List<string> in_, string file)
         {
             var fileOut = new FileInfo(file);
             if (File.Exists(file))
@@ -509,6 +514,30 @@ namespace ImOrg
             return true;
 
         }
+        private static List<string> ReadCsv(string filename, int lineCount = 1)
+        {
+            var output = new List<string>();
+
+            using (var reader = new StreamReader(filename))
+            {
+                var line = "";
+                int j = -1;
+                while (line != null)
+                {
+                    j++;
+                    if (j == lineCount)
+                        break;
+
+                    line = reader.ReadLine();
+                    output.Add(line);
+                }
+
+                if (output.Last() == null)
+                    output.RemoveAt(output.Count - 1);
+            }
+
+            return output;
+        }
         #endregion
 
         #region Theme related
@@ -517,9 +546,9 @@ namespace ImOrg
             colorDialog1.ShowDialog();
 
             // prevent text color from being the same as background color
-            if (colorDialog1.Color == backgroundColor)
+            if (colorDialog1.Color == BackColor_)
                 return;
-            textColor = colorDialog1.Color;
+            ForeColor_ = colorDialog1.Color;
 
             SetAppColors();
 
@@ -527,23 +556,72 @@ namespace ImOrg
         private void RGBBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorDialog1.ShowDialog();
-            backgroundColor = colorDialog1.Color;
+            BackColor_ = colorDialog1.Color;
 
             SetAppColors();
 
         }
         private void SetAppColors()
         {
-            pictureBox1.BackColor = backgroundColor;
-            listBox_files.BackColor = backgroundColor;
-            listBox_files.ForeColor = textColor;
-            treeView_folders.BackColor = backgroundColor;
-            treeView_folders.ForeColor = textColor;
-            this.BackColor = backgroundColor;
-            this.ForeColor = textColor;
-            ToolStrip.BackColor = Color.White;
-            ToolStrip.ForeColor = Color.Black;
+            listBox_files.ForeColor = ForeColor_;
+            listBox_files.BackColor = BackColor_;
 
+            treeView_folders.BackColor = BackColor_;
+            treeView_folders.ForeColor = ForeColor_;
+
+            this.BackColor = BackColor_;
+            this.ForeColor = ForeColor_;
+
+            ToolStrip.ForeColor = ForeColor_;
+            ToolStrip.BackColor = BackColor_;
+
+            statusStrip1.ForeColor = ForeColor_;
+            statusStrip1.BackColor = BackColor_;
+
+            richTextBox1.ForeColor = ForeColor_;
+            richTextBox1.BackColor = BackColor_;
+
+            pictureBox1.ForeColor = ForeColor_;
+            pictureBox1.BackColor = BackColor_;
+
+            toolStripDropDownButton1.ForeColor = ForeColor_;
+            toolStripDropDownButton1.BackColor = BackColor_;
+
+            // this did not go as planned
+            // rGBTextToolStripMenuItem.BackColor = BackColor_;
+            // rGBBackgroundToolStripMenuItem.BackColor = BackColor_;
+            // allowUPDOWNToRenameToolStripMenuItem.BackColor = BackColor_;
+            // allowAnyFiletypeToolStripMenuItem.BackColor = BackColor_;
+            // sortFilesByTypeToolStripMenuItem.BackColor = BackColor_;
+            // toolStripMenuItem1.BackColor = BackColor_;
+            // videoScrollingSpeedToolStripMenuItem.BackColor = BackColor_;
+            // renamingTypeToolStripMenuItem.BackColor = BackColor_;
+            // startVideoMutedToolStripMenuItem.BackColor = BackColor_;
+            // allowFolderHandlingToolStripMenuItem.BackColor = BackColor_;
+            // 
+            // rGBTextToolStripMenuItem.ForeColor = ForeColor_;
+            // rGBBackgroundToolStripMenuItem.ForeColor = ForeColor_;
+            // allowUPDOWNToRenameToolStripMenuItem.ForeColor = ForeColor_;
+            // allowAnyFiletypeToolStripMenuItem.ForeColor = ForeColor_;
+            // sortFilesByTypeToolStripMenuItem.ForeColor = ForeColor_;
+            // toolStripMenuItem1.ForeColor = ForeColor_;
+            // videoScrollingSpeedToolStripMenuItem.ForeColor = ForeColor_;
+            // renamingTypeToolStripMenuItem.ForeColor = ForeColor_;
+            // startVideoMutedToolStripMenuItem.ForeColor = ForeColor_;
+            // allowFolderHandlingToolStripMenuItem.ForeColor = ForeColor_;
+        }
+        private void FontToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            fontDialog1.ShowDialog();
+            this.Font = fontDialog1.Font;
+            label1.Font = fontDialog1.Font;
+            label2.Font = fontDialog1.Font;
+            label3.Font = fontDialog1.Font;
+            label4.Font = fontDialog1.Font;
+            label5.Font = fontDialog1.Font;
+            label6.Font = fontDialog1.Font;
+            label7.Font = fontDialog1.Font;
+            ToolStrip.Font = fontDialog1.Font;
         }
         #endregion
 
@@ -578,44 +656,16 @@ namespace ImOrg
 
             panel1.Hide();
 
+            richTextBox1.Hide();
+
+            imagesToolStripMenuItem.Checked = true;
+            videosToolStripMenuItem.Checked = true;
+            textToolStripMenuItem.Checked = true;
+            directoriesToolStripMenuItem.Checked = true;
+            unsupportedToolStripMenuItem.Checked = false;
+
 #if DEBUG
-            isDebug = true;
-            log($"DEBUG mode");
-            panel1.Show();
-
-            try // ...
-            {
-                for (int i = 0; i < treeView_folders.Nodes.Count; i++)
-                {
-                    log($"Found Disk: {treeView_folders.Nodes[i].Text.ToString()}");
-                    if (treeView_folders.Nodes[i].Text.ToString() != "R:")
-                        continue;
-
-                    treeView_folders.SelectedNode = treeView_folders.Nodes[i];
-                    treeView_folders.SelectedNode.Expand();
-
-                    // ok well this suddenly doesn't work anymore, great
-                    for (int j = 0; j < treeView_folders.Nodes.Count; j++)
-                    {
-                        log($"Found directory: {treeView_folders.Nodes[i].Nodes[j].Text.ToString()}");
-                        if (treeView_folders.Nodes[i].Nodes[j].Text.ToString() != "UNSORTED_SFW")
-                            continue;
-
-                        // treeView_folders.SelectedNode = treeView_folders.Nodes[i].Nodes[j];
-                        var a = treeView_folders.SelectedNode.Nodes[j].Nodes[0];
-                        return;
-
-                    }
-
-                    return;
-
-                }
-            }
-            catch (Exception err)
-            {
-                log($"ERROR on #if DEBUG: {err}");
-            }
-
+            DoDebugStuf();
 #endif
 
         }
@@ -690,7 +740,8 @@ namespace ImOrg
             }
             catch (Exception e_cannotReadFolder)
             {
-                throw new Exception(e_cannotReadFolder.Message);
+                log($"ERROR: {e_cannotReadFolder.Message}");
+                return;
             }
 
             foreach (var folder_ in folders)
@@ -767,9 +818,37 @@ namespace ImOrg
             int i = -1;
             foreach (var a in items2)
             {
-                if (!allowAnyFiletypeToolStripMenuItem.Checked)
-                    if (!(a.type == itemType.image || a.type == itemType.video))
-                        continue;
+                switch(a.type)
+                {
+                    case itemType.image:
+                        if (!imagesToolStripMenuItem.Checked)
+                            continue;
+                        break;
+
+                    case itemType.video:
+                        if (!videosToolStripMenuItem.Checked)
+                            continue;
+                        break;
+
+                    case itemType.text:
+                        if (!textToolStripMenuItem.Checked)
+                            continue;
+                        break;
+
+                    case itemType.directory:
+                        if (!directoriesToolStripMenuItem.Checked)
+                            continue;
+                        break;
+
+                    case itemType.noExtension:
+                    case itemType.unsupported:
+                        if (!unsupportedToolStripMenuItem.Checked)
+                            continue;
+                        break;
+
+                    default:
+                        throw new Exception($"ERROR: That shouldn't have happened: TreeView1_AfterSelect(): {a.extension}");
+                }
 
                 i++;
                 a.Index = i;
@@ -1007,8 +1086,8 @@ namespace ImOrg
         {
             var dialogBox = new Form();
             dialogBox.Text = "Info";
-            dialogBox.BackColor = backgroundColor;
-            dialogBox.ForeColor = textColor;
+            dialogBox.BackColor = BackColor_;
+            dialogBox.ForeColor = ForeColor_;
             var label = new Label();
             label.AutoSize = true;
             label.Font = new Font("Consolas", 10.25F, FontStyle.Regular, GraphicsUnit.Point);
@@ -1022,7 +1101,7 @@ namespace ImOrg
                 "\n" +
                 "";
 
-            label.ForeColor = textColor;
+            label.ForeColor = ForeColor_;
             label.Location = new Point { X = 10, Y = 10 };
             dialogBox.Controls.Add(label);
 
@@ -1341,6 +1420,26 @@ namespace ImOrg
         {
             renameAndMoveItems();
         }
+        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            timer_startSetParent.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+            timer_spamParent.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+            timer_refocusMain.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown4_ValueChanged(object sender, EventArgs e)
+        {
+            timer_renameItems.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown5_ValueChanged(object sender, EventArgs e)
+        {
+            timer_killRogueFFPLAY.Interval = (int)numericUpDown1.Value;
+        }
         #endregion
 
         #region FFPLAY DLL
@@ -1488,6 +1587,14 @@ namespace ImOrg
         {
             ffplay_kill();
         }
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            ffplay_loadVideo();
+        }
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            ffplay_kill();
+        }
 
         #endregion
 
@@ -1515,25 +1622,36 @@ namespace ImOrg
 
                 goto skipForDirectory;
             }
-
-            if (!File.Exists(fullPath))
+            else if (!File.Exists(fullPath))
             {
                 ToolStrip.Text = $"ERROR: cannot find {fullPath}";
                 return;
             }
 
-            if (getFileType(new FileInfo(fullPath).Extension) == itemType.video)
-            {
-                ffplay_loadVideo();
-            }
-            else
-            {
-                // if (previouslySelectedItem != -1)
-                //     if (items[previouslySelectedItem].type == itemType.video)
-                ffplay_kill(); // kill only if the player is up
+            richTextBox1.Hide();
+            pictureBox1.Hide();
+            if (ffplay_isRunning)
+                ffplay_kill();
 
-                pictureBox1.LoadAsync(fullPath);
+            switch (items[currentFile.SelectedIndex].type)
+            {
+                case itemType.video:
+                    pictureBox1.Show();
+                    ffplay_loadVideo();
+                    break;
 
+                case itemType.image:
+                    pictureBox1.Show();
+                    pictureBox1.LoadAsync(fullPath);
+                    break;
+
+                case itemType.text:
+                    richTextBox1.Show();
+                    LoadText(fullPath);
+                    break;
+
+                default:
+                    break;
             }
 
             skipForDirectory:
@@ -1547,6 +1665,46 @@ namespace ImOrg
 
         }
 
+        #region DEBUG
+        private void DoDebugStuf()
+        {
+            isDebug = true;
+            log($"DEBUG mode");
+
+            try // ...
+            {
+                for (int i = 0; i < treeView_folders.Nodes.Count; i++)
+                {
+                    log($"Found Disk: {treeView_folders.Nodes[i].Text.ToString()}");
+                    if (treeView_folders.Nodes[i].Text.ToString() != "R:")
+                        continue;
+
+                    treeView_folders.SelectedNode = treeView_folders.Nodes[i];
+                    treeView_folders.SelectedNode.Expand();
+
+                    // ok well this suddenly doesn't work anymore, great
+                    for (int j = 0; j < treeView_folders.Nodes.Count; j++)
+                    {
+                        log($"Found directory: {treeView_folders.Nodes[i].Nodes[j].Text.ToString()}");
+                        if (treeView_folders.Nodes[i].Nodes[j].Text.ToString() != "UNSORTED_SFW")
+                            continue;
+
+                        // treeView_folders.SelectedNode = treeView_folders.Nodes[i].Nodes[j];
+                        var a = treeView_folders.SelectedNode.Nodes[j].Nodes[0];
+                        return;
+
+                    }
+
+                    return;
+
+                }
+            }
+            catch (Exception err)
+            {
+                log($"ERROR on #if DEBUG: {err}");
+            }
+
+        }
         private void ToolStrip_Click(object sender, EventArgs e)
         {
             if (panel1.Visible)
@@ -1554,42 +1712,20 @@ namespace ImOrg
             else
                 panel1.Show();
         }
+        #endregion
 
-        private void Button1_Click(object sender, EventArgs e)
+        #region LoadText
+        private void LoadText(string filename)
         {
-            ffplay_loadVideo();
-        }
+            var lines =  ReadCsv(filename, (int)numericUpDown6.Value);
+            var text = "";
 
-        private void Button2_Click(object sender, EventArgs e)
-        {
-            ffplay_kill();
-        }
+            foreach (var a in lines)
+                text = $"{text}{a}\n";
 
-        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-            timer_startSetParent.Interval = (int)numericUpDown1.Value;
+            richTextBox1.Text = text;
         }
-
-        private void NumericUpDown2_ValueChanged(object sender, EventArgs e)
-        {
-            timer_spamParent.Interval = (int)numericUpDown1.Value;
-        }
-
-        private void NumericUpDown3_ValueChanged(object sender, EventArgs e)
-        {
-            timer_refocusMain.Interval = (int)numericUpDown1.Value;
-        }
-
-        private void NumericUpDown4_ValueChanged(object sender, EventArgs e)
-        {
-            timer_renameItems.Interval = (int)numericUpDown1.Value;
-        }
-
-        private void NumericUpDown5_ValueChanged(object sender, EventArgs e)
-        {
-            timer_killRogueFFPLAY.Interval = (int)numericUpDown1.Value;
-
-        }
+        #endregion
 
         // current major problems:
         // something keeps failing and leaves a rogue ffplay process running in the background and locking the video file

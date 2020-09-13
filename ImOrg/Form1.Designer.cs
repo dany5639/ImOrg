@@ -39,6 +39,11 @@
             this.rGBBackgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.allowAnyFiletypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.videosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.directoriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unsupportedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowFolderHandlingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allowUPDOWNToRenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sortFilesByTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,7 +52,7 @@
             this.videoScrollingSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox_videoSkipLength = new System.Windows.Forms.ToolStripTextBox();
             this.startVideoMutedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.infoToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
@@ -55,6 +60,9 @@
             this.timer_renameItems = new System.Windows.Forms.Timer(this.components);
             this.timer_killRogueFFPLAY = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -67,10 +75,13 @@
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.fontDialog1 = new System.Windows.Forms.FontDialog();
+            this.fontToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
@@ -133,6 +144,7 @@
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rGBTextToolStripMenuItem,
             this.rGBBackgroundToolStripMenuItem,
+            this.fontToolStripMenuItem2,
             this.toolStripSeparator1,
             this.allowAnyFiletypeToolStripMenuItem,
             this.allowFolderHandlingToolStripMenuItem,
@@ -141,12 +153,13 @@
             this.renamingTypeToolStripMenuItem,
             this.videoScrollingSpeedToolStripMenuItem,
             this.startVideoMutedToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.infoToolStripMenuItem1});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Click += new System.EventHandler(this.ToolStripDropDownButton1_Click);
             // 
             // rGBTextToolStripMenuItem
             // 
@@ -169,10 +182,49 @@
             // 
             // allowAnyFiletypeToolStripMenuItem
             // 
-            this.allowAnyFiletypeToolStripMenuItem.CheckOnClick = true;
+            this.allowAnyFiletypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.imagesToolStripMenuItem,
+            this.videosToolStripMenuItem,
+            this.textToolStripMenuItem,
+            this.directoriesToolStripMenuItem,
+            this.unsupportedToolStripMenuItem});
             this.allowAnyFiletypeToolStripMenuItem.Name = "allowAnyFiletypeToolStripMenuItem";
             this.allowAnyFiletypeToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.allowAnyFiletypeToolStripMenuItem.Text = "Allow any filetype";
+            this.allowAnyFiletypeToolStripMenuItem.Text = "Allow the following items:";
+            // 
+            // imagesToolStripMenuItem
+            // 
+            this.imagesToolStripMenuItem.CheckOnClick = true;
+            this.imagesToolStripMenuItem.Name = "imagesToolStripMenuItem";
+            this.imagesToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.imagesToolStripMenuItem.Text = "Images";
+            // 
+            // videosToolStripMenuItem
+            // 
+            this.videosToolStripMenuItem.CheckOnClick = true;
+            this.videosToolStripMenuItem.Name = "videosToolStripMenuItem";
+            this.videosToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.videosToolStripMenuItem.Text = "Videos";
+            // 
+            // textToolStripMenuItem
+            // 
+            this.textToolStripMenuItem.CheckOnClick = true;
+            this.textToolStripMenuItem.Name = "textToolStripMenuItem";
+            this.textToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.textToolStripMenuItem.Text = "Text";
+            // 
+            // directoriesToolStripMenuItem
+            // 
+            this.directoriesToolStripMenuItem.CheckOnClick = true;
+            this.directoriesToolStripMenuItem.Name = "directoriesToolStripMenuItem";
+            this.directoriesToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.directoriesToolStripMenuItem.Text = "Directories";
+            // 
+            // unsupportedToolStripMenuItem
+            // 
+            this.unsupportedToolStripMenuItem.Name = "unsupportedToolStripMenuItem";
+            this.unsupportedToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.unsupportedToolStripMenuItem.Text = "Unsupported";
             // 
             // allowFolderHandlingToolStripMenuItem
             // 
@@ -227,6 +279,7 @@
             // 
             // toolStripTextBox_videoSkipLength
             // 
+            this.toolStripTextBox_videoSkipLength.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripTextBox_videoSkipLength.Name = "toolStripTextBox_videoSkipLength";
             this.toolStripTextBox_videoSkipLength.Size = new System.Drawing.Size(100, 23);
             this.toolStripTextBox_videoSkipLength.TextChanged += new System.EventHandler(this.ToolStripTextBox1_textChanged);
@@ -240,12 +293,12 @@
             this.startVideoMutedToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.startVideoMutedToolStripMenuItem.Text = "Start video muted";
             // 
-            // toolStripMenuItem1
+            // infoToolStripMenuItem1
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(215, 22);
-            this.toolStripMenuItem1.Text = "Info";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
+            this.infoToolStripMenuItem1.Name = "infoToolStripMenuItem1";
+            this.infoToolStripMenuItem1.Size = new System.Drawing.Size(215, 22);
+            this.infoToolStripMenuItem1.Text = "Info";
+            this.infoToolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
             // ToolStrip
             // 
@@ -277,6 +330,8 @@
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.numericUpDown6);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.label6);
@@ -292,8 +347,48 @@
             this.panel1.Controls.Add(this.button1);
             this.panel1.Location = new System.Drawing.Point(1043, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(208, 182);
+            this.panel1.Size = new System.Drawing.Size(208, 222);
             this.panel1.TabIndex = 12;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(84, 164);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(79, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "text_linesCount";
+            // 
+            // numericUpDown6
+            // 
+            this.numericUpDown6.Location = new System.Drawing.Point(3, 162);
+            this.numericUpDown6.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericUpDown6.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown6.Name = "numericUpDown6";
+            this.numericUpDown6.Size = new System.Drawing.Size(75, 20);
+            this.numericUpDown6.TabIndex = 15;
+            this.numericUpDown6.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 185);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(77, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "DEBUG ONLY";
             // 
             // label7
             // 
@@ -500,14 +595,24 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // label1
+            // richTextBox1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 159);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 13);
-            this.label1.TabIndex = 14;
-            this.label1.Text = "DEBUG ONLY";
+            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox1.Location = new System.Drawing.Point(207, 0);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.ReadOnly = true;
+            this.richTextBox1.Size = new System.Drawing.Size(1038, 614);
+            this.richTextBox1.TabIndex = 13;
+            this.richTextBox1.Text = "";
+            // 
+            // fontToolStripMenuItem2
+            // 
+            this.fontToolStripMenuItem2.Name = "fontToolStripMenuItem2";
+            this.fontToolStripMenuItem2.Size = new System.Drawing.Size(215, 22);
+            this.fontToolStripMenuItem2.Text = "Select Font";
+            this.fontToolStripMenuItem2.Click += new System.EventHandler(this.FontToolStripMenuItem2_Click);
             // 
             // Form1
             // 
@@ -519,6 +624,7 @@
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
+            this.Controls.Add(this.richTextBox1);
             this.Name = "Form1";
             this.Text = "ImOrg";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -529,6 +635,7 @@
             this.statusStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
@@ -552,7 +659,7 @@
         private System.Windows.Forms.ToolStripMenuItem allowUPDOWNToRenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allowAnyFiletypeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sortFilesByTypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem videoScrollingSpeedToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoSkipLength;
@@ -579,6 +686,16 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown numericUpDown6;
+        private System.Windows.Forms.ToolStripMenuItem imagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem videosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem textToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem directoriesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unsupportedToolStripMenuItem;
+        private System.Windows.Forms.FontDialog fontDialog1;
+        private System.Windows.Forms.ToolStripMenuItem fontToolStripMenuItem2;
     }
 }
 
