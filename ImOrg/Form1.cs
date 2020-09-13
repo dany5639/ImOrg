@@ -220,9 +220,12 @@ namespace ImOrg
 
             initializeTimers();
 
+            panel1.Hide();
+
 #if DEBUG
             isDebug = true;
             log($"DEBUG mode");
+            panel1.Show();
 
             try // ...
             {
@@ -257,10 +260,6 @@ namespace ImOrg
                 log($"ERROR on #if DEBUG: {err}");
             }
 
-            panel1.Hide();
-            button1.ForeColor = Color.Black;
-            button2.ForeColor = Color.Black;
-            button3.ForeColor = Color.Black;
 #endif
 
         }
@@ -501,7 +500,12 @@ namespace ImOrg
                     log($"Renaming queued: {items[selectedIndex].filename} to {currNewName}");
                     prevNewName = currNewName; // this is the new name used previously for the last renamed item
                     currNewName = ""; // this is the new name, currently modified with letters or F1 or F3
+
+                    if (ffplay_isRunning)
+                        ffplay_kill();
+
                     timer_renameItems.Start(); // start renaming if: new video is selected and previous video is released;
+
                     return;
 
                 case Keys.Escape:
@@ -594,23 +598,25 @@ namespace ImOrg
                     ToolStrip.Text = $"Renaming mode: {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}";
                     return;
 
-                case Keys.F3:
-                    throw new NotImplementedException();
-                    // selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
-                    // 
-                    // var it = items[selectedIndex];
-                    // var og = it.originalFullpath;
-                    // 
-                    // if (it.type == itemType.directory)
-                    //     items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - og.LastIndexOf("\\") - 1);
-                    // else
-                    //     items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - it.extension.Length - og.LastIndexOf("\\") - 1);
-                    // 
-                    // items[selectedIndex].toRename = true;
-                    // 
-                    // ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
-                    // 
-                    // timer_renameItems.Start();
+                case Keys.F3: // get original filename and use as new name
+                    selectedIndex = listBox_files.SelectedIndex;
+                    
+                    var it = items[selectedIndex];
+                    var og = it.originalFullpath;
+                    
+                    if (it.type == itemType.directory)
+                        items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - og.LastIndexOf("\\") - 1);
+                    else
+                        items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - it.extension.Length - og.LastIndexOf("\\") - 1);
+                    
+                    items[selectedIndex].toRename = true;
+                    
+                    ToolStrip.Text = $"Renaming queued: {it.filename} to {items[selectedIndex].newFilenameTemp}";
+
+                    if (ffplay_isRunning)
+                        ffplay_kill();
+
+                    timer_renameItems.Start();
                     return;
 
                 case Keys.F12: // resize image
@@ -795,9 +801,6 @@ namespace ImOrg
                         catch (IOException err)
                         {
                             log($"ERROR: failed to rename or move {oldFullpath} to {newFullpath}: {err}");
-                            item.newFilenameTemp = "";
-                            item.toRename = false;
-                            item.relativePath = false;
                             continue;
                         }
                     }
@@ -1233,6 +1236,7 @@ namespace ImOrg
         }
 
         // current major problems:
+        // something keeps failing and leaves a rogue ffplay process running in the background and locking the video file
 
     }
 
