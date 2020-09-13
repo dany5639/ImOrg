@@ -399,6 +399,8 @@ namespace ImOrg
         }
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e) // a folder has been selected, scan for all supported files
         {
+            previouslySelectedItem = -1;
+
             listBox_files.Items.Clear();
             items.Clear();
 
