@@ -271,10 +271,18 @@ namespace ImOrg
                 return;
             }
 
-            richTextBox1.Hide();
-            pictureBox1.Hide();
-            if (ffplay_isRunning)
-                ffplay_kill();
+            if (previouslySelectedItem != -1)
+                if (items[previouslySelectedItem].type != FileTypes.itemType.text)
+                    richTextBox1.Hide();
+
+            if (previouslySelectedItem != -1)
+                if (items[previouslySelectedItem].type != FileTypes.itemType.image)
+                    pictureBox1.Hide();
+
+            if (previouslySelectedItem != -1)
+                if (items[previouslySelectedItem].type != FileTypes.itemType.video)
+                    if (ffplay_isRunning)
+                        ffplay_kill(); // it should kill ffplay when it loads a new video anyway
 
             switch (items[currentFile.SelectedIndex].type)
             {
@@ -445,11 +453,29 @@ namespace ImOrg
             }
 
             // cool we can now add any kind of sorting here
-            if (ToolStripMenuItem_sortFilesByType.Checked)
-                items2 = items2.OrderBy(x => x.filename).ToList(); // could order by different methods here
+            switch((SortType)toolStripComboBox_sortType.SelectedIndex)
+            {
+                case SortType.a_z_ascending:
+                    items2 = items2.OrderBy(x => x.filename).ToList();
+                    break;
 
-            if (ToolStripMenuItem_sortFilesByType.Checked)
-                items2 = items2.OrderBy(x => x.type).ToList(); // could order by different methods here
+                case SortType.a_z_descending:
+                    items2 = items2.OrderBy(x => x.filename).Reverse().ToList();
+                    break;
+
+                case SortType.size_a:
+                case SortType.size_d:
+                    break;
+
+                case SortType.type_a:
+                    items2 = items2.OrderBy(x => x.type).ToList();
+                    break;
+
+                case SortType.type_d:
+                    items2 = items2.OrderBy(x => x.type).Reverse().ToList();
+                    break;
+
+            }
 
             int i = -1;
             foreach (var a in items2)
@@ -1140,6 +1166,7 @@ namespace ImOrg
                 return;
             }
 
+            if (!ffplay.HasExited)
             if ((int)ffplay.MainWindowHandle != 0) // window handle will change once the video starts, somehow
             {
                 SetParent(ffplay.MainWindowHandle, pictureBox1.Handle);
