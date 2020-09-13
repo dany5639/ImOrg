@@ -669,9 +669,71 @@ namespace ImOrg
 #endif
 
         }
-        private void Form1_SizeChanged(object sender, EventArgs e)
+        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
-            // log($"Size changed: {this.Size.Width}x{this.Size.Height}");
+            timer_renameItems.Start(); // if a video failed to get renamed previously, attempt now
+
+            var currentFile = (ListBox)sender;
+            if (currentFile.SelectedItem == null)
+                return;
+
+            // don't do anything if the selected file didn't change incase the user clicked outside and needs to click back to rename it
+            if (currentFile.SelectedIndex == previouslySelectedItem)
+                return;
+
+            fullPath = items[currentFile.SelectedIndex].fullpath;
+
+            if (items[currentFile.SelectedIndex].type == itemType.directory)
+            {
+                if (!Directory.Exists(fullPath))
+                {
+                    ToolStrip.Text = $"ERROR: cannot find {fullPath}";
+                    return;
+                }
+
+                goto skipForDirectory;
+            }
+            else if (!File.Exists(fullPath))
+            {
+                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
+                return;
+            }
+
+            richTextBox1.Hide();
+            pictureBox1.Hide();
+            if (ffplay_isRunning)
+                ffplay_kill();
+
+            switch (items[currentFile.SelectedIndex].type)
+            {
+                case itemType.video:
+                    pictureBox1.Show();
+                    ffplay_loadVideo();
+                    break;
+
+                case itemType.image:
+                    pictureBox1.Show();
+                    pictureBox1.LoadAsync(fullPath);
+                    break;
+
+                case itemType.text:
+                    richTextBox1.Show();
+                    LoadText(fullPath);
+                    break;
+
+                default:
+                    break;
+            }
+
+            skipForDirectory:
+
+            // check if this should be placed after RenameFile(); or not
+            previouslySelectedItem = currentFile.SelectedIndex;
+
+            // try to scroll the files list further to see the next files
+            // ...
+            // can't find any method to increment scroll by one
+
         }
         #endregion
 
@@ -1597,73 +1659,6 @@ namespace ImOrg
         }
 
         #endregion
-
-        private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
-        {
-            timer_renameItems.Start(); // if a video failed to get renamed previously, attempt now
-
-            var currentFile = (ListBox)sender;
-            if (currentFile.SelectedItem == null)
-                return;
-
-            // don't do anything if the selected file didn't change incase the user clicked outside and needs to click back to rename it
-            if (currentFile.SelectedIndex == previouslySelectedItem)
-                return;
-
-            fullPath = items[currentFile.SelectedIndex].fullpath;
-
-            if (items[currentFile.SelectedIndex].type == itemType.directory)
-            {
-                if (!Directory.Exists(fullPath))
-                {
-                    ToolStrip.Text = $"ERROR: cannot find {fullPath}";
-                    return;
-                }
-
-                goto skipForDirectory;
-            }
-            else if (!File.Exists(fullPath))
-            {
-                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
-                return;
-            }
-
-            richTextBox1.Hide();
-            pictureBox1.Hide();
-            if (ffplay_isRunning)
-                ffplay_kill();
-
-            switch (items[currentFile.SelectedIndex].type)
-            {
-                case itemType.video:
-                    pictureBox1.Show();
-                    ffplay_loadVideo();
-                    break;
-
-                case itemType.image:
-                    pictureBox1.Show();
-                    pictureBox1.LoadAsync(fullPath);
-                    break;
-
-                case itemType.text:
-                    richTextBox1.Show();
-                    LoadText(fullPath);
-                    break;
-
-                default:
-                    break;
-            }
-
-            skipForDirectory:
-
-            // check if this should be placed after RenameFile(); or not
-            previouslySelectedItem = currentFile.SelectedIndex;
-
-            // try to scroll the files list further to see the next files
-            // ...
-            // can't find any method to increment scroll by one
-
-        }
 
         #region DEBUG
         private void DoDebugStuf()
