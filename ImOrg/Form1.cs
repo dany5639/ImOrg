@@ -28,7 +28,7 @@ namespace ImOrg
         private bool isDebug = false;
         private bool ffplay_isRunning = false;
         private string currNewName = "";
-        private string previousNewFilename = "";
+        private string prevNewName = "";
         private Color textColor = Color.White;
         private Color backgroundColor = Color.Black;
         private int previouslySelectedItem = -1;
@@ -36,10 +36,10 @@ namespace ImOrg
         private string fullPath = "";
         private string oldFullpath = "";
         private string newFullpath = "";
-        private List<int> indexesToName = new List<int>();
 
         private class itemInfo
         {
+            public int Index;
             public string filename;
             public string fullpath;
             public string originalFullpath;
@@ -98,6 +98,9 @@ namespace ImOrg
                     // ".flv", // definitely not supported
                     return itemType.text;
 
+                case "Directory":
+                    return itemType.directory;
+
                 default:
                     return itemType.unsupported;
             }
@@ -114,9 +117,6 @@ namespace ImOrg
         #region utilities
         public void log(string in_)
         {
-            if (!isDebug)
-                return;
-
             Console.WriteLine($"[{DateTime.Now.ToString("hhmmss:fff")}] {in_}");
 
         }
@@ -200,7 +200,6 @@ namespace ImOrg
             // WMP library has a massive memory leak when opening videos successively rapidely, is significantly reduced when letting a video play for 5-10 seconds before opening a new one
             // unable to create a thread specifically for WMP to destroy to avoid this memory leak
 
-
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddSeconds(version.Revision * 2);
             string displayableVersion = $"{version} ({buildDate})";
@@ -258,12 +257,16 @@ namespace ImOrg
                 log($"ERROR on #if DEBUG: {err}");
             }
 
+            panel1.Hide();
+            button1.ForeColor = Color.Black;
+            button2.ForeColor = Color.Black;
+            button3.ForeColor = Color.Black;
 #endif
 
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
-            log($"Size changed: {this.Size.Width}x{this.Size.Height}");
+            // log($"Size changed: {this.Size.Width}x{this.Size.Height}");
         }
         #endregion
 
@@ -348,7 +351,6 @@ namespace ImOrg
         }
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e) // a folder has been selected, scan for all supported files
         {
-            indexesToName.Clear();
             listBox_files.Items.Clear();
             items.Clear();
 
@@ -359,16 +361,12 @@ namespace ImOrg
 
             try
             {
-                files = Directory.EnumerateFiles($"{e.Node.FullPath}\\");
+                files = Directory.EnumerateFileSystemEntries($"{e.Node.FullPath}\\");
             }
             catch (UnauthorizedAccessException err)
             {
                 ToolStrip.Text = $"ERROR on selecting file: {err.Message}";
             }
-
-            var files2 = files.ToList();
-            files2.Sort();
-            files = files2;
 
             // add all files with supported extensions
 
@@ -382,9 +380,18 @@ namespace ImOrg
                 var fileInfo = new FileInfo(file);
                 var ext = fileInfo.Extension;
                 var filenameWithoutExtension = $"{fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length)}";
+
+                var filename = fileInfo.Name;
+
+                if (!allowAnyFiletypeToolStripMenuItem.Checked)
+                    filename = file.Split("\\".ToCharArray()).Last(); // use this for folder name
+
+                if (fileInfo.Attributes.ToString().Contains("Directory"))
+                    ext = "Directory";
+
                 items2.Add(new itemInfo
                 {
-                    filename = fileInfo.Name,
+                    filename = filename,
                     fullpath = fileInfo.FullName,
                     originalFullpath = fileInfo.FullName,
                     newFilenameTemp = "",
@@ -397,63 +404,40 @@ namespace ImOrg
 
             // cool we can now add any kind of sorting here
             if (sortFilesByTypeToolStripMenuItem.Checked)
-                items2 = items2.OrderBy(x => x.type).ToList();
+                items2 = items2.OrderBy(x => x.filename).ToList(); // could order by different methods here
 
+            if (sortFilesByTypeToolStripMenuItem.Checked)
+                items2 = items2.OrderBy(x => x.type).ToList(); // could order by different methods here
+
+            int i = -1;
             foreach (var a in items2)
             {
                 if (!allowAnyFiletypeToolStripMenuItem.Checked)
                     if (!(a.type == itemType.image || a.type == itemType.video))
                         continue;
 
+                i++;
+                a.Index = i;
                 items.Add(a);
                 listBox_files.Items.Add(a.filename);
             }
 
-            if (allowFolderHandlingToolStripMenuItem.Checked)
-                AddFolders(e);
-        }
-        private void AddFolders(TreeViewEventArgs e)
-        {
-            if (!Directory.Exists(e.Node.FullPath))
+            // add folders
+            if (!allowFolderHandlingToolStripMenuItem.Checked)
                 return;
 
-            var files = Directory.EnumerateDirectories($"{e.Node.FullPath}\\");
-            var files2 = files.ToList();
-            files2.Sort();
-            files = files2;
-
-            // add all files with supported extensions
-
-            // add dropdown menu toggle to add files in order or by type
-            // bad design, ended up with forcing the type order
-
-            var items2 = new List<itemInfo>();
-
-            foreach (var file in files)
-            {
-                items2.Add(new itemInfo
-                {
-                    filename = file.Split("\\".ToCharArray()).Last(), // use this for folder name
-                    fullpath = file,
-                    originalFullpath = file,
-                    newFilenameTemp = "",
-                    toRename = false,
-                    type = itemType.directory
-                });
-            }
-
-            // cool we can now add any kind of sorting here
-            if (sortFilesByTypeToolStripMenuItem.Checked)
-                items2 = items2.OrderBy(x => x.type).ToList();
-
+            // add folders
             foreach (var a in items2)
             {
                 if (a.type != itemType.directory)
                     continue;
 
+                i++;
+                a.Index = i;
                 items.Add(a);
                 listBox_files.Items.Add(a.filename);
             }
+
         }
         #endregion
        
@@ -463,8 +447,7 @@ namespace ImOrg
             if (listBox_files.SelectedItem == null)
                 return;
 
-            var oldFileName = listBox_files.SelectedItem.ToString();
-
+            // need to fix symbols not working, numbers on azerty keyboard being wrong, other special keys
             // if (false) // debug
             //     if (e.KeyCode != Keys.ShiftKey)
             //         ToolStrip.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
@@ -504,35 +487,21 @@ namespace ImOrg
                         return;
                     }
                     goto keysEnter;
-                case Keys.Enter:
+                case Keys.Enter: // really need to replace with a textbox for more editing control
                     keysEnter:
-                    var selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
+                    var selectedIndex = listBox_files.SelectedIndex; // rename the currently selected item
 
-                    if (listBox_files.Items.Count != items.Count)
-                        throw new Exception("badev");
+                    if (currNewName == "") // new name has been assigned
+                        return;
 
-                    if (items[selectedIndex].newFilenameTemp != "")
-                        break;
-
-                    items[selectedIndex].newFilenameTemp = currNewName; // me a day later: what's this for?
+                    log($"ListBox_files_KeyDown: {items[selectedIndex].filename}; {items[selectedIndex].newFilenameTemp}");
+                    items[selectedIndex].newFilenameTemp = currNewName;
                     items[selectedIndex].toRename = true;
-
-                    if (currNewName != "")
-                        previousNewFilename = currNewName;
-
-                    if (currNewName == "")
-                        break;
-
-                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
-
-                    currNewName = "";
-
-                    if (!indexesToName.Contains(selectedIndex))
-                        indexesToName.Add(selectedIndex);
-
-                    // return; // need to handle this better, if an item is stuck in a renaming loop, i need to give it a new name
-
-                    timer_renameItems.Start();
+                    ToolStrip.Text = $"Renaming queued: {items[selectedIndex].filename} to {currNewName}";
+                    log($"Renaming queued: {items[selectedIndex].filename} to {currNewName}");
+                    prevNewName = currNewName; // this is the new name used previously for the last renamed item
+                    currNewName = ""; // this is the new name, currently modified with letters or F1 or F3
+                    timer_renameItems.Start(); // start renaming if: new video is selected and previous video is released;
                     return;
 
                 case Keys.Escape:
@@ -610,7 +579,7 @@ namespace ImOrg
                 case Keys.F1:
                     // use the last renamed file as template
                     // maybe change key or let the user customize it
-                    currNewName = previousNewFilename;
+                    currNewName = prevNewName;
                     if (currNewName != "")
                         ToolStrip.Text = $"Reusing: {currNewName}"; // maybe use to undo
                     return;
@@ -626,26 +595,22 @@ namespace ImOrg
                     return;
 
                 case Keys.F3:
-                    selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
-
-                    var it = items[selectedIndex];
-                    var og = it.originalFullpath;
-
-                    if (it.type == itemType.directory)
-                        items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - og.LastIndexOf("\\") - 1);
-                    else
-                        items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - it.extension.Length - og.LastIndexOf("\\") - 1);
-
-                    items[selectedIndex].toRename = true;
-
-                    ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
-
-                    if (indexesToName.Contains(selectedIndex))
-                        return;
-
-                    indexesToName.Add(selectedIndex);
-
-                    timer_renameItems.Start();
+                    throw new NotImplementedException();
+                    // selectedIndex = listBox_files.SelectedIndex; // assuming we don't remove entries, it will always work
+                    // 
+                    // var it = items[selectedIndex];
+                    // var og = it.originalFullpath;
+                    // 
+                    // if (it.type == itemType.directory)
+                    //     items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - og.LastIndexOf("\\") - 1);
+                    // else
+                    //     items[selectedIndex].newFilenameTemp = og.Substring(og.LastIndexOf("\\") + 1, og.Length - it.extension.Length - og.LastIndexOf("\\") - 1);
+                    // 
+                    // items[selectedIndex].toRename = true;
+                    // 
+                    // ToolStrip.Text = $"Renaming queued: {oldFileName} to {currNewName}";
+                    // 
+                    // timer_renameItems.Start();
                     return;
 
                 case Keys.F12: // resize image
@@ -709,24 +674,18 @@ namespace ImOrg
         #endregion
 
         #region Move File
-        private void managePreviousItems()
+        private void renameAndMoveItems()
         {
             var processedIndexes = new List<int>();
-            // log($"managePreviousItems(): indexesToName {indexesToName.Count}");
 
             // don't loop trough the list of all items as the list can be long, instead check the list of items to name
-            for (int j = 0; j < indexesToName.Count; j++)
+            foreach (var item in items)
             {
-                // wait what about moving directories
-                var i = indexesToName[j];
-                var item = items[i]; // WARNING: items 
-
                 if (item.type == itemType.directory)
                     continue;
 
-                // skip files that don't need to be renamed
                 if (item.toRename == false)
-                    continue; // shouldn't happen
+                    continue;
 
                 // skip files if new name was failed to be set
                 if (item.newFilenameTemp == "")
@@ -734,51 +693,48 @@ namespace ImOrg
 
                 oldFullpath = item.fullpath;
 
-                log($"index to rename: {i}; {oldFullpath}; {item.newFilenameTemp}; {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}");
+                log($"To rename: {oldFullpath}; {item.newFilenameTemp}; {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}");
 
                 if (!new FileInfo(oldFullpath).Exists)
                 {
-                    log($"RenameOrMoveItems(): error: file doesn't exists. prevFileName = {oldFullpath};");
+                    log($"managePreviousItems(): error: file doesn't exists. prevFileName = {oldFullpath};");
                     return;
                 }
 
                 var ogFileInfo = new FileInfo(oldFullpath);
                 var ogFileInfoDirectory = ogFileInfo.Directory.ToString();
                 var filenameWithoutExtension = item.filenameWithoutExtension;
-
-                // log($"newFullpath before {oldFullpath}");
+                var newName = item.newFilenameTemp;
 
                 switch ((renamingMode)toolStripComboBox_renamingMode.SelectedIndex)
                 {
                     case renamingMode.move:
-                        ogFileInfoDirectory = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
+                        ogFileInfoDirectory = $"{ogFileInfoDirectory}\\{newName}";
 
                         if (!Directory.Exists($"{ogFileInfoDirectory}"))
                             Directory.CreateDirectory($"{ogFileInfoDirectory}");
 
-                        item.newFilenameTemp = ogFileInfo.Name.Substring(0, ogFileInfo.Name.Length - ogFileInfo.Extension.Length);
-                        newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}";
+                        newName = ogFileInfo.Name.Substring(0, ogFileInfo.Name.Length - ogFileInfo.Extension.Length);
+                        newFullpath = $"{ogFileInfoDirectory}\\{newName}";
                         item.relativePath = true;
                         break;
 
                     case renamingMode.replace:
-                        newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}"; // don't add extension, it's added later
+                        newFullpath = $"{ogFileInfoDirectory}\\{newName}";
                         break;
 
                     case renamingMode.start:
-                        newFullpath = $"{ogFileInfoDirectory}\\{item.newFilenameTemp}{filenameWithoutExtension}";
+                        newFullpath = $"{ogFileInfoDirectory}\\{newName}{filenameWithoutExtension}";
                         break;
 
                     case renamingMode.end:
-                        newFullpath = $"{ogFileInfoDirectory}\\{filenameWithoutExtension}{item.newFilenameTemp}";
+                        newFullpath = $"{ogFileInfoDirectory}\\{filenameWithoutExtension}{newName}";
                         break;
 
                     default:
                         throw new Exception("New name position: Index out of bounds");
 
                 }
-
-                log($"newFullpath after  {newFullpath}");
 
                 // rename by adding the standard windows method: (?)
                 if (File.Exists($"{newFullpath}{ogFileInfo.Extension}"))
@@ -813,8 +769,6 @@ namespace ImOrg
 
                 newFullpath = $"{newFullpath}{ogFileInfo.Extension}";
 
-                // log($"newFullpath after2 {newFullpath}");
-
                 if (item.relativePath)
                 {
                     try
@@ -840,7 +794,10 @@ namespace ImOrg
                         }
                         catch (IOException err)
                         {
-                            log_ts($"Failed on managePreviousItems() on files: {oldFullpath} to {newFullpath}: {err}");
+                            log($"ERROR: failed to rename or move {oldFullpath} to {newFullpath}: {err}");
+                            item.newFilenameTemp = "";
+                            item.toRename = false;
+                            item.relativePath = false;
                             continue;
                         }
                     }
@@ -855,7 +812,6 @@ namespace ImOrg
 
                 item.fullpath = newFullpath;
                 item.filename = newFullpath.Split("\\".ToCharArray()).Last();
-                item.newFilenameTemp = "";
                 item.toRename = false;
                 item.relativePath = false;
                 item.filenameWithoutExtension = filenameWithoutExtension;
@@ -864,32 +820,28 @@ namespace ImOrg
 
                 item.filenameWithoutExtension = $"{item.filename.Substring(0, item.filename.Length - el)}";
 
-                listBox_files.Items[i] = item.filename;
-
-                processedIndexes.Add(i);
+                listBox_files.Items[item.Index] = item.filename;
 
             }
 
             // rename folders
-            for (int j = 0; j < indexesToName.Count; j++)
+            foreach (var item in items)
             {
-                var i = indexesToName[j];
-                var item = items[i]; // WARNING: items 
-
                 if (item.type != itemType.directory)
                     continue;
 
-                // skip files that don't need to be renamed
                 if (item.toRename == false)
-                    continue; // shouldn't happen
+                    continue;
 
                 // skip files if new name was failed to be set
-                if (item.newFilenameTemp == "")
+                var newName = item.newFilenameTemp;
+
+                if (newName == "")
                     continue;
 
                 oldFullpath = item.fullpath;
 
-                log($"index to rename: {i}; {oldFullpath}; {item.newFilenameTemp}; {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}");
+                log($"To rename: {oldFullpath}; {newName}; {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}");
 
                 if (!Directory.Exists(oldFullpath))
                 {
@@ -899,36 +851,32 @@ namespace ImOrg
 
                 var parentDir = Directory.GetParent(oldFullpath);
 
-                log($"newFullpath before {oldFullpath}");
-
                 switch ((renamingMode)toolStripComboBox_renamingMode.SelectedIndex)
                 {
                     case renamingMode.move:
-                        if (!Directory.Exists($"{parentDir}\\{item.newFilenameTemp}"))
-                            Directory.CreateDirectory($"{parentDir}\\{item.newFilenameTemp}");
+                        if (!Directory.Exists($"{parentDir}\\{newName}"))
+                            Directory.CreateDirectory($"{parentDir}\\{newName}");
 
-                        newFullpath = $"{parentDir}\\{item.newFilenameTemp}\\{item.filename}";
+                        newFullpath = $"{parentDir}\\{newName}\\{item.filename}";
                         item.relativePath = true;
                         break;
 
                     case renamingMode.replace:
-                        newFullpath = $"{parentDir}\\{item.newFilenameTemp}";
+                        newFullpath = $"{parentDir}\\{newName}";
                         break;
 
                     case renamingMode.start:
-                        newFullpath = $"{parentDir}\\{item.newFilenameTemp}{item.filename}";
+                        newFullpath = $"{parentDir}\\{newName}{item.filename}";
                         break;
 
                     case renamingMode.end:
-                        newFullpath = $"{parentDir}\\{item.filename}{item.newFilenameTemp}";
+                        newFullpath = $"{parentDir}\\{item.filename}{newName}";
                         break;
 
                     default:
                         throw new Exception("New name position: Index out of bounds");
 
                 }
-
-                log($"newFullpath after {newFullpath}");
 
                 // rename by adding the standard windows method: (?)
                 if (Directory.Exists($"{newFullpath}"))
@@ -992,10 +940,10 @@ namespace ImOrg
                     }
                     catch (Exception err)
                     {
-                        // previousNewFilename = "";
-                        // currNewName = "";
-
-                        log($"ERROR on managePreviousItems(): move directory: {err}");
+                        log($"ERROR: failed to rename or move {oldFullpath} to {newFullpath}: {err}");
+                        item.newFilenameTemp = "";
+                        item.toRename = false;
+                        item.relativePath = false;
                         continue;
                     }
                 }
@@ -1013,21 +961,9 @@ namespace ImOrg
                 item.toRename = false;
                 item.relativePath = false;
 
-                listBox_files.Items[i] = item.filename;
-
-                processedIndexes.Add(i);
+                listBox_files.Items[item.Index] = item.filename;
 
             }
-
-            // remove all indexes that were processed
-            var indexesToNameTemp = new List<int>();
-            foreach (var i in indexesToName)
-                if (!processedIndexes.Contains(i))
-                    indexesToNameTemp.Add(i);
-
-            indexesToName.Clear();
-            foreach (var i in indexesToNameTemp)
-                indexesToName.Add(i);
 
             timer_renameItems.Stop();
 
@@ -1044,11 +980,13 @@ namespace ImOrg
         }
         private void Timer_renameItems_Tick(object sender, EventArgs e)
         {
-            managePreviousItems();
+            renameAndMoveItems();
         }
         #endregion
 
         #region FFPLAY DLL
+        [DllImport("user32.dll")]
+        private static extern int GetParent(IntPtr hWndChild);
         [DllImport("user32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
         [DllImport("user32.dll", SetLastError = true)]
@@ -1073,6 +1011,7 @@ namespace ImOrg
                 $"-x {pictureBox1.Width} " +
                 $"-y {pictureBox1.Height} " +
                 $"-noborder " +
+                // $"-autoexit " + // not good, it kills the video when i want to rewind at the end of a video
                 $"-volume {volume} " +
                 $"\"{fullPath}\"" +
                 $"";
@@ -1085,6 +1024,7 @@ namespace ImOrg
         }
         private void ffplay_startThread()
         {
+            timer_killRogueFFPLAY.Start();
             ffplay.Start();
         }
         private void ffplay_Thread()
@@ -1097,28 +1037,18 @@ namespace ImOrg
         }
         private void initializeTimers()
         {
-            timer_startSetParent.Interval = 100; // ms time between opening ffplay and attempting to attach it to the main window. range: 400-700
-            timer_spamParent.Interval = 8; // ms time between each attempt to attach it to the main window; 16 is every frame
-
-            timer_startSetParent.Stop();
-            timer_spamParent.Stop();
-
+            timer_startSetParent.Stop(); // ms time between opening ffplay and attempting to attach it to the main window. range: 400-700
+            timer_spamParent.Stop(); // ms time between each attempt to attach it to the main window; 16 is every frame
             timer_refocusMain.Stop();
-            timer_refocusMain.Interval = 800;
 
-            timer_renameItems.Interval = 500;
         }
         private void Timer_startSetParent_Tick(object sender, EventArgs e)
         {
-            // log($"Timer_startSetParent_Tick");
             ffplay_attachVideo();
         }
         private void Timer_spamParent_Tick(object sender, EventArgs e)
         {
-            // log($"Timer_spamParent_Tick");
-
             // this is quite ugly, i need a way to find out that the ffplay window has spawned, and not spam a function to attach it every specified tick
-            // ffplay.WaitForInputIdle(500); // try this
 
             try
             {
@@ -1126,7 +1056,6 @@ namespace ImOrg
             }
             catch (Exception err)
             {
-                // log($"ffplay_attachVideo(): ffplay is invalid.");
                 timer_startSetParent.Stop();
                 timer_spamParent.Stop();
                 log($"ERROR on Timer_spamParent_Tick(): {err}");
@@ -1135,7 +1064,6 @@ namespace ImOrg
 
             if ((int)ffplay.MainWindowHandle != 0) // window handle will change once the video starts, somehow
             {
-                // log($"ffplay_attachVideo(): SetParent");
                 SetParent(ffplay.MainWindowHandle, pictureBox1.Handle);
                 timer_startSetParent.Stop();
                 timer_spamParent.Stop();
@@ -1152,15 +1080,12 @@ namespace ImOrg
         private void ffplay_attachVideo()
         {
             timer_spamParent.Start();
-            // log("ffplay_attachVideo(): timer_spamParent.Start()");
 
             timer_startSetParent.Stop();
-            // log("ffplay_attachVideo(): timer_startSetParent.Stop()");
         }
         private void ffplay_kill()
         {
             // needs a different way as it would kill any ffplay instances or fail to kill the one created by this program
-            // log("ffplay_kill");
             if (!ffplay_isRunning)
                 return;
 
@@ -1174,7 +1099,7 @@ namespace ImOrg
                 log($"ERROR on ffplay.Kill(): {err}");
             }
 
-            // log("timer_startSetParent");
+            timer_killRogueFFPLAY.Stop();
             timer_startSetParent.Stop();
         }
         private void ffplay_loadVideo()
@@ -1183,32 +1108,25 @@ namespace ImOrg
             timer_spamParent.Stop();
             timer_startSetParent.Stop();
 
-            // log("ffplay_loadVideo(): ffplay_kill()");
             ffplay_kill(); // don't allow other instances for now, as i can't kill the already existing instance
 
-            // log("ffplay_loadVideo(): ffmpeg_setInfo()");
             ffplay_setInfo();
 
-            // log("ffplay_loadVideo(): ffmpeg_startThread()");
             ffplay_Thread();
 
             timer_startSetParent.Start();
-            // log("ffplay_loadVideo(): timer_startSetParent.Start()");
         }
         private void PictureBox1_Resize(object sender, EventArgs e)
         {
-            // log($"PictureBox1_Resize {pictureBox1.Width}x{pictureBox1.Height}");
             if (ffplay_isRunning)
                 ffplay_loadVideo();
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            // log("ffplay_kill");
             ffplay_kill();
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // log("ffplay_kill");
             ffplay_kill();
         }
 
@@ -1267,6 +1185,50 @@ namespace ImOrg
             // try to scroll the files list further to see the next files
             // ...
             // can't find any method to increment scroll by one
+
+        }
+
+        private void ToolStrip_Click(object sender, EventArgs e)
+        {
+            if (panel1.Visible)
+                panel1.Hide();
+            else
+                panel1.Show();
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            ffplay_loadVideo();
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            ffplay_kill();
+        }
+
+        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            timer_startSetParent.Interval = (int)numericUpDown1.Value;
+        }
+
+        private void NumericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+            timer_spamParent.Interval = (int)numericUpDown1.Value;
+        }
+
+        private void NumericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+            timer_refocusMain.Interval = (int)numericUpDown1.Value;
+        }
+
+        private void NumericUpDown4_ValueChanged(object sender, EventArgs e)
+        {
+            timer_renameItems.Interval = (int)numericUpDown1.Value;
+        }
+
+        private void NumericUpDown5_ValueChanged(object sender, EventArgs e)
+        {
+            timer_killRogueFFPLAY.Interval = (int)numericUpDown1.Value;
 
         }
 
