@@ -37,6 +37,7 @@ namespace ImOrg
         private string oldFullpath = "";
         private string newFullpath = "";
         private int text_linesToRead = 20;
+        private PictureBoxSizeMode currentPictureMode = PictureBoxSizeMode.Zoom;
         private class itemInfo
         {
             public int Index;
@@ -283,6 +284,9 @@ namespace ImOrg
                     if (ffplay_isRunning)
                         ffplay_kill();
                     pictureBox1.Show();
+
+                    pictureBox1.SizeMode = currentPictureMode;
+
                     pictureBox1.LoadAsync(fullPath);
                     break;
 
@@ -693,16 +697,16 @@ namespace ImOrg
                     timer_renameItems.Start();
                     return;
 
-                case Keys.F12: // resize image
-                    // well this completely broke out of nowhere
-                    var a = (int)pictureBox1.SizeMode;
-                    if (a + 1 == availablePictureModes.Count)
-                        a = -1;
-
-                    pictureBox1.SizeMode = availablePictureModes[a + 1];
-
-                    ToolStrip.Text = $"Picture scaling: {pictureBox1.SizeMode}";
-                    return;
+                // case Keys.F12: // resize image
+                //     // well this completely broke out of nowhere
+                //     var a = (int)pictureBox1.SizeMode;
+                //     if (a + 1 == availablePictureModes.Count)
+                //         a = -1;
+                // 
+                //     currentPictureMode = availablePictureModes[a + 1];
+                // 
+                //     ToolStrip.Text = $"Picture scaling: {pictureBox1.SizeMode}";
+                //     return;
 
                 default:
                     break;
@@ -736,7 +740,7 @@ namespace ImOrg
                 "\nF1  : use the last typed name." +
                 "\nF2  : change renaming mode." +
                 "\nF3  : restore the original filename from before renaming it in this session." +
-                "\nF12 : change image view mode" +
+                // "\nF12 : change image view mode" +
                 "\n" +
                 "";
 

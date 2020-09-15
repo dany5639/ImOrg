@@ -665,10 +665,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1251, 740);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBox1);
             this.Name = "Form1";
             this.Text = "ImOrg";
