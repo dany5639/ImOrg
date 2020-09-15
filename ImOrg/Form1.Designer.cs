@@ -230,18 +230,14 @@
             // 
             // directoriesToolStripMenuItem
             // 
-            this.directoriesToolStripMenuItem.Checked = true;
             this.directoriesToolStripMenuItem.CheckOnClick = true;
-            this.directoriesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.directoriesToolStripMenuItem.Name = "directoriesToolStripMenuItem";
             this.directoriesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.directoriesToolStripMenuItem.Text = "Show directories/folders";
             // 
             // unsupportedToolStripMenuItem
             // 
-            this.unsupportedToolStripMenuItem.Checked = true;
             this.unsupportedToolStripMenuItem.CheckOnClick = true;
-            this.unsupportedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.unsupportedToolStripMenuItem.Name = "unsupportedToolStripMenuItem";
             this.unsupportedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.unsupportedToolStripMenuItem.Text = "Show unsupported formats";

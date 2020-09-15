@@ -271,33 +271,26 @@ namespace ImOrg
                 return;
             }
 
-            if (previouslySelectedItem != -1)
-                if (items[previouslySelectedItem].type != FileTypes.itemType.text)
-                    richTextBox1.Hide();
-
-            if (previouslySelectedItem != -1)
-                if (items[previouslySelectedItem].type != FileTypes.itemType.image)
-                    pictureBox1.Hide();
-
-            if (previouslySelectedItem != -1)
-                if (items[previouslySelectedItem].type != FileTypes.itemType.video)
-                    if (ffplay_isRunning)
-                        ffplay_kill(); // it should kill ffplay when it loads a new video anyway
-
             switch (items[currentFile.SelectedIndex].type)
             {
                 case FileTypes.itemType.video:
                     pictureBox1.Show();
+                    richTextBox1.Hide();
                     ffplay_loadVideo();
                     break;
 
                 case FileTypes.itemType.image:
+                    if (ffplay_isRunning)
+                        ffplay_kill();
                     pictureBox1.Show();
                     pictureBox1.LoadAsync(fullPath);
                     break;
 
                 case FileTypes.itemType.text:
+                    if (ffplay_isRunning)
+                        ffplay_kill();
                     richTextBox1.Show();
+                    pictureBox1.Hide();
                     LoadText(fullPath);
                     break;
 
@@ -537,15 +530,13 @@ namespace ImOrg
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    if (!ffplay_isRunning)
-                        break;
-                    SetForegroundWindow((int)ffplay.MainWindowHandle);
-                    e.Handled = true;
-                    timer_refocusMain.Start();
-                    return;
                 case Keys.Right:
                     if (!ffplay_isRunning)
-                        break;
+                    {
+                        currNewName = "";
+                        ToolStrip.Text = $"Cannot use left/right arrows to rename items.";
+                        return;
+                    }
                     SetForegroundWindow((int)ffplay.MainWindowHandle);
                     e.Handled = true;
                     timer_refocusMain.Start();
@@ -579,8 +570,8 @@ namespace ImOrg
                     log($"ListBox_files_KeyDown: {items[selectedIndex].filename}; {items[selectedIndex].newFilenameTemp}");
                     items[selectedIndex].newFilenameTemp = currNewName;
                     items[selectedIndex].toRename = true;
-                    ToolStrip.Text = $"Renaming queued: {items[selectedIndex].filename} to {currNewName}";
-                    log($"Renaming queued: {items[selectedIndex].filename} to {currNewName}");
+                    // ToolStrip.Text = $"Renaming queued: {items[selectedIndex].filename} to {currNewName}";
+                    // log($"Renaming queued: {items[selectedIndex].filename} to {currNewName}");
                     prevNewName = currNewName; // this is the new name used previously for the last renamed item
                     currNewName = ""; // this is the new name, currently modified with letters or F1 or F3
 
