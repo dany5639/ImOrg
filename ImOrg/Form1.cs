@@ -609,6 +609,7 @@ namespace ImOrg
 
                 case Keys.Space:
                     currNewName = $"{currNewName} ";
+                    e.Handled = true; // surely this is not needed here as it's handeled elsewhere; NOPE IT STILL DIDNT GET HANDELED IN THE SO CALLED ""ELSEWHERE""
                     break;
 
                 #region numbers and signs
