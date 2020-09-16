@@ -522,7 +522,7 @@ namespace ImOrg
                 i++;
                 a.Index = i;
                 items.Add(a);
-                listBox_files.Items.Add(a.filename);
+                listBox_files.Items.Add(a.fullpath);
             }
 
             log($"Listed {listBox_files.Items.Count} items.");
@@ -598,7 +598,7 @@ namespace ImOrg
                     if (ffplay_isRunning)
                         ffplay_kill();
 
-                    timer_renameItems.Start(); // start renaming if: new video is selected and previous video is released;
+                    timer_renameItems.Start();
 
                     break;
 
@@ -923,7 +923,7 @@ namespace ImOrg
 
                 item.filenameWithoutExtension = $"{item.filename.Substring(0, item.filename.Length - el)}";
 
-                listBox_files.Items[item.Index] = item.filename;
+                listBox_files.Items[item.Index] = item.fullpath;
 
             }
 
@@ -1064,7 +1064,7 @@ namespace ImOrg
                 item.toRename = false;
                 item.relativePath = false;
 
-                listBox_files.Items[item.Index] = item.filename;
+                listBox_files.Items[item.Index] = item.fullpath;
 
             }
 
@@ -1084,26 +1084,6 @@ namespace ImOrg
         private void Timer_renameItems_Tick(object sender, EventArgs e)
         {
             renameAndMoveItems();
-        }
-        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-            timer_startSetParent.Interval = (int)numericUpDown1.Value;
-        }
-        private void NumericUpDown2_ValueChanged(object sender, EventArgs e)
-        {
-            timer_spamParent.Interval = (int)numericUpDown1.Value;
-        }
-        private void NumericUpDown3_ValueChanged(object sender, EventArgs e)
-        {
-            timer_refocusMain.Interval = (int)numericUpDown1.Value;
-        }
-        private void NumericUpDown4_ValueChanged(object sender, EventArgs e)
-        {
-            timer_renameItems.Interval = (int)numericUpDown1.Value;
-        }
-        private void NumericUpDown5_ValueChanged(object sender, EventArgs e)
-        {
-            timer_killRogueFFPLAY.Interval = (int)numericUpDown1.Value;
         }
         #endregion
 
@@ -1311,6 +1291,26 @@ namespace ImOrg
             else
                 panel1.Show();
         }
+        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            timer_startSetParent.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+            timer_spamParent.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+            timer_refocusMain.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown4_ValueChanged(object sender, EventArgs e)
+        {
+            timer_renameItems.Interval = (int)numericUpDown1.Value;
+        }
+        private void NumericUpDown5_ValueChanged(object sender, EventArgs e)
+        {
+            timer_killRogueFFPLAY.Interval = (int)numericUpDown1.Value;
+        }
         #endregion
 
         #region LoadText
@@ -1332,7 +1332,9 @@ namespace ImOrg
         #endregion
 
         // current major problems:
-        // something keeps failing and leaves a rogue ffplay process running in the background and locking the video file
+        // if something fails around a video loading or renaming, FFPLAY may run detached and can't be killed by the app; probably should add a timer to occasionally kill it
+        // should use text box to rename items
+        // using F3 to restore the filename won't move it back to the original location if it was moved. wat do
 
     }
 
