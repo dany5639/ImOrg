@@ -584,7 +584,7 @@ namespace ImOrg
 
                     timer_renameItems.Start(); // start renaming if: new video is selected and previous video is released;
 
-                    return;
+                    break;
 
                 case Keys.Escape:
                     currNewName = "";
@@ -655,6 +655,8 @@ namespace ImOrg
                 case Keys.Back:
                     if (currNewName != "")
                         currNewName = currNewName.Remove(currNewName.Length - 1, 1);
+
+                    ToolStrip.Text = $"";
                     break;
 
                 // press this key to use the last used filename
