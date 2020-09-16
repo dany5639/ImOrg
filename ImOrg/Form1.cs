@@ -27,6 +27,7 @@ namespace ImOrg
 
         private bool isDebug = false;
         private bool ffplay_isRunning = false;
+        private bool isViewingImage = false;
         private string currNewName = "";
         private string prevNewName = "";
         private Color ForeColor_ = Color.White;
@@ -275,6 +276,8 @@ namespace ImOrg
             switch (items[currentFile.SelectedIndex].type)
             {
                 case FileTypes.itemType.video:
+                    isViewingImage = false;
+
                     pictureBox1.Show();
                     richTextBox1.Hide();
                     ffplay_loadVideo();
@@ -287,10 +290,15 @@ namespace ImOrg
 
                     pictureBox1.SizeMode = currentPictureMode;
 
+                    isViewingImage = true;
+
                     pictureBox1.LoadAsync(fullPath);
+
                     break;
 
                 case FileTypes.itemType.text:
+                    isViewingImage = false;
+
                     if (ffplay_isRunning)
                         ffplay_kill();
                     richTextBox1.Show();
@@ -517,6 +525,8 @@ namespace ImOrg
                 listBox_files.Items.Add(a.filename);
             }
 
+            log($"Listed {listBox_files.Items.Count} items.");
+
         }
         #endregion
        
@@ -535,15 +545,15 @@ namespace ImOrg
             {
                 case Keys.Left:
                 case Keys.Right:
-                    if (!ffplay_isRunning)
-                    {
-                        currNewName = "";
-                        ToolStrip.Text = $"Cannot use left/right arrows to rename items.";
-                        return;
-                    }
+                    if (isViewingImage)
+                        break;
+
                     SetForegroundWindow((int)ffplay.MainWindowHandle);
-                    e.Handled = true;
+
                     timer_refocusMain.Start();
+
+                    e.Handled = true; // surely this is not needed here as it's handeled elsewhere
+
                     return;
                 default:
                     break;
@@ -554,6 +564,12 @@ namespace ImOrg
                 case Keys.Alt:
                 case Keys.ShiftKey:
                 case Keys.ControlKey:
+                    break;
+
+                case Keys.Left:
+                case Keys.Right:
+                    if (isViewingImage)
+                        goto keysEnter;
                     break;
 
                 case Keys.Up:
@@ -591,6 +607,10 @@ namespace ImOrg
                     ToolStrip.Text = $"Name reset."; // maybe use to undo
                     return;
 
+                case Keys.Space:
+                    currNewName = $"{currNewName} ";
+                    break;
+
                 #region numbers and signs
                 case Keys.OemMinus: currNewName = $"{currNewName}_"; break;
                 case Keys.Subtract: currNewName = $"{currNewName}-"; break;
@@ -604,7 +624,6 @@ namespace ImOrg
                 case Keys.NumPad7: currNewName = $"{currNewName}7"; break;
                 case Keys.NumPad8: currNewName = $"{currNewName}8"; break;
                 case Keys.NumPad9: currNewName = $"{currNewName}9"; break;
-                case Keys.Space: currNewName = $"{currNewName} "; break;
                 case Keys.Add: currNewName = $"{currNewName}+"; break;
                 case Keys.D0: currNewName = $"{currNewName}0"; break;
                 case Keys.D1: currNewName = $"{currNewName}1"; break;
