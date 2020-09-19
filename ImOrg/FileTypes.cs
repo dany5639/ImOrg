@@ -13,7 +13,7 @@
         }
         public static itemType getFileType(string extension)
         {
-            switch (extension)
+            switch (extension.ToLower())
             {
                 case "":
                     return itemType.noExtension;

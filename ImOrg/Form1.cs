@@ -75,8 +75,6 @@ namespace ImOrg
             size_a,
             size_d
         }
-        private List<SortType> sortType = new List<SortType> {
-        };
         #endregion
 
         #region utilities
@@ -87,7 +85,7 @@ namespace ImOrg
         }
         private void log_ts(string in_)
         {
-            ToolStrip.Text = $"Renamed {oldFullpath} to {newFullpath}";
+            ToolStrip.Text = $"{in_}";
 
         }
         private static List<string> ReadCsv(string filename, int lineCount = 1)
@@ -525,7 +523,7 @@ namespace ImOrg
                 listBox_files.Items.Add(a.fullpath);
             }
 
-            log($"Listed {listBox_files.Items.Count} items.");
+            log_ts($"Listed {listBox_files.Items.Count} items.");
 
         }
         #endregion
@@ -1083,6 +1081,7 @@ namespace ImOrg
         }
         private void Timer_renameItems_Tick(object sender, EventArgs e)
         {
+            var a = timer_renameItems.Interval;
             renameAndMoveItems();
         }
         #endregion
@@ -1255,27 +1254,27 @@ namespace ImOrg
                 for (int i = 0; i < treeView_folders.Nodes.Count; i++)
                 {
                     log($"Found Disk: {treeView_folders.Nodes[i].Text.ToString()}");
-                    if (treeView_folders.Nodes[i].Text.ToString() != "R:")
+                    if (treeView_folders.Nodes[i].Text.ToString() != "F:")
                         continue;
-
+            
                     treeView_folders.SelectedNode = treeView_folders.Nodes[i];
                     treeView_folders.SelectedNode.Expand();
-
+            
                     // ok well this suddenly doesn't work anymore, great
                     for (int j = 0; j < treeView_folders.Nodes.Count; j++)
                     {
                         log($"Found directory: {treeView_folders.Nodes[i].Nodes[j].Text.ToString()}");
                         if (treeView_folders.Nodes[i].Nodes[j].Text.ToString() != "UNSORTED_SFW")
                             continue;
-
+            
                         // treeView_folders.SelectedNode = treeView_folders.Nodes[i].Nodes[j];
                         var a = treeView_folders.SelectedNode.Nodes[j].Nodes[0];
                         return;
-
+            
                     }
-
+            
                     return;
-
+            
                 }
             }
             catch (Exception err)
