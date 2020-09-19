@@ -17,6 +17,7 @@ F3  : restore the original filename before renaming it in this session.
 
 Instructions:
 - Compile with Visual Studio 2019 Community Edition or download a binary from the Releases page or ImOrg/bin/x64/Debug/ImOrg.exe for the most frequent updates.
+- Compile or download a precompiled build of FFMPEG to get FFPLAY.exe : https://ffmpeg.org/download.html (FFPLAY.EXE needs to be in the same folder as ImOrg.exe)
 - Double click on ImOrg.exe to open it as a program.
 - Once it's open, select the folder to open from the list of drives on the left panel.
 - Once a folder is selected, all supported files will appear in the bottom list.
