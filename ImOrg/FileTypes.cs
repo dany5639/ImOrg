@@ -15,6 +15,9 @@
         {
             switch (extension.ToLower())
             {
+                case "directory":
+                    return itemType.directory;
+
                 case "":
                     return itemType.noExtension;
 
@@ -25,17 +28,15 @@
                 case ".tif":
                 case ".tiff":
                 case ".bmp":
-                    // case ".ico":
-                    // ".webp", // not supported
-                    // ".dds", // not supported
-                    // ".tga", // not supported
+                // case ".ico":
+                // ".webp", // not supported
+                // ".dds", // not supported
+                // ".tga", // not supported
                     return itemType.image;
 
-                // case ".webm":
-                // case ".mp4":
                 case ".mkv":
 
-                // UNTESTED but in the list of supported formats:
+                // List of supported formats in FFPLAY:
                 #region FFPLAY
                 case ".3dostr":
                 case ".3g2":
@@ -393,21 +394,19 @@
                     return itemType.video;
                 #endregion
 
-                #region TXT
+                #region TXT only a few were tested, but any file should open just fine assuming they're... ascii.
                 case ".txt":
                 case ".csv":
                 case ".log":
                 case ".xml":
                 case ".json":
                 case ".xaml":
-                    return itemType.text;
+                    goto default;
                 #endregion
 
-                case "Directory":
-                    return itemType.directory;
-
                 default:
-                    return itemType.unsupported;
+                    return itemType.text;
+                    // return itemType.unsupported;
             }
         }
 

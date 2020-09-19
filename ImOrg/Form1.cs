@@ -37,7 +37,7 @@ namespace ImOrg
         private string fullPath = "";
         private string oldFullpath = "";
         private string newFullpath = "";
-        private int text_linesToRead = 20;
+        private string displayableVersion = ""; // i still don't know how to use get; set, this is just sad
         private PictureBoxSizeMode currentPictureMode = PictureBoxSizeMode.Zoom;
         private class itemInfo
         {
@@ -208,9 +208,9 @@ namespace ImOrg
             // WMP library has a massive memory leak when opening videos successively rapidely, is significantly reduced when letting a video play for 5-10 seconds before opening a new one
             // unable to create a thread specifically for WMP to destroy to avoid this memory leak
 
-            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
             DateTime buildDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddSeconds(version.Revision * 2);
-            string displayableVersion = $"{version} ({buildDate})";
+            displayableVersion = $"{version} ({buildDate})";
 
             ToolStrip.Text = $"Version: {displayableVersion}";
 
@@ -224,7 +224,7 @@ namespace ImOrg
             // change videoSkipSeconds for the default value
             toolStripTextBox_videoFastForwardSeconds.Text = "5";
 
-            toolStripTextBox_textLength.Text = "20";
+            toolStripTextBox_textLength.Text = "200";
 
             toolStripComboBox_renamingMode.SelectedIndex = 1;
 
@@ -240,6 +240,7 @@ namespace ImOrg
             DoDebugStuf();
 #endif
 
+            ToolStrip.Text = $"Version: {displayableVersion}";
         }
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
@@ -755,7 +756,8 @@ namespace ImOrg
             label.AutoSize = true;
             label.Font = new Font("Consolas", 10.25F, FontStyle.Regular, GraphicsUnit.Point);
             label.Text =
-                "Shortcuts list:" +
+                $"Version: {displayableVersion} " +
+                "\nShortcuts list:" +
                 "\nESC : cancel last new name." +
                 "\nF1  : use the last typed name." +
                 "\nF2  : change renaming mode." +
@@ -1315,6 +1317,8 @@ namespace ImOrg
         #region LoadText
         private void LoadText(string filename)
         {
+            int.TryParse(toolStripTextBox_textLength.Text, System.Globalization.NumberStyles.Integer, null, out int text_linesToRead);
+           
             var lines =  ReadCsv(filename, text_linesToRead);
             var text = "";
 
@@ -1324,10 +1328,6 @@ namespace ImOrg
             richTextBox1.Text = text;
         }
 
-        private void ToolStripMenuItem_textLength_textChanged(object sender, EventArgs e)
-        {
-            int.TryParse(toolStripTextBox_textLength.Text, System.Globalization.NumberStyles.Integer, null, out text_linesToRead);
-        }
         #endregion
 
         // current major problems:
