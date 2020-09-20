@@ -32,7 +32,7 @@ Features to add:
 - Allow user to resize the left and bottom panels.
 
 To Fix ASAP:
-- Fast forwarding in a video will cause the window to not be focused anymore. 
+- Very strange bug: using fast forward on a video while NOT using Visual Studio debugging will cause the main window to not get focused. Affects both debug and release builds. Double checked and it was the same build for all 3.
 Current behavior: press arrow, video fast forwards, click on window to focus again, type new name.
 Expected behavior: press arrow, video fast forwards, type new name.
 

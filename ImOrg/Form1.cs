@@ -1107,7 +1107,7 @@ namespace ImOrg
 
             // no idea why 8 and 30, maybe title bar + borders
 
-            var volume = toolStripMenuItem_settings_video_mute.Checked == true ? "0" : "100";
+            var volume = toolStripMenuItem_startVideoMuted.Checked == true ? "0" : "100";
 
             ffplay.StartInfo.Arguments = $"" +
                 $"-left {pictureBox1.Location.X + this.Location.X + 8} " +

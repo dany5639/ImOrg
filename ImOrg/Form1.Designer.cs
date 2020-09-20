@@ -57,9 +57,7 @@
             this.toolStripComboBox_renamingMode = new System.Windows.Forms.ToolStripComboBox();
             this.ToolStripMenuItem_info = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.howManyLinesToReadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem_settings_video_mute = new System.Windows.Forms.ToolStripMenuItem();
             this.timer_startSetParent = new System.Windows.Forms.Timer(this.components);
             this.timer_spamParent = new System.Windows.Forms.Timer(this.components);
             this.timer_refocusMain = new System.Windows.Forms.Timer(this.components);
@@ -83,6 +81,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
+            this.toolStripMenuItem_startVideoMuted = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -246,7 +245,8 @@
             // 
             this.toolStripMenuItem_itemSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem_settings_text,
-            this.toolStripMenuItem_settings_video});
+            this.toolStripMenuItem_settings_video,
+            this.toolStripMenuItem_startVideoMuted});
             this.toolStripMenuItem_itemSettings.Name = "toolStripMenuItem_itemSettings";
             this.toolStripMenuItem_itemSettings.Size = new System.Drawing.Size(215, 22);
             this.toolStripMenuItem_itemSettings.Text = "Item types settings";
@@ -341,23 +341,11 @@
             this.ToolStrip.Text = "Idle";
             this.ToolStrip.Click += new System.EventHandler(this.ToolStrip_Click);
             // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(219, 22);
-            this.toolStripMenuItem1.Text = "Fast forward seconds count";
-            // 
             // howManyLinesToReadToolStripMenuItem
             // 
             this.howManyLinesToReadToolStripMenuItem.Name = "howManyLinesToReadToolStripMenuItem";
             this.howManyLinesToReadToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.howManyLinesToReadToolStripMenuItem.Text = "How many lines to read:";
-            // 
-            // toolStripMenuItem_settings_video_mute
-            // 
-            this.toolStripMenuItem_settings_video_mute.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.toolStripMenuItem_settings_video_mute.Name = "toolStripMenuItem_settings_video_mute";
-            this.toolStripMenuItem_settings_video_mute.Size = new System.Drawing.Size(100, 23);
             // 
             // timer_startSetParent
             // 
@@ -659,6 +647,13 @@
             this.richTextBox1.TabIndex = 13;
             this.richTextBox1.Text = "";
             // 
+            // toolStripMenuItem_startVideoMuted
+            // 
+            this.toolStripMenuItem_startVideoMuted.CheckOnClick = true;
+            this.toolStripMenuItem_startVideoMuted.Name = "toolStripMenuItem_startVideoMuted";
+            this.toolStripMenuItem_startVideoMuted.Size = new System.Drawing.Size(219, 22);
+            this.toolStripMenuItem_startVideoMuted.Text = "Start video muted";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -738,13 +733,12 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_changeFont;
         private System.Windows.Forms.ToolStripMenuItem howManyLinesToReadToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_textLength;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_itemSettings;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_text;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_video;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_settings_video_mute;
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoFastForwardSeconds;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_sortType;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_startVideoMuted;
     }
 }
 
