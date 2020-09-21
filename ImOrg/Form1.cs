@@ -1078,7 +1078,10 @@ namespace ImOrg
         {
             // this is so janky i hate it
             // need a way to control ffplay without focusing its window, like a process.sendCommand()
+            log($"DEBUG timer_refocusMain ticked; handle: {(int)this.Handle}");
+
             SetForegroundWindow((int)this.Handle);
+
             timer_refocusMain.Stop();
         }
         private void Timer_renameItems_Tick(object sender, EventArgs e)
@@ -1251,6 +1254,8 @@ namespace ImOrg
             isDebug = true;
             log($"DEBUG mode");
 
+            toolStripMenuItem_startVideoMuted.Checked = true;
+
             try // ...
             {
                 for (int i = 0; i < treeView_folders.Nodes.Count; i++)
@@ -1336,7 +1341,7 @@ namespace ImOrg
         // using F3 to restore the filename won't move it back to the original location if it was moved. wat do
 
         /* weird bugs encountered so far:
-         * Main window won't focus in Debug or Release when running the standalone executable, but would work when debugging in Visual Studio.
+         * Main window won't focus in Debug or Release when running the standalone executable, but would work when debugging in Visual Studio. Turns out it's in SetForegroundWindow's documentation.
          * Renaming files too fast will make the file list selection jump from the last to first. There's no function to do it, nor anything that makes the index go to 0.
          * If the new name for the last file in the list contained a space, then it would not rename the last item and instead go to the previous one and rename it.
          * Image rescaling randomly breaking after making it work and never touching the code for many builds.
@@ -1346,6 +1351,7 @@ namespace ImOrg
          * Can't rename a video immediately after FFPLAY is closed, needs a delay. A long delay. Okay how long because this is getting ridiculous.
          * 
         */
+
     }
 
 }
