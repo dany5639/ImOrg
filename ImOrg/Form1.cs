@@ -28,6 +28,7 @@ namespace ImOrg
         private bool isDebug = false;
         private bool ffplay_isRunning = false;
         private bool isViewingImage = false;
+        private bool text_windowOutOfFocusAnnounced = false;
         private string currNewName = "";
         private string prevNewName = "";
         private Color ForeColor_ = Color.White;
@@ -38,6 +39,7 @@ namespace ImOrg
         private string oldFullpath = "";
         private string newFullpath = "";
         private string displayableVersion = ""; // i still don't know how to use get; set, this is just sad
+        private string text_lastStatus = "";
         private PictureBoxSizeMode currentPictureMode = PictureBoxSizeMode.Zoom;
         private class itemInfo
         {
@@ -86,7 +88,7 @@ namespace ImOrg
         private void log_ts(string in_)
         {
             ToolStrip.Text = $"{in_}";
-
+            text_lastStatus = in_;
         }
         private static List<string> ReadCsv(string filename, int lineCount = 1)
         {
@@ -212,7 +214,7 @@ namespace ImOrg
             DateTime buildDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddSeconds(version.Revision * 2);
             displayableVersion = $"{version} ({buildDate})";
 
-            ToolStrip.Text = $"Version: {displayableVersion}";
+            log_ts($"Version: {displayableVersion}");
 
             GetDrivesList(); // check all available drives and display them
 
@@ -240,7 +242,7 @@ namespace ImOrg
             DoDebugStuf();
 #endif
 
-            ToolStrip.Text = $"Version: {displayableVersion}";
+            log_ts($"Version: {displayableVersion}");
         }
         private void ListBox_files_SelectedIndexChanged(object sender, EventArgs e) // click an image in the list
         {
@@ -260,7 +262,7 @@ namespace ImOrg
             {
                 if (!Directory.Exists(fullPath))
                 {
-                    ToolStrip.Text = $"ERROR: cannot find {fullPath}";
+                    log_ts($"ERROR: cannot find {fullPath}");
                     return;
                 }
 
@@ -268,7 +270,7 @@ namespace ImOrg
             }
             else if (!File.Exists(fullPath))
             {
-                ToolStrip.Text = $"ERROR: cannot find {fullPath}";
+                log_ts($"ERROR: cannot find {fullPath}");
                 return;
             }
 
@@ -419,7 +421,7 @@ namespace ImOrg
             }
             catch (UnauthorizedAccessException err)
             {
-                ToolStrip.Text = $"ERROR on selecting file: {err.Message}";
+                log_ts($"ERROR on selecting file: {err.Message}");
             }
 
             // add all files with supported extensions
@@ -538,7 +540,7 @@ namespace ImOrg
             // need to fix symbols not working, numbers on azerty keyboard being wrong, other special keys
             // if (false) // debug
             //     if (e.KeyCode != Keys.ShiftKey)
-            //         ToolStrip.Text = $"{e.KeyCode},{e.KeyData},{e.KeyValue}";
+            //         log_ts($"{e.KeyCode},{e.KeyData},{e.KeyValue}";
 
             switch (e.KeyCode)
             {
@@ -575,7 +577,7 @@ namespace ImOrg
                 case Keys.Down:
                     if (!ToolStripMenuItem_allowUPDOWNToRename.Checked)
                     {
-                        ToolStrip.Text = $"Name reset.";
+                        log_ts($"Name reset.");
                         return;
                     }
                     goto keysEnter;
@@ -589,7 +591,7 @@ namespace ImOrg
                     log($"ListBox_files_KeyDown: {items[selectedIndex].filename}; {items[selectedIndex].newFilenameTemp}");
                     items[selectedIndex].newFilenameTemp = currNewName;
                     items[selectedIndex].toRename = true;
-                    // ToolStrip.Text = $"Renaming queued: {items[selectedIndex].filename} to {currNewName}";
+                    // log_ts($"Renaming queued: {items[selectedIndex].filename} to {currNewName}";
                     // log($"Renaming queued: {items[selectedIndex].filename} to {currNewName}");
                     prevNewName = currNewName; // this is the new name used previously for the last renamed item
                     currNewName = ""; // this is the new name, currently modified with letters or F1 or F3
@@ -603,7 +605,7 @@ namespace ImOrg
 
                 case Keys.Escape:
                     currNewName = "";
-                    ToolStrip.Text = $"Name reset."; // maybe use to undo
+                    log_ts($"Name reset."); // maybe use to undo
                     return;
 
                 case Keys.Space:
@@ -675,7 +677,7 @@ namespace ImOrg
                     if (currNewName != "")
                         currNewName = currNewName.Remove(currNewName.Length - 1, 1);
 
-                    ToolStrip.Text = $"";
+                    log_ts($"");
                     break;
 
                 // press this key to use the last used filename
@@ -684,7 +686,7 @@ namespace ImOrg
                     // maybe change key or let the user customize it
                     currNewName = prevNewName;
                     if (currNewName != "")
-                        ToolStrip.Text = $"Reusing: {currNewName}"; // maybe use to undo
+                        log_ts($"Reusing: {currNewName}"); // maybe use to undo
                     return;
 
                 case Keys.F2: // change renaming mode
@@ -694,7 +696,7 @@ namespace ImOrg
 
                     np = np + 1;
                     toolStripComboBox_renamingMode.SelectedIndex = np;
-                    ToolStrip.Text = $"Renaming mode: {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}";
+                    log_ts($"Renaming mode: {(renamingMode)toolStripComboBox_renamingMode.SelectedIndex}");
                     return;
 
                 case Keys.F3: // get original filename and use as new name
@@ -710,7 +712,7 @@ namespace ImOrg
                     
                     items[selectedIndex].toRename = true;
                     
-                    ToolStrip.Text = $"Renaming queued: {it.filename} to {items[selectedIndex].newFilenameTemp}";
+                    log_ts($"Renaming queued: {it.filename} to {items[selectedIndex].newFilenameTemp}");
 
                     if (ffplay_isRunning)
                         ffplay_kill();
@@ -726,7 +728,7 @@ namespace ImOrg
                 // 
                 //     currentPictureMode = availablePictureModes[a + 1];
                 // 
-                //     ToolStrip.Text = $"Picture scaling: {pictureBox1.SizeMode}";
+                //     log_ts($"Picture scaling: {pictureBox1.SizeMode}";
                 //     return;
 
                 default:
@@ -734,7 +736,7 @@ namespace ImOrg
             }
 
             if (currNewName != "")
-                ToolStrip.Text = $"New name: {currNewName}";
+                log_ts($"New name: {currNewName}");
 
         }
         private void ListBox_files_KeyPress(object sender, KeyPressEventArgs e)
@@ -752,11 +754,14 @@ namespace ImOrg
             dialogBox.Text = "Info";
             dialogBox.BackColor = BackColor_;
             dialogBox.ForeColor = ForeColor_;
+            dialogBox.Size = new Size { Width = 1100, Height = 300 };
+
             var label = new Label();
             label.AutoSize = true;
             label.Font = new Font("Consolas", 10.25F, FontStyle.Regular, GraphicsUnit.Point);
             label.Text =
                 $"Version: {displayableVersion} " +
+                "\n" +
                 "\nShortcuts list:" +
                 "\nESC : cancel last new name." +
                 "\nF1  : use the last typed name." +
@@ -764,13 +769,17 @@ namespace ImOrg
                 "\nF3  : restore the original filename from before renaming it in this session." +
                 // "\nF12 : change image view mode" +
                 "\n" +
+                "\nLeft/right arrows should fast forward the video by 5 seconds (or as specified)." +
+                "\nIf right mouse click is used to scroll the video, click again on the program window to continue renaming items or viewing others." +
+                "\n" +
                 "";
 
             label.ForeColor = ForeColor_;
             label.Location = new Point { X = 10, Y = 10 };
+
             dialogBox.Controls.Add(label);
 
-            dialogBox.ShowDialog();
+            dialogBox.ShowDialog(); // why... does it have priority?
 
         }
         private void ToolStripTextBox_videoFastForwardSeconds_textChanged(object sender, EventArgs e)
@@ -1089,6 +1098,30 @@ namespace ImOrg
             var a = timer_renameItems.Interval;
             renameAndMoveItems();
         }
+        private void timer_checkForeground_Tick(object sender, EventArgs e)
+        {
+            var a = Process.GetCurrentProcess().MainWindowHandle;
+            var b = GetForegroundWindow();
+
+            if (b == (int)a)
+            {
+                text_windowOutOfFocusAnnounced = false;
+                log_ts($"{text_lastStatus}");
+                return;
+
+            }
+
+            if (b != (int)a)
+            {
+                if (text_windowOutOfFocusAnnounced)
+                    return;
+
+                text_windowOutOfFocusAnnounced = true;
+
+                ToolStrip.Text = "Video window is a separate process and is currently focused. Click on the main program window to continue renaming items or view other items.";
+
+            }
+        }
         #endregion
 
         #region FFPLAY DLL
@@ -1100,6 +1133,8 @@ namespace ImOrg
         private static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
         [DllImport("user32.dll")]
         public static extern int SetForegroundWindow(int hwnd);
+        [DllImport("user32.dll")]
+        public static extern int GetForegroundWindow();
         #endregion
 
         #region FFPLAY
@@ -1209,6 +1244,8 @@ namespace ImOrg
 
             timer_killRogueFFPLAY.Stop();
             timer_startSetParent.Stop();
+            timer_checkForeground.Stop();
+
         }
         private void ffplay_loadVideo()
         {
@@ -1223,6 +1260,8 @@ namespace ImOrg
             ffplay_Thread();
 
             timer_startSetParent.Start();
+            timer_checkForeground.Start();
+
         }
         private void PictureBox1_Resize(object sender, EventArgs e)
         {
@@ -1341,6 +1380,8 @@ namespace ImOrg
         // using F3 to restore the filename won't move it back to the original location if it was moved. wat do
 
         /* weird bugs encountered so far:
+         * 
+         * WAIT SO NOW IT RANDOMLY WORKS IN RELEASE????
          * Main window won't focus in Debug or Release when running the standalone executable, but would work when debugging in Visual Studio. Turns out it's in SetForegroundWindow's documentation.
          * Renaming files too fast will make the file list selection jump from the last to first. There's no function to do it, nor anything that makes the index go to 0.
          * If the new name for the last file in the list contained a space, then it would not rename the last item and instead go to the previous one and rename it.

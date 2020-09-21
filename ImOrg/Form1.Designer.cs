@@ -50,6 +50,7 @@
             this.toolStripTextBox_textLength = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem_settings_video = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox_videoFastForwardSeconds = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripMenuItem_startVideoMuted = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_allowUPDOWNToRename = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_sortFilesByType = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_sortType = new System.Windows.Forms.ToolStripComboBox();
@@ -64,6 +65,9 @@
             this.timer_renameItems = new System.Windows.Forms.Timer(this.components);
             this.timer_killRogueFFPLAY = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.numericUpDown_key = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
@@ -81,10 +85,11 @@
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
-            this.toolStripMenuItem_startVideoMuted = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer_checkForeground = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_key)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
@@ -279,6 +284,13 @@
             this.toolStripTextBox_videoFastForwardSeconds.Name = "toolStripTextBox_videoFastForwardSeconds";
             this.toolStripTextBox_videoFastForwardSeconds.Size = new System.Drawing.Size(100, 23);
             // 
+            // toolStripMenuItem_startVideoMuted
+            // 
+            this.toolStripMenuItem_startVideoMuted.CheckOnClick = true;
+            this.toolStripMenuItem_startVideoMuted.Name = "toolStripMenuItem_startVideoMuted";
+            this.toolStripMenuItem_startVideoMuted.Size = new System.Drawing.Size(219, 22);
+            this.toolStripMenuItem_startVideoMuted.Text = "Start video muted";
+            // 
             // ToolStripMenuItem_allowUPDOWNToRename
             // 
             this.ToolStripMenuItem_allowUPDOWNToRename.Checked = true;
@@ -370,6 +382,9 @@
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.button3);
+            this.panel1.Controls.Add(this.label8);
+            this.panel1.Controls.Add(this.numericUpDown_key);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.numericUpDown6);
             this.panel1.Controls.Add(this.label1);
@@ -387,13 +402,36 @@
             this.panel1.Controls.Add(this.button1);
             this.panel1.Location = new System.Drawing.Point(1043, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(208, 222);
+            this.panel1.Size = new System.Drawing.Size(208, 269);
             this.panel1.TabIndex = 12;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(0, 0);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 0;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(84, 212);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(55, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "key_index";
+            // 
+            // numericUpDown_key
+            // 
+            this.numericUpDown_key.Location = new System.Drawing.Point(0, 0);
+            this.numericUpDown_key.Name = "numericUpDown_key";
+            this.numericUpDown_key.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown_key.TabIndex = 19;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(84, 164);
+            this.label2.Location = new System.Drawing.Point(84, 186);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(79, 13);
             this.label2.TabIndex = 16;
@@ -401,7 +439,7 @@
             // 
             // numericUpDown6
             // 
-            this.numericUpDown6.Location = new System.Drawing.Point(3, 162);
+            this.numericUpDown6.Location = new System.Drawing.Point(3, 184);
             this.numericUpDown6.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -424,16 +462,16 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 185);
+            this.label1.Location = new System.Drawing.Point(3, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 13);
+            this.label1.Size = new System.Drawing.Size(204, 13);
             this.label1.TabIndex = 14;
-            this.label1.Text = "DEBUG ONLY";
+            this.label1.Text = "DEBUG ONLY. Click bottom text to yeet it";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(84, 138);
+            this.label7.Location = new System.Drawing.Point(84, 160);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(118, 13);
             this.label7.TabIndex = 13;
@@ -442,7 +480,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(84, 112);
+            this.label6.Location = new System.Drawing.Point(84, 134);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(95, 13);
             this.label6.TabIndex = 12;
@@ -451,7 +489,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(84, 86);
+            this.label5.Location = new System.Drawing.Point(84, 108);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(93, 13);
             this.label5.TabIndex = 11;
@@ -460,7 +498,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(84, 60);
+            this.label4.Location = new System.Drawing.Point(84, 82);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(91, 13);
             this.label4.TabIndex = 10;
@@ -469,7 +507,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(84, 34);
+            this.label3.Location = new System.Drawing.Point(84, 56);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(102, 13);
             this.label3.TabIndex = 9;
@@ -482,7 +520,7 @@
             0,
             0,
             0});
-            this.numericUpDown5.Location = new System.Drawing.Point(3, 136);
+            this.numericUpDown5.Location = new System.Drawing.Point(3, 158);
             this.numericUpDown5.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -510,7 +548,7 @@
             0,
             0,
             0});
-            this.numericUpDown4.Location = new System.Drawing.Point(3, 110);
+            this.numericUpDown4.Location = new System.Drawing.Point(3, 132);
             this.numericUpDown4.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -538,7 +576,7 @@
             0,
             0,
             0});
-            this.numericUpDown3.Location = new System.Drawing.Point(3, 84);
+            this.numericUpDown3.Location = new System.Drawing.Point(3, 106);
             this.numericUpDown3.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -566,7 +604,7 @@
             0,
             0,
             0});
-            this.numericUpDown2.Location = new System.Drawing.Point(3, 58);
+            this.numericUpDown2.Location = new System.Drawing.Point(3, 80);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -594,7 +632,7 @@
             0,
             0,
             0});
-            this.numericUpDown1.Location = new System.Drawing.Point(3, 32);
+            this.numericUpDown1.Location = new System.Drawing.Point(3, 54);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -617,7 +655,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(87, 3);
+            this.button2.Location = new System.Drawing.Point(87, 25);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 1;
@@ -627,7 +665,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(3, 3);
+            this.button1.Location = new System.Drawing.Point(3, 25);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -647,12 +685,9 @@
             this.richTextBox1.TabIndex = 13;
             this.richTextBox1.Text = "";
             // 
-            // toolStripMenuItem_startVideoMuted
+            // timer_checkForeground
             // 
-            this.toolStripMenuItem_startVideoMuted.CheckOnClick = true;
-            this.toolStripMenuItem_startVideoMuted.Name = "toolStripMenuItem_startVideoMuted";
-            this.toolStripMenuItem_startVideoMuted.Size = new System.Drawing.Size(219, 22);
-            this.toolStripMenuItem_startVideoMuted.Text = "Start video muted";
+            this.timer_checkForeground.Tick += new System.EventHandler(this.timer_checkForeground_Tick);
             // 
             // Form1
             // 
@@ -674,6 +709,7 @@
             this.statusStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_key)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
@@ -739,6 +775,10 @@
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoFastForwardSeconds;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_sortType;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_startVideoMuted;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.NumericUpDown numericUpDown_key;
+        private System.Windows.Forms.Timer timer_checkForeground;
     }
 }
 
