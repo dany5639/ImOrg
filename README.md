@@ -31,18 +31,13 @@ Features to add:
 - Files list auto scroll should keep the highlighted item in the middle of the list, to see the items above and bellow it.
 - Allow user to resize the left and bottom panels.
 
-To Fix ASAP:
-- Very strange bug: using fast forward on a video while NOT using Visual Studio debugging will cause the main window to not get focused. Affects both debug and release builds. Double checked and it was the same build for all 3.
-Current behavior: press arrow, video fast forwards, click on window to focus again, type new name.
-Expected behavior: press arrow, video fast forwards, type new name.
-
 Current known issues:
 - Using F3 to restore the original name won't move the file to its original folder if it was moved with the move option.
-- In some rare cases, FFPLAY can run detached from the program.
+- If the program is force closed and a video was playing, then FFPLAY will remain running in the background, using CPU resources when playing videos and keeping the file locked until FFPLAY is stopped.
 
 Tested supported file formats:
 - Image: jpg, png, tif, bmp (any formats supported by WinForms' PictureBox)
-- Video: mp4, webm, gif (any formats supported by FFPLAY)
+- Video: mp4, webm, gif, mp3 (any formats supported by FFPLAY)
 - Text: txt, csv, log, xml, json, ahk, ini, amgp, cs, etc
 
 IMPORTANT:
