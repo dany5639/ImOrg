@@ -2,6 +2,8 @@
 TLDR: Tool to rename files as you them, such as images, videos, sound files, text files.
 Uses FFPLAY/FFMPEG to read videos and sound files.
 
+![Current view](master/ImOrg_QwkfQOt7ES.png)
+
 Features:
 - Directory tree to explore local drives.
 - View images, videos, text files, play sound files.
