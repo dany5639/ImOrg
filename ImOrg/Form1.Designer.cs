@@ -86,6 +86,7 @@
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.timer_checkForeground = new System.Windows.Forms.Timer(this.components);
+            this.toolStripMenuItem_imgFFMPEG = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -103,6 +104,8 @@
             this.treeView_folders.AllowDrop = true;
             this.treeView_folders.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.treeView_folders.FullRowSelect = true;
+            this.treeView_folders.HideSelection = false;
             this.treeView_folders.Location = new System.Drawing.Point(0, 0);
             this.treeView_folders.Name = "treeView_folders";
             this.treeView_folders.Size = new System.Drawing.Size(201, 614);
@@ -251,7 +254,8 @@
             this.toolStripMenuItem_itemSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem_settings_text,
             this.toolStripMenuItem_settings_video,
-            this.toolStripMenuItem_startVideoMuted});
+            this.toolStripMenuItem_startVideoMuted,
+            this.toolStripMenuItem_imgFFMPEG});
             this.toolStripMenuItem_itemSettings.Name = "toolStripMenuItem_itemSettings";
             this.toolStripMenuItem_itemSettings.Size = new System.Drawing.Size(215, 22);
             this.toolStripMenuItem_itemSettings.Text = "Item types settings";
@@ -689,6 +693,13 @@
             // 
             this.timer_checkForeground.Tick += new System.EventHandler(this.timer_checkForeground_Tick);
             // 
+            // toolStripMenuItem_imgFFMPEG
+            // 
+            this.toolStripMenuItem_imgFFMPEG.CheckOnClick = true;
+            this.toolStripMenuItem_imgFFMPEG.Name = "toolStripMenuItem_imgFFMPEG";
+            this.toolStripMenuItem_imgFFMPEG.Size = new System.Drawing.Size(219, 22);
+            this.toolStripMenuItem_imgFFMPEG.Text = "Use FFMPEG for images";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -779,6 +790,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown numericUpDown_key;
         private System.Windows.Forms.Timer timer_checkForeground;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_imgFFMPEG;
     }
 }
 

@@ -9,12 +9,16 @@
             image,
             video,
             text,
+            executable,
             unsupported
         }
         public static itemType getFileType(string extension)
         {
             switch (extension.ToLower())
             {
+                case ".exe":
+                    return itemType.executable;
+
                 case "directory":
                     return itemType.directory;
 

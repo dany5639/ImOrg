@@ -276,7 +276,17 @@ namespace ImOrg
 
             switch (items[currentFile.SelectedIndex].type)
             {
+                case FileTypes.itemType.executable:
+                    isViewingImage = false;
+                    if (ffplay_isRunning)
+                        ffplay_kill();
+                    richTextBox1.Hide();
+                    pictureBox1.Hide();
+                    break;
+
                 case FileTypes.itemType.video:
+                    forceFFMPEG:
+
                     isViewingImage = false;
 
                     pictureBox1.Show();
@@ -285,16 +295,19 @@ namespace ImOrg
                     break;
 
                 case FileTypes.itemType.image:
+                    if (toolStripMenuItem_imgFFMPEG.Checked)
+                        goto forceFFMPEG;
+
                     if (ffplay_isRunning)
                         ffplay_kill();
                     pictureBox1.Show();
-
+                
                     pictureBox1.SizeMode = currentPictureMode;
-
+                
                     isViewingImage = true;
-
-                    pictureBox1.LoadAsync(fullPath);
-
+                
+                    pictureBox1.LoadAsync(fullPath); // using picturebox due to FFPLAY implementation being just jank and slow
+                
                     break;
 
                 case FileTypes.itemType.text:
@@ -510,6 +523,7 @@ namespace ImOrg
                             continue;
                         break;
 
+                    case FileTypes.itemType.executable:
                     case FileTypes.itemType.noExtension:
                     case FileTypes.itemType.unsupported:
                         if (!unsupportedToolStripMenuItem.Checked)
@@ -1371,7 +1385,7 @@ namespace ImOrg
 
             richTextBox1.Text = text;
         }
-
+  
         #endregion
 
         // current major problems:
@@ -1381,6 +1395,7 @@ namespace ImOrg
 
         /* weird bugs encountered so far:
          * 
+         * add hex viewer
          * WAIT SO NOW IT RANDOMLY WORKS IN RELEASE????
          * Main window won't focus in Debug or Release when running the standalone executable, but would work when debugging in Visual Studio. Turns out it's in SetForegroundWindow's documentation.
          * Renaming files too fast will make the file list selection jump from the last to first. There's no function to do it, nor anything that makes the index go to 0.
