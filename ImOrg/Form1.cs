@@ -435,6 +435,7 @@ namespace ImOrg
             catch (UnauthorizedAccessException err)
             {
                 log_ts($"ERROR on selecting file: {err.Message}");
+                return;
             }
 
             // add all files with supported extensions
@@ -1385,7 +1386,7 @@ namespace ImOrg
 
             richTextBox1.Text = text;
         }
-  
+
         #endregion
 
         // current major problems:

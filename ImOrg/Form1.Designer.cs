@@ -51,6 +51,7 @@
             this.toolStripMenuItem_settings_video = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox_videoFastForwardSeconds = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem_startVideoMuted = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem_imgFFMPEG = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_allowUPDOWNToRename = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_sortFilesByType = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBox_sortType = new System.Windows.Forms.ToolStripComboBox();
@@ -65,7 +66,6 @@
             this.timer_renameItems = new System.Windows.Forms.Timer(this.components);
             this.timer_killRogueFFPLAY = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button3 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.numericUpDown_key = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
@@ -86,7 +86,6 @@
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.timer_checkForeground = new System.Windows.Forms.Timer(this.components);
-            this.toolStripMenuItem_imgFFMPEG = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -106,7 +105,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView_folders.FullRowSelect = true;
             this.treeView_folders.HideSelection = false;
-            this.treeView_folders.Location = new System.Drawing.Point(0, 0);
+            this.treeView_folders.Location = new System.Drawing.Point(0, 1);
             this.treeView_folders.Name = "treeView_folders";
             this.treeView_folders.Size = new System.Drawing.Size(201, 614);
             this.treeView_folders.TabIndex = 1;
@@ -131,7 +130,7 @@
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.Location = new System.Drawing.Point(207, 0);
+            this.pictureBox1.Location = new System.Drawing.Point(207, 1);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(1044, 614);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -295,6 +294,13 @@
             this.toolStripMenuItem_startVideoMuted.Size = new System.Drawing.Size(219, 22);
             this.toolStripMenuItem_startVideoMuted.Text = "Start video muted";
             // 
+            // toolStripMenuItem_imgFFMPEG
+            // 
+            this.toolStripMenuItem_imgFFMPEG.CheckOnClick = true;
+            this.toolStripMenuItem_imgFFMPEG.Name = "toolStripMenuItem_imgFFMPEG";
+            this.toolStripMenuItem_imgFFMPEG.Size = new System.Drawing.Size(219, 22);
+            this.toolStripMenuItem_imgFFMPEG.Text = "Use FFMPEG for images";
+            // 
             // ToolStripMenuItem_allowUPDOWNToRename
             // 
             this.ToolStripMenuItem_allowUPDOWNToRename.Checked = true;
@@ -386,7 +392,6 @@
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.label8);
             this.panel1.Controls.Add(this.numericUpDown_key);
             this.panel1.Controls.Add(this.label2);
@@ -404,17 +409,10 @@
             this.panel1.Controls.Add(this.numericUpDown1);
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.button1);
-            this.panel1.Location = new System.Drawing.Point(1043, 0);
+            this.panel1.Location = new System.Drawing.Point(1043, 1);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(208, 269);
             this.panel1.TabIndex = 12;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(0, 0);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 0;
             // 
             // label8
             // 
@@ -682,7 +680,7 @@
             this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox1.Location = new System.Drawing.Point(207, 0);
+            this.richTextBox1.Location = new System.Drawing.Point(207, 1);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.Size = new System.Drawing.Size(1038, 614);
@@ -693,24 +691,17 @@
             // 
             this.timer_checkForeground.Tick += new System.EventHandler(this.timer_checkForeground_Tick);
             // 
-            // toolStripMenuItem_imgFFMPEG
-            // 
-            this.toolStripMenuItem_imgFFMPEG.CheckOnClick = true;
-            this.toolStripMenuItem_imgFFMPEG.Name = "toolStripMenuItem_imgFFMPEG";
-            this.toolStripMenuItem_imgFFMPEG.Size = new System.Drawing.Size(219, 22);
-            this.toolStripMenuItem_imgFFMPEG.Text = "Use FFMPEG for images";
-            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1251, 740);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
             this.Text = "ImOrg";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -786,7 +777,6 @@
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox_videoFastForwardSeconds;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox_sortType;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_startVideoMuted;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown numericUpDown_key;
         private System.Windows.Forms.Timer timer_checkForeground;
