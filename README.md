@@ -34,6 +34,7 @@ Features to add:
 - Allow user to resize the left and bottom panels.
 
 Current known issues:
+- File explorer function freezes when viewing a text file, to fix ASAP.
 - Using F3 to restore the original name won't move the file to its original folder if it was moved with the move option.
 - If the program is force closed and a video was playing, then FFPLAY will remain running in the background, using CPU resources when playing videos and keeping the file locked until FFPLAY is stopped.
 
