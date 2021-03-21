@@ -300,6 +300,9 @@ namespace ImOrg
 
                     if (ffplay_isRunning)
                         ffplay_kill();
+
+                    richTextBox1.Hide();
+
                     pictureBox1.Show();
                 
                     pictureBox1.SizeMode = currentPictureMode;
