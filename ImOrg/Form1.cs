@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -25,6 +25,16 @@ namespace ImOrg
         /// </summary>
         private List<itemInfo> items = new List<itemInfo>();
 
+        private Dictionary<long, boxInfo> boxes = new Dictionary<long, boxInfo>();
+        private class boxInfo
+        {
+            public int locationX;
+            public int locationY;
+            public int scaleX;
+            public int scaleY;
+            public string Fullpath;
+        }
+
         private bool isDebug = false;
         private bool ffplay_isRunning = false;
         private bool isViewingImage = false;
@@ -41,6 +51,10 @@ namespace ImOrg
         private string displayableVersion = ""; // i still don't know how to use get; set, this is just sad
         private string text_lastStatus = "";
         private PictureBoxSizeMode currentPictureMode = PictureBoxSizeMode.Zoom;
+
+        #region boxstuf
+        public string boxstufFile = "boxstuf.csv";
+        #endregion
         private class itemInfo
         {
             public int Index;
@@ -113,6 +127,29 @@ namespace ImOrg
             }
 
             return output;
+        }
+        public static void WriteCsv(List<string> in_, string file)
+        {
+            var fileOut = new FileInfo(file);
+            if (File.Exists(file))
+                File.Delete(file);
+
+            int i = -1;
+            try
+            {
+                using (var csvStream = fileOut.OpenWrite())
+                using (var csvWriter = new StreamWriter(csvStream))
+                {
+                    foreach (var a in in_)
+                    {
+                        csvStream.Position = csvStream.Length;
+                        csvWriter.WriteLine(a);
+                        i++;
+                    }
+                }
+            }
+            catch
+            { }
         }
         #endregion
 
@@ -277,11 +314,6 @@ namespace ImOrg
             switch (items[currentFile.SelectedIndex].type)
             {
                 case FileTypes.itemType.executable:
-                    isViewingImage = false;
-                    if (ffplay_isRunning)
-                        ffplay_kill();
-                    richTextBox1.Hide();
-                    pictureBox1.Hide();
                     break;
 
                 case FileTypes.itemType.video:
@@ -310,7 +342,61 @@ namespace ImOrg
                     isViewingImage = true;
                 
                     pictureBox1.LoadAsync(fullPath); // using picturebox due to FFPLAY implementation being just jank and slow
-                
+
+                    // remove all boxes first from the last image
+                    for (int i = 0; i < Controls.Count; i++)
+                    {
+                        try
+                        {
+                            var panel = (Panel)Controls[i];
+                            if (panel.Name == "boxstuf")
+                            {
+                                Controls.Remove(Controls[i]);
+                                i = 0;
+                            }
+                        }
+                        catch
+                        { 
+                        }
+
+                    }
+
+                    // something fails the first loop and won't delete all
+                    for (int i = 0; i < Controls.Count; i++)
+                    {
+                        try
+                        {
+                            var panel = (Panel)Controls[i];
+                            if (panel.Name == "boxstuf")
+                            {
+                                Controls.Remove(Controls[i]);
+                                i = 0;
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                    }
+
+                    foreach (var a in boxes)
+                    {
+                        if (a.Value.Fullpath == fullPath)
+                        {
+                            panel2 = new System.Windows.Forms.Panel();
+                            panel2.Location = new System.Drawing.Point(a.Value.locationX, a.Value.locationY);
+                            panel2.Name = "boxstuf";
+                            panel2.Size = new System.Drawing.Size(a.Value.scaleX, a.Value.scaleY);
+                            panel2.TabIndex = 2;
+                            panel2.BackColor = Color.Green;
+                            panel2.ForeColor = Color.Green;
+                            panel2.Visible = true;
+                            panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseClick_hideBox);
+                            Controls.Add(panel2);
+                            panel2.BringToFront();
+                        }
+                    }
+
                     break;
 
                 case FileTypes.itemType.text:
@@ -375,7 +461,7 @@ namespace ImOrg
 
                 var driveName = $"{currentNode.Text}";
 
-                var folders = Directory.EnumerateDirectories($"{driveName}\\"); // weird bug here, if it has no backslash, it won't enumerate E but only E drive
+                var folders = Directory.EnumerateDirectories($"{driveName}\\"); // weird bug here, if it has no backslash, it won't enumerate E but only E drive. maybe it interprets \e 
 
                 foreach (var folder in folders)
                 {
@@ -418,6 +504,8 @@ namespace ImOrg
 
             }
 
+
+
         }
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e) // a folder has been selected, scan for all supported files
         {
@@ -440,6 +528,74 @@ namespace ImOrg
                 log_ts($"ERROR on selecting file: {err.Message}");
                 return;
             }
+
+            #region boxstuf
+
+            // make the file when creating the first box only, elsewhere in code
+            boxes = new Dictionary<long, boxInfo>();
+            boxstufFile = $"{e.Node.FullPath}\\boxstufFile.csv";
+            if (!File.Exists(boxstufFile))
+                goto skip1;
+
+            var oldLines = ReadCsv(boxstufFile, -1);
+
+            // remove all boxes first from the last image
+            for (int j = 0; j < Controls.Count; j++)
+            {
+                try
+                {
+                    var panel = (Panel)Controls[j];
+                    if (panel.Name == "boxstuf")
+                    {
+                        Controls.Remove(Controls[j]);
+                        j = 0;
+                    }
+                }
+                catch
+                {
+                }
+
+            }
+
+            // something fails the first loop and won't delete all
+            for (int j = 0; j < Controls.Count; j++)
+            {
+                try
+                {
+                    var panel = (Panel)Controls[j];
+                    if (panel.Name == "boxstuf")
+                    {
+                        Controls.Remove(Controls[j]);
+                        j = 0;
+                    }
+                }
+                catch
+                {
+                }
+
+            }
+
+            foreach (var a in oldLines)
+            {
+                var bfn = a.Split(",".ToCharArray()[0])[0];
+                var blx = a.Split(",".ToCharArray()[0])[1];
+                var bly = a.Split(",".ToCharArray()[0])[2];
+                var bsx = a.Split(",".ToCharArray()[0])[3];
+                var bsy = a.Split(",".ToCharArray()[0])[4];
+
+                int.TryParse(blx, out int lx);
+                int.TryParse(bly, out int ly);
+                int.TryParse(bsx, out int sx);
+                int.TryParse(bsy, out int sy);
+                long id = lx * ly * sx * sy; // shouldn't be possible to have two the same
+                boxes.Add(id, new boxInfo { locationX = lx, locationY = ly, scaleX = sx, scaleY = sy, Fullpath = bfn });
+         
+            }
+
+            this.Refresh();
+
+        skip1:
+            #endregion
 
             // add all files with supported extensions
 
@@ -1388,6 +1544,109 @@ namespace ImOrg
                 text = $"{text}{a}\n";
 
             richTextBox1.Text = text;
+        }
+
+
+        #endregion
+
+        #region place boxes where you click to cover words easily, press boxes again to reveal, imports from file based on filename to restore boxes
+
+        private System.Windows.Forms.Panel panel2;
+        public Point location = new Point(0, 0);
+
+        private void pictureBox1_Click(object sender, EventArgs e) // first click on image takes the location of the box, next click takes the size
+        {
+            var ee = (MouseEventArgs)e;
+            if (ee.Button != MouseButtons.Left)
+                return;
+
+            // store box location on first left click
+            if (location.X == 0 && location.Y == 0)
+            {
+                location = new Point(this.PointToClient(Cursor.Position).X, this.PointToClient(Cursor.Position).Y);
+                return;
+            }
+
+            var size = new Point(this.PointToClient(Cursor.Position).X - location.X, this.PointToClient(Cursor.Position).Y - location.Y);
+
+            if (size.X < 1 || size.Y < 1)
+            {
+                location = new Point(0, 0);
+                return;
+            }
+
+            panel2 = new System.Windows.Forms.Panel();
+            panel2.Location = new System.Drawing.Point(location.X, location.Y);
+            panel2.Name = "boxstuf";
+            panel2.Size = new System.Drawing.Size(size.X, size.Y);
+            panel2.TabIndex = 2;
+            panel2.BackColor = Color.Green;
+            panel2.ForeColor = Color.Green;
+            panel2.Visible = true;
+            panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseClick_hideBox);
+
+            Controls.Add(panel2);
+            panel2.BringToFront();
+
+            long id = location.X * location.Y * size.X * size.Y;
+            boxes.Add(id, new boxInfo { locationX = location.X, locationY = location.Y, scaleX = size.X, scaleY = size.Y, Fullpath = fullPath });
+
+            this.Refresh();
+
+            location = new Point(0, 0);
+            size = new Point(0, 0);
+
+            // export all boxes
+
+            exportAllBoxes();
+
+        }
+
+        private void exportAllBoxes()
+        {
+            var c = new List<string>();
+            foreach (var b in boxes)
+            {
+                if (b.Value.Fullpath != "") 
+                    c.Add($"{b.Value.Fullpath},{b.Value.locationX},{b.Value.locationY},{b.Value.scaleX},{b.Value.scaleY}");
+            }
+
+            WriteCsv(c, boxstufFile);
+
+        }
+        private void panel2_MouseClick_hideBox(object sender, MouseEventArgs e) // click on box to move back
+        {
+            var a = (Panel)sender;
+            if (e.Button == MouseButtons.Right) // delete box on right click
+            {
+                long id = a.Location.X * a.Location.Y * a.Width * a.Height;
+                boxes.Remove(id);
+                Controls.Remove((Control)sender);
+                exportAllBoxes();
+                return; // to edit
+            }
+                
+            a.SendToBack();
+
+        }
+
+        private void button3_Click_showAllBoxes(object sender, EventArgs e)
+        {
+            // bring all boxstuf to front
+            foreach (var a in Controls)
+            {
+                try
+                {
+                    var b = (Panel)a;
+                    if (b.Name != "boxstuf")
+                        continue;
+
+                    b.BringToFront();
+                }
+                catch
+                {
+                }
+            }
         }
 
         #endregion
