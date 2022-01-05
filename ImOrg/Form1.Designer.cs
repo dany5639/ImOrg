@@ -1,4 +1,4 @@
-﻿namespace ImOrg
+namespace ImOrg
 {
     partial class Form1
     {
@@ -86,6 +86,7 @@
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.timer_checkForeground = new System.Windows.Forms.Timer(this.components);
+            this.button3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -136,6 +137,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             this.pictureBox1.Resize += new System.EventHandler(this.PictureBox1_Resize);
             // 
             // statusStrip1
@@ -691,17 +693,29 @@
             // 
             this.timer_checkForeground.Tick += new System.EventHandler(this.timer_checkForeground_Tick);
             // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(1154, 717);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 14;
+            this.button3.Text = "show all";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click_showAllBoxes);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1251, 740);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.treeView_folders);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listBox_files);
-            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.richTextBox1);
             this.Name = "Form1";
             this.Text = "ImOrg";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -781,6 +795,7 @@
         private System.Windows.Forms.NumericUpDown numericUpDown_key;
         private System.Windows.Forms.Timer timer_checkForeground;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_imgFFMPEG;
+        private System.Windows.Forms.Button button3;
     }
 }
 
