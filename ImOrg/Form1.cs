@@ -33,6 +33,7 @@ namespace ImOrg
             public int scaleX;
             public int scaleY;
             public string Fullpath;
+            public string color;
         }
 
         private bool isDebug = false;
@@ -336,7 +337,7 @@ namespace ImOrg
                     richTextBox1.Hide();
 
                     pictureBox1.Show();
-                
+
                     pictureBox1.SizeMode = currentPictureMode;
                 
                     isViewingImage = true;
@@ -383,17 +384,33 @@ namespace ImOrg
                     {
                         if (a.Value.Fullpath == fullPath)
                         {
+                            var newcolor = Color.Red;
+
+                            switch (a.Value.color)
+                            {
+                                case "red":
+                                    newcolor = Color.Red;
+                                    break;
+                                case "green":
+                                    newcolor = Color.Green;
+                                    break;
+                                default:
+                                    throw new Exception($"Color not added: {a.Value.color}");
+                            }
+
+
                             panel2 = new System.Windows.Forms.Panel();
                             panel2.Location = new System.Drawing.Point(a.Value.locationX, a.Value.locationY);
                             panel2.Name = "boxstuf";
                             panel2.Size = new System.Drawing.Size(a.Value.scaleX, a.Value.scaleY);
                             panel2.TabIndex = 2;
-                            panel2.BackColor = Color.Green;
-                            panel2.ForeColor = Color.Green;
+                            panel2.BackColor = newcolor;
+                            panel2.ForeColor = newcolor;
                             panel2.Visible = true;
-                            panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseClick_hideBox);
+                            panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseClick_deleteBox);
                             Controls.Add(panel2);
                             panel2.BringToFront();
+
                         }
                     }
 
@@ -582,13 +599,15 @@ namespace ImOrg
                 var bly = a.Split(",".ToCharArray()[0])[2];
                 var bsx = a.Split(",".ToCharArray()[0])[3];
                 var bsy = a.Split(",".ToCharArray()[0])[4];
+                var bcr = a.Split(",".ToCharArray()[0])[5];
 
                 int.TryParse(blx, out int lx);
                 int.TryParse(bly, out int ly);
                 int.TryParse(bsx, out int sx);
                 int.TryParse(bsy, out int sy);
+                
                 long id = lx * ly * sx * sy; // shouldn't be possible to have two the same
-                boxes.Add(id, new boxInfo { locationX = lx, locationY = ly, scaleX = sx, scaleY = sy, Fullpath = bfn });
+                boxes.Add(id, new boxInfo { locationX = lx, locationY = ly, scaleX = sx, scaleY = sy, Fullpath = bfn, color = bcr });
          
             }
 
@@ -1580,16 +1599,16 @@ namespace ImOrg
             panel2.Name = "boxstuf";
             panel2.Size = new System.Drawing.Size(size.X, size.Y);
             panel2.TabIndex = 2;
-            panel2.BackColor = Color.Green;
-            panel2.ForeColor = Color.Green;
+            panel2.BackColor = Color.Red;
+            panel2.ForeColor = Color.Red;
             panel2.Visible = true;
-            panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseClick_hideBox);
+            panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseClick_deleteBox);
 
             Controls.Add(panel2);
             panel2.BringToFront();
 
             long id = location.X * location.Y * size.X * size.Y;
-            boxes.Add(id, new boxInfo { locationX = location.X, locationY = location.Y, scaleX = size.X, scaleY = size.Y, Fullpath = fullPath });
+            boxes.Add(id, new boxInfo { locationX = location.X, locationY = location.Y, scaleX = size.X, scaleY = size.Y, Fullpath = fullPath, color = "red" });
 
             this.Refresh();
 
@@ -1608,13 +1627,14 @@ namespace ImOrg
             foreach (var b in boxes)
             {
                 if (b.Value.Fullpath != "") 
-                    c.Add($"{b.Value.Fullpath},{b.Value.locationX},{b.Value.locationY},{b.Value.scaleX},{b.Value.scaleY}");
+                    c.Add($"{b.Value.Fullpath},{b.Value.locationX},{b.Value.locationY},{b.Value.scaleX},{b.Value.scaleY},{b.Value.color}");
             }
 
             WriteCsv(c, boxstufFile);
 
         }
-        private void panel2_MouseClick_hideBox(object sender, MouseEventArgs e) // click on box to move back
+
+        private void panel2_MouseClick_deleteBox(object sender, MouseEventArgs e)
         {
             var a = (Panel)sender;
             if (e.Button == MouseButtons.Right) // delete box on right click
@@ -1625,8 +1645,19 @@ namespace ImOrg
                 exportAllBoxes();
                 return; // to edit
             }
-                
-            a.SendToBack();
+
+            if (e.Button == MouseButtons.Middle) // delete box on right click
+            {
+                long id = a.Location.X * a.Location.Y * a.Width * a.Height;
+                boxes[id].color = "green";
+                var b = (Panel)sender;
+                b.BackColor = Color.Green;
+                b.ForeColor = Color.Green;
+                exportAllBoxes();
+                return; // to edit
+            }
+
+            // a.SendToBack();
 
         }
 
@@ -1647,6 +1678,22 @@ namespace ImOrg
                 {
                 }
             }
+        }
+
+        private void toolStripTextBox_textLength_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem2_DropDownClosed(object sender, EventArgs e)
+        {
+            log_ts("toolStripMenuItem2_DropDownClosed");
+            currentPictureMode = (PictureBoxSizeMode)toolStripMenuItem_imageScales.SelectedIndex;
         }
 
         #endregion
