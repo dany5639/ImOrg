@@ -1,5 +1,5 @@
 # ImOrg
-TLDR: Tool to rename files as you them, such as images, videos, sound files, text files.
+TLDR: Tool to rename files as you view them, such as images, videos, sound files, text files.
 Uses FFPLAY/FFMPEG to read videos and sound files.
 
 ![Current view](ImOrg_QwkfQOt7ES.png)
