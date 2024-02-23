@@ -17,7 +17,7 @@ namespace ImOrg
         {
             if (!File.Exists("ffplay.exe"))
             {
-                MessageBox.Show("ERROR: FFMPEG video player is required. This cannot continue." +
+                MessageBox.Show("ERROR: FFMPEG video player is required. Filename: ffplay.exe. Version: any." +
                     "ToDo: integrate a video playback library.");
                 return;
             }
