@@ -544,7 +544,7 @@ namespace ImOrg
                 listBox_files.Items.Add(a.fullpath);
             }
 
-            log_ts($"Listed {listBox_files.Items.Count} items.");
+            log_ts($"< Click here for more. Listed {listBox_files.Items.Count} items.");
 
         }
         #endregion
